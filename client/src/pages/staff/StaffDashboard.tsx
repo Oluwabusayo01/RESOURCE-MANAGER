@@ -131,32 +131,32 @@ export default function StaffDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {loading
           ? [1, 2, 3, 4, 5].map(i => (
-              <Card key={i} className="border border-mid-gray/20">
-                <CardContent className="p-5 space-y-3">
-                  <Skeleton className="h-10 w-10 rounded-lg" />
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-4 w-24" />
+            <Card key={i} className="border border-mid-gray/20">
+              <CardContent className="p-5 space-y-3">
+                <Skeleton className="h-10 w-10 rounded-lg" />
+                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-4 w-24" />
+              </CardContent>
+            </Card>
+          ))
+          : statCards.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <Card className="border border-mid-gray/20 hover:shadow-md transition-shadow">
+                <CardContent className="p-5">
+                  <div className={`w-10 h-10 ${s.bg} rounded-lg flex items-center justify-center mb-3`}>
+                    <s.icon className={`w-5 h-5 ${s.color}`} />
+                  </div>
+                  <p className="text-3xl font-black text-accent">{s.value}</p>
+                  <p className="text-xs font-bold text-dark-gray uppercase tracking-wider mt-1">{s.label}</p>
                 </CardContent>
               </Card>
-            ))
-          : statCards.map((s, i) => (
-              <motion.div
-                key={s.label}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-              >
-                <Card className="border border-mid-gray/20 hover:shadow-md transition-shadow">
-                  <CardContent className="p-5">
-                    <div className={`w-10 h-10 ${s.bg} rounded-lg flex items-center justify-center mb-3`}>
-                      <s.icon className={`w-5 h-5 ${s.color}`} />
-                    </div>
-                    <p className="text-3xl font-black text-accent">{s.value}</p>
-                    <p className="text-xs font-bold text-dark-gray uppercase tracking-wider mt-1">{s.label}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            </motion.div>
+          ))}
       </div>
 
       {/* 3. Quick Actions (3 for staff) */}
@@ -307,7 +307,7 @@ export default function StaffDashboard() {
                     {formatDistanceToNow(new Date(n.timestamp), { addSuffix: true })}
                   </p>
                 </div>
-                {!n.read && <div className="w-2 h-2 rounded-full bg-gold mt-2 flex-shrink-0" />}
+                {!n.read && <div className="w-2 h-2 rounded-full bg-gold mt-2 shrink-0" />}
               </div>
             ))}
           </div>

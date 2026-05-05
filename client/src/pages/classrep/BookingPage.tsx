@@ -7,6 +7,7 @@ import * as z from 'zod'
 import { useAuthStore } from '@/store/useAuthStore'
 import { resourceService, bookingService } from '@/lib/apiService'
 import type { Resource } from '@/types'
+import { useBookingReminder } from '@/lib/useBookingReminder'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -48,6 +49,7 @@ interface BookingFormValues {
 export default function BookingPage() {
   const { user } = useAuthStore()
   const navigate = useNavigate()
+  const { scheduleReminder } = useBookingReminder()
 
   const [resources, setResources] = useState<Resource[]>([])
   const [checking, setChecking] = useState(false)
@@ -116,7 +118,7 @@ export default function BookingPage() {
     setSubmitting(true)
     try {
       const resource = resources.find(r => r.id === data.resourceId)
-      await bookingService.create({
+      const newBooking = await bookingService.create({
         ...data,
         userId: user?.id,
         user: { id: user?.id, name: user?.name, role: user?.role, department: user?.department },
@@ -124,6 +126,12 @@ export default function BookingPage() {
         department: user?.department,
       })
       toast.success('Booking confirmed!')
+
+      // Schedule auto-reminder 1 hour before booking
+      if (resource) {
+        scheduleReminder({ ...newBooking, resource, course: data.course, date: data.date, startTime: data.startTime })
+      }
+
       // Navigate to the correct dashboard based on role
       const dashboardPath = user?.role === 'staff' ? '/staff/dashboard' : '/classrep/dashboard'
       navigate(dashboardPath)

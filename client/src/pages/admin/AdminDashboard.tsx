@@ -39,7 +39,6 @@ import {
   Activity,
   CalendarPlus,
   UserCheck,
-  AlertCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
 

@@ -164,7 +164,7 @@ export default function LoginPage() {
         {isMock && (
           <div className="mt-6 p-4 bg-gold/5 border border-gold/20 rounded-lg">
             <div className="flex items-center gap-2 mb-3">
-              <Info className="w-4 h-4 text-gold flex-shrink-0" />
+              <Info className="w-4 h-4 text-gold shrink-0" />
               <span className="text-xs font-bold text-gold uppercase tracking-wider">Demo Credentials</span>
             </div>
             <div className="space-y-2 text-xs text-dark-gray">

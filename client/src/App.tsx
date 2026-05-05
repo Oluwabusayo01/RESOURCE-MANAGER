@@ -87,11 +87,20 @@ function App() {
         </Route>
 
         {/* 404 Route */}
-        <Route path="*" element={<div className="flex items-center justify-center h-screen">404 — Page Not Found</div>} />
+        <Route path="*" element={
+          <div className="flex flex-col items-center justify-center h-screen bg-light-gray gap-4">
+            <p className="text-8xl font-black text-accent">404</p>
+            <p className="text-lg text-dark-gray font-medium">Page Not Found</p>
+            <p className="text-sm text-mid-gray">The page you are looking for does not exist.</p>
+            <a href="/" className="mt-4 inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-bold rounded-lg hover:bg-accent/90 transition-colors">
+              Go Home
+            </a>
+          </div>
+        } />
       </Routes>
       <Toaster position="top-center" richColors />
       {import.meta.env.VITE_USE_MOCK === 'true' && (
-        <div className="fixed bottom-0 left-0 right-0 bg-black text-white text-[10px] py-1 text-center z-9999 opacity-80 pointer-events-none">
+        <div className="fixed bottom-0 left-0 right-0 bg-black text-white text-[10px] py-1 text-center z-50 opacity-80 pointer-events-none">
           🟡 Demo Mode — Using mock data. Backend not connected.
         </div>
       )}

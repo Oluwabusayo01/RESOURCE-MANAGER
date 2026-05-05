@@ -2,14 +2,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuthStore } from '@/store/useAuthStore'
 import { cn } from '@/lib/utils'
-import { 
-  LayoutDashboard, 
-  CalendarPlus, 
-  History, 
-  Bell, 
-  Upload, 
-  Users, 
-  Settings, 
+import {
+  LayoutDashboard,
+  CalendarPlus,
+  History,
+  Bell,
+  Upload,
+  Users,
+  Settings,
   LogOut,
   Menu,
   X
@@ -22,7 +22,7 @@ export default function Sidebar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
-  const [isOpen, setIsOpen] = useState(true)
+  // const [isOpen, setIsOpen] = useState(true)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const handleLogout = () => {
@@ -73,8 +73,8 @@ export default function Sidebar() {
               to={link.path}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group",
-                active 
-                  ? "bg-white/10 text-gold border-l-4 border-gold" 
+                active
+                  ? "bg-white/10 text-gold border-l-4 border-gold"
                   : "text-mid-gray hover:text-white hover:bg-white/5 border-l-4 border-transparent"
               )}
             >
@@ -111,10 +111,10 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile Toggle */}
-      <div className="lg:hidden fixed top-4 left-4 z-[60]">
-        <Button 
-          variant="outline" 
-          size="icon" 
+      <div className="lg:hidden fixed top-4 left-4 z-60">
+        <Button
+          variant="outline"
+          size="icon"
           onClick={() => setIsMobileOpen(!isMobileOpen)}
           className="bg-white text-accent border-accent"
         >
@@ -136,14 +136,14 @@ export default function Sidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[50] lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 lg:hidden"
             />
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-72 z-[55] lg:hidden"
+              className="fixed inset-y-0 left-0 w-72 z-55 lg:hidden"
             >
               {sidebarContent}
             </motion.aside>

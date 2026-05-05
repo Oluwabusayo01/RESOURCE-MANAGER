@@ -136,14 +136,13 @@ export default function NotificationsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04 }}
                 onClick={() => !n.read && handleMarkRead(n.id)}
-                className={`flex items-start gap-4 p-4 rounded-xl transition-all cursor-pointer ${
-                  n.read
+                className={`flex items-start gap-4 p-4 rounded-xl transition-all cursor-pointer ${n.read
                     ? 'bg-white hover:bg-light-gray/50'
                     : 'bg-[#FAFAFA] border-l-4 border-gold hover:bg-gold/5'
-                }`}
+                  }`}
               >
                 {/* Icon */}
-                <div className={`p-2.5 rounded-lg flex-shrink-0 ${n.read ? 'bg-light-gray' : 'bg-gold/10'}`}>
+                <div className={`p-2.5 rounded-lg shrink-0 ${n.read ? 'bg-light-gray' : 'bg-gold/10'}`}>
                   <Icon className={`w-5 h-5 ${config.color}`} />
                 </div>
 
@@ -159,7 +158,7 @@ export default function NotificationsPage() {
 
                 {/* Unread Dot */}
                 {!n.read && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-gold flex-shrink-0 mt-2" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-2" />
                 )}
               </motion.div>
             )

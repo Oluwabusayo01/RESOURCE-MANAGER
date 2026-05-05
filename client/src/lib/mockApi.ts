@@ -1,4 +1,4 @@
-import type { User, Resource, Booking, Notification, LibraryMaterial, UserRole, UserStatus, BookingStatus, ResourceStatus, ResourceType, NotificationType, Department } from '../types'
+import type { Resource, Booking, Notification, LibraryMaterial, UserRole, UserStatus, ResourceStatus, NotificationType, Department } from '../types'
 
 // Helper to simulate network delay
 const delay = (ms = 600) => new Promise(resolve => setTimeout(resolve, ms))
@@ -276,7 +276,7 @@ export const uploadMaterial = async (formData: FormData) => {
   return newMaterial
 }
 
-export const downloadMaterial = async (id: string) => {
+export const downloadMaterial = async (_id: string) => {
   await delay()
   return { fileUrl: '#' }
 }
