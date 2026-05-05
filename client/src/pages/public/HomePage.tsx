@@ -50,7 +50,7 @@ export default function HomePage() {
     >
       {/* 1. Hero Section */}
       <section className="relative overflow-hidden bg-white py-20 lg:py-32 border-b">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-size-[4rem_4rem] mask-image-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         <div className="container relative mx-auto px-4 text-center">
           <motion.h1 
             initial={{ y: 20, opacity: 0 }}
@@ -171,7 +171,7 @@ export default function HomePage() {
             ) : bookings.length > 0 ? (
               bookings.map((b) => (
                 <div key={b.id} className="bg-white p-6 rounded-xl border border-mid-gray/20 shadow-sm hover:shadow-md transition-shadow">
-                  <h4 className="font-bold text-accent truncate mb-1">{b.resourceName}</h4>
+                  <h4 className="font-bold text-accent truncate mb-1">{b.resource.name}</h4>
                   <p className="text-sm text-dark-gray mb-4 truncate">{b.course}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-gold">{b.startTime} - {b.endTime}</span>
