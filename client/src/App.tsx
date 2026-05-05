@@ -52,15 +52,17 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+        {/* Public Routes (with Navbar + Footer) */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/schedule" element={<SchedulePage />} />
           <Route path="/library" element={<ELibraryPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/status" element={<StatusPage />} />
         </Route>
+
+        {/* Auth Routes (standalone — no Navbar/Sidebar) */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/status" element={<StatusPage />} />
 
         {/* Dashboard Routes */}
         <Route element={<DashboardLayout />}>
