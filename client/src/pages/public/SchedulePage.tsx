@@ -5,26 +5,26 @@ import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { enUS } from 'date-fns/locale'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
   DialogTitle,
-  DialogDescription 
+  DialogDescription
 } from '@/components/ui/dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import StatusBadge from '@/components/shared/StatusBadge'
 import { bookingService, resourceService } from '@/lib/apiService'
-import type { Booking, Resource, Department } from '@/types'
+import type { Booking, Resource } from '@/types'
 import { RotateCcw, Info } from 'lucide-react'
 
 // Calendar localizer setup
@@ -118,7 +118,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="container mx-auto px-4 py-10"
@@ -162,10 +162,10 @@ export default function SchedulePage() {
 
         <div className="space-y-2 flex-1 min-w-[200px]">
           <label className="text-xs font-bold uppercase text-dark-gray">Date</label>
-          <Input 
-            type="date" 
-            value={dateFilter} 
-            onChange={(e) => setDateFilter(e.target.value)} 
+          <Input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
           />
         </div>
 
@@ -216,7 +216,7 @@ export default function SchedulePage() {
               Detailed information about this reserved slot.
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedEvent && (
             <div className="py-6 space-y-6">
               <div className="flex items-start justify-between">
@@ -257,7 +257,7 @@ export default function SchedulePage() {
               )}
             </div>
           )}
-          
+
           <div className="flex justify-end">
             <Button onClick={() => setSelectedEvent(null)} className="bg-accent text-white">
               Close
