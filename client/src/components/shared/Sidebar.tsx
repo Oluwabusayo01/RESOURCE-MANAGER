@@ -34,13 +34,13 @@ export default function Sidebar() {
     classrep: [
       { name: 'Dashboard', path: '/classrep/dashboard', icon: LayoutDashboard },
       { name: 'Book a Resource', path: '/classrep/book', icon: CalendarPlus },
-      { name: 'My Bookings', path: '/classrep/dashboard', icon: History }, // Path might be hash or scroll
+      { name: 'My Bookings', path: '/classrep/bookings', icon: History },
       { name: 'Notifications', path: '/classrep/notifications', icon: Bell },
     ],
     staff: [
       { name: 'Dashboard', path: '/staff/dashboard', icon: LayoutDashboard },
       { name: 'Book a Resource', path: '/staff/book', icon: CalendarPlus },
-      { name: 'My Bookings', path: '/staff/dashboard', icon: History },
+      { name: 'My Bookings', path: '/staff/bookings', icon: History },
       { name: 'Upload Material', path: '/staff/upload', icon: Upload },
       { name: 'Notifications', path: '/staff/notifications', icon: Bell },
     ],

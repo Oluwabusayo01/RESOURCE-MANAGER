@@ -1,17 +1,11 @@
 import { motion } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuthStore } from '@/store/useAuthStore'
-import { Clock, XCircle, LogOut } from 'lucide-react'
+import { Clock, XCircle, Home } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function StatusPage() {
-  const { user, logout } = useAuthStore()
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  const { user } = useAuthStore()
 
   const status = user?.status || 'pending'
 
@@ -94,15 +88,16 @@ export default function StatusPage() {
           </div>
         )}
 
-        {/* Logout Button */}
-        <Button
-          variant="outline"
-          onClick={handleLogout}
-          className="w-full mt-8 gap-2 font-bold border-accent text-accent hover:bg-light-gray"
-        >
-          <LogOut className="w-4 h-4" />
-          Logout
-        </Button>
+        {/* Home Link */}
+        <Link to="/">
+          <Button
+            variant="outline"
+            className="w-full mt-8 gap-2 font-bold border-accent text-accent hover:bg-light-gray"
+          >
+            <Home className="w-4 h-4" />
+            Back to Homepage
+          </Button>
+        </Link>
       </div>
     </motion.div>
   )

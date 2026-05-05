@@ -1,7 +1,9 @@
 import { Link, Outlet } from 'react-router-dom'
+import { useAuthStore } from '@/store/useAuthStore'
 import Navbar from './Navbar'
 
 export default function PublicLayout() {
+  const { user } = useAuthStore()
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -27,7 +29,11 @@ export default function PublicLayout() {
               <Link to="/" className="text-sm hover:text-gold transition-colors text-white">Home</Link>
               <Link to="/schedule" className="text-sm hover:text-gold transition-colors text-white">Schedule</Link>
               <Link to="/library" className="text-sm hover:text-gold transition-colors text-white">E-Library</Link>
-              <Link to="/login" className="text-sm hover:text-gold transition-colors text-white">Login</Link>
+              {!user ? (
+                <Link to="/login" className="text-sm hover:text-gold transition-colors text-white">Login</Link>
+              ) : (
+                <Link to={user.role === 'admin' ? '/admin/dashboard' : user.role === 'staff' ? '/staff/dashboard' : '/classrep/dashboard'} className="text-sm hover:text-gold transition-colors text-white">Dashboard</Link>
+              )}
             </div>
             <div>
               <h5 className="font-bold text-gold uppercase tracking-widest text-xs mb-4">Contact Info</h5>

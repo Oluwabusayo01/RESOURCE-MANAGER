@@ -1,20 +1,13 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/useAuthStore'
 import { cn } from '@/lib/utils'
-import { Menu, X, LogOut } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Menu, X } from 'lucide-react'
 
 export default function Navbar() {
   const location = useLocation()
-  const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
+  const { user } = useAuthStore()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  const handleLogout = () => {
-    logout()
-    navigate('/')
-  }
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -62,17 +55,6 @@ export default function Navbar() {
                 )}
               </Link>
             ))}
-            {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="text-red-500 hover:text-red-600 hover:bg-red-50 gap-2 font-bold"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
-            )}
           </div>
 
           {/* Mobile Toggle */}
@@ -103,15 +85,6 @@ export default function Navbar() {
               {link.name}
             </Link>
           ))}
-          {user && (
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 text-lg font-bold text-red-500 p-2 w-full text-left"
-            >
-              <LogOut className="w-5 h-5" />
-              Logout
-            </button>
-          )}
         </div>
       )}
     </nav>

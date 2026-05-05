@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { 
-  CalendarCheck, 
-  CheckCircle, 
-  Shield, 
-  Monitor, 
-  Lock, 
-  Globe, 
+import {
+  CalendarCheck,
+  CheckCircle,
+  Shield,
+  Monitor,
+  Lock,
+  Globe,
   ArrowRight,
   BookOpen
 } from 'lucide-react'
@@ -15,9 +15,11 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import StatusBadge from '@/components/shared/StatusBadge'
 import { bookingService } from '@/lib/apiService'
+import { useAuthStore } from '@/store/useAuthStore'
 import type { Booking } from '@/types'
 
 export default function HomePage() {
+  const { user } = useAuthStore()
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -25,10 +27,10 @@ export default function HomePage() {
     const fetchTodayBookings = async () => {
       try {
         // Mock delay is handled inside apiService
-        const data = await bookingService.getAll({ 
-          date: new Date().toISOString().split('T')[0], 
-          status: 'confirmed', 
-          limit: 4 
+        const data = await bookingService.getAll({
+          date: new Date().toISOString().split('T')[0],
+          status: 'confirmed',
+          limit: 4
         })
         setBookings(data)
       } catch (err) {
@@ -42,7 +44,7 @@ export default function HomePage() {
   }, [])
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
@@ -52,7 +54,7 @@ export default function HomePage() {
       <section className="relative overflow-hidden bg-white py-20 lg:py-32 border-b">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-size-[4rem_4rem] mask-image-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         <div className="container relative mx-auto px-4 text-center">
-          <motion.h1 
+          <motion.h1
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -60,7 +62,7 @@ export default function HomePage() {
           >
             Book Smarter. <span className="text-gold">Learn Better.</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -69,7 +71,7 @@ export default function HomePage() {
             The official resource booking system for the Faculty of
             Computing and Informatics, LAUTECH.
           </motion.p>
-          <motion.div 
+          <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -78,9 +80,17 @@ export default function HomePage() {
             <Button asChild size="lg" className="bg-accent text-white hover:bg-accent/90 px-8 font-bold">
               <Link to="/schedule">View Schedule</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-accent text-accent hover:bg-light-gray px-8 font-bold">
-              <Link to="/login">Login</Link>
-            </Button>
+            {!user ? (
+              <Button asChild size="lg" variant="outline" className="border-accent text-accent hover:bg-light-gray px-8 font-bold">
+                <Link to="/login">Login</Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" variant="outline" className="border-accent text-accent hover:bg-light-gray px-8 font-bold">
+                <Link to={user.role === 'admin' ? '/admin/dashboard' : user.role === 'staff' ? '/staff/dashboard' : '/classrep/dashboard'}>
+                  Dashboard
+                </Link>
+              </Button>
+            )}
           </motion.div>
         </div>
       </section>
@@ -90,23 +100,23 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { 
-                title: "Real-Time Availability", 
+              {
+                title: "Real-Time Availability",
                 desc: "instantly check if a lab or hall is free for your next class or session.",
-                icon: CalendarCheck 
+                icon: CalendarCheck
               },
-              { 
-                title: "Instant Confirmation", 
+              {
+                title: "Instant Confirmation",
                 desc: "No more waiting. Book and get confirmed immediately by the system.",
-                icon: CheckCircle 
+                icon: CheckCircle
               },
-              { 
-                title: "Role-Based Access", 
+              {
+                title: "Role-Based Access",
                 desc: "Secure permissions for students, staff, and admin to manage resources.",
-                icon: Shield 
+                icon: Shield
               },
             ].map((f, i) => (
-              <motion.div 
+              <motion.div
                 key={f.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -149,9 +159,9 @@ export default function HomePage() {
       {/* 4. Today's Bookings Snapshot */}
       <section className="py-20 bg-light-gray/20">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-3xl font-black text-accent">Today's Bookings</h2>
-            <Link to="/schedule" className="text-gold font-bold flex items-center gap-2 hover:underline">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+            <h2 className="text-2xl md:text-3xl font-black text-accent">Today's Bookings</h2>
+            <Link to="/schedule" className="text-gold font-bold flex items-center gap-1.5 hover:underline text-sm md:text-base w-fit">
               View Full Schedule <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -196,10 +206,10 @@ export default function HomePage() {
               Access <span className="text-gold">Study Materials</span>
             </h2>
             <p className="text-lg text-mid-gray mb-10 leading-relaxed">
-              Lecturers upload notes, slides, and past questions — all free to download. 
+              Lecturers upload notes, slides, and past questions — all free to download.
               Build your knowledge with the best resources from FCI.
             </p>
-            <Button asChild size="lg" className="bg-gold text-accent hover:bg-gold/90 font-black px-10">
+            <Button asChild size="lg" variant="outline" className="bg-gold text-accent border-none hover:bg-gold/90 hover:text-accent font-black px-10">
               <Link to="/library" className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
                 Browse E-Library

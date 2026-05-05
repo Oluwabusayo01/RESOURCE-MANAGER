@@ -8,7 +8,6 @@ import type { Booking, Notification } from '@/types'
 
 import NotificationBell from '@/components/shared/NotificationBell'
 import StatusBadge from '@/components/shared/StatusBadge'
-import BookingModal from '@/components/shared/BookingModal'
 import ClassUpdateModal from '@/components/shared/ClassUpdateModal'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 
@@ -29,7 +28,6 @@ import {
   Clock,
   Megaphone,
   Users,
-  Plus,
   Send,
   Eye,
   XCircle,
@@ -46,7 +44,6 @@ export default function ClassRepDashboard() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [bookingModalOpen, setBookingModalOpen] = useState(false)
   const [classUpdateOpen, setClassUpdateOpen] = useState(false)
   const [cancelDialog, setCancelDialog] = useState<{ open: boolean; id: string }>({ open: false, id: '' })
 
@@ -153,19 +150,7 @@ export default function ClassRepDashboard() {
       </div>
 
       {/* 3. Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
-          onClick={() => setBookingModalOpen(true)}
-          className="flex items-center gap-4 p-5 bg-accent text-white rounded-xl hover:bg-accent/90 transition-all group"
-        >
-          <div className="p-3 bg-white/10 rounded-lg group-hover:bg-white/20 transition-colors">
-            <Plus className="w-6 h-6" />
-          </div>
-          <div className="text-left">
-            <p className="font-bold text-lg">Book a Resource</p>
-            <p className="text-sm text-mid-gray">Reserve a lab, hall, or seminar room</p>
-          </div>
-        </button>
+      <div className="grid grid-cols-1 gap-4">
 
         <button
           onClick={() => setClassUpdateOpen(true)}
@@ -184,8 +169,11 @@ export default function ClassRepDashboard() {
       {/* 4. My Bookings Table */}
       <div className="bg-white rounded-xl border border-mid-gray/20 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-lg font-black text-accent">My Bookings</h2>
-          <button className="text-gold text-sm font-bold flex items-center gap-1 hover:underline">
+          <h2 className="text-lg font-black text-accent">Recent Bookings</h2>
+          <button 
+            onClick={() => navigate('/classrep/bookings')}
+            className="text-gold text-sm font-bold flex items-center gap-1 hover:underline"
+          >
             View All <ArrowRight className="w-3 h-3" />
           </button>
         </div>
@@ -295,11 +283,6 @@ export default function ClassRepDashboard() {
       </div>
 
       {/* Modals */}
-      <BookingModal
-        isOpen={bookingModalOpen}
-        onClose={() => setBookingModalOpen(false)}
-        onSuccess={fetchData}
-      />
       <ClassUpdateModal
         isOpen={classUpdateOpen}
         onClose={() => setClassUpdateOpen(false)}

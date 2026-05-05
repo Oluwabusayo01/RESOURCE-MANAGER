@@ -23,6 +23,9 @@ import NotificationsPage from '@/pages/classrep/NotificationsPage'
 import StaffDashboard from '@/pages/staff/StaffDashboard'
 import UploadMaterialPage from '@/pages/staff/UploadMaterialPage'
 
+// Shared Pages
+import MyBookingsPage from '@/pages/shared/MyBookingsPage'
+
 // Admin Pages
 import AdminDashboard from '@/pages/admin/AdminDashboard'
 import ManageResourcesPage from '@/pages/admin/ManageResourcesPage'
@@ -69,12 +72,14 @@ function App() {
           {/* Class Rep Routes */}
           <Route path="/classrep/dashboard" element={<ProtectedRoute allowedRoles={['classrep']}><ClassRepDashboard /></ProtectedRoute>} />
           <Route path="/classrep/book" element={<ProtectedRoute allowedRoles={['classrep']}><BookingPage /></ProtectedRoute>} />
+          <Route path="/classrep/bookings" element={<ProtectedRoute allowedRoles={['classrep']}><MyBookingsPage /></ProtectedRoute>} />
           <Route path="/classrep/bookings/:id" element={<ProtectedRoute allowedRoles={['classrep']}><BookingDetailPage /></ProtectedRoute>} />
           <Route path="/classrep/notifications" element={<ProtectedRoute allowedRoles={['classrep']}><NotificationsPage /></ProtectedRoute>} />
 
           {/* Staff Routes */}
           <Route path="/staff/dashboard" element={<ProtectedRoute allowedRoles={['staff']}><StaffDashboard /></ProtectedRoute>} />
           <Route path="/staff/book" element={<ProtectedRoute allowedRoles={['staff']}><BookingPage /></ProtectedRoute>} />
+          <Route path="/staff/bookings" element={<ProtectedRoute allowedRoles={['staff']}><MyBookingsPage /></ProtectedRoute>} />
           <Route path="/staff/bookings/:id" element={<ProtectedRoute allowedRoles={['staff']}><BookingDetailPage /></ProtectedRoute>} />
           <Route path="/staff/upload" element={<ProtectedRoute allowedRoles={['staff']}><UploadMaterialPage /></ProtectedRoute>} />
           <Route path="/staff/notifications" element={<ProtectedRoute allowedRoles={['staff']}><NotificationsPage /></ProtectedRoute>} />

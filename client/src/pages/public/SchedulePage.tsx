@@ -50,6 +50,24 @@ export default function SchedulePage() {
   const [resourceFilter, setResourceFilter] = useState<string>('all')
   const [deptFilter, setDeptFilter] = useState<string>('all')
   const [dateFilter, setDateFilter] = useState<string>('')
+  
+  // View state for mobile responsiveness
+  const [currentView, setCurrentView] = useState<any>(Views.WEEK)
+  const [currentDate, setCurrentDate] = useState(new Date())
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setCurrentView(Views.DAY)
+      } else {
+        setCurrentView(Views.WEEK)
+      }
+    }
+    
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,14 +87,27 @@ export default function SchedulePage() {
     fetchData()
   }, [])
 
+  // Sync date filter with calendar date
+  useEffect(() => {
+    if (dateFilter) {
+      try {
+        const selectedDate = parse(dateFilter, 'yyyy-MM-dd', new Date())
+        if (!isNaN(selectedDate.getTime())) {
+          setCurrentDate(selectedDate)
+        }
+      } catch (e) {
+        console.error('Invalid date format', e)
+      }
+    }
+  }, [dateFilter])
+
   const filteredBookings = useMemo(() => {
     return bookings.filter(b => {
       const matchResource = resourceFilter === 'all' || b.resourceId === resourceFilter
       const matchDept = deptFilter === 'all' || b.department === deptFilter
-      const matchDate = !dateFilter || b.date === dateFilter
-      return matchResource && matchDept && matchDate
+      return matchResource && matchDept
     })
-  }, [bookings, resourceFilter, deptFilter, dateFilter])
+  }, [bookings, resourceFilter, deptFilter])
 
   const events = useMemo(() => {
     return filteredBookings.map(b => {
@@ -115,6 +146,7 @@ export default function SchedulePage() {
     setResourceFilter('all')
     setDeptFilter('all')
     setDateFilter('')
+    setCurrentDate(new Date())
   }
 
   return (
@@ -194,8 +226,16 @@ export default function SchedulePage() {
             events={events}
             startAccessor="start"
             endAccessor="end"
-            defaultView={Views.WEEK}
-            views={[Views.WEEK, Views.DAY]}
+            view={currentView}
+            onView={(v) => setCurrentView(v)}
+            date={currentDate}
+            onNavigate={(date) => {
+              setCurrentDate(date)
+              // Update date filter input to match if needed, or just leave it
+              const dateString = format(date, 'yyyy-MM-dd')
+              setDateFilter(dateString)
+            }}
+            views={[Views.WEEK, Views.DAY, Views.AGENDA]}
             eventPropGetter={eventPropGetter}
             onSelectEvent={(event) => setSelectedEvent(event as Booking)}
             style={{ height: '100%' }}

@@ -22,7 +22,11 @@ import { cn } from '@/lib/utils'
 
 const registerSchema = z.object({
   name: z.string().min(3, 'Full name must be at least 3 characters'),
-  email: z.string().email('Please enter a valid email address'),
+  email: z.string()
+    .email('Please enter a valid email address')
+    .refine((email) => email.toLowerCase().endsWith('lautech.edu.ng'), {
+      message: 'Must be a valid LAUTECH email address (e.g. @student.lautech.edu.ng)',
+    }),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
   department: z.string().min(1, 'Please select a department'),
@@ -132,8 +136,17 @@ export default function RegisterPage() {
           {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@fci.edu" {...register('email')} />
-            {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
+            <Input 
+              id="email" 
+              type="email" 
+              placeholder="e.g. solatubosun92@student.lautech.edu.ng" 
+              {...register('email')} 
+            />
+            <p className="text-[10px] text-dark-gray font-medium flex items-center gap-1">
+              <span className="w-1 h-1 bg-gold rounded-full" />
+              Must be a valid LAUTECH institutional email.
+            </p>
+            {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email.message}</p>}
           </div>
 
           {/* Password */}
