@@ -1,4 +1,4 @@
-import { User, Resource, Booking, Notification, LibraryMaterial, UserRole, UserStatus, Department } from '../types'
+import type { User, Resource, Booking, Notification, LibraryMaterial, UserRole, UserStatus, BookingStatus, ResourceStatus, ResourceType, NotificationType, Department } from '../types'
 
 // Helper to simulate network delay
 const delay = (ms = 600) => new Promise(resolve => setTimeout(resolve, ms))

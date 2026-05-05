@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Booking } from '../types'
+import type { Booking } from '../types'
 
 interface BookingState {
   bookings: Booking[]

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Resource } from '../types'
+import type { Resource } from '../types'
 
 interface ResourceState {
   resources: Resource[]

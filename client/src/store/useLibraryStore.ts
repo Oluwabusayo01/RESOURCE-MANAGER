@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { LibraryMaterial } from '../types'
+import type { LibraryMaterial } from '../types'
 
 interface LibraryState {
   materials: LibraryMaterial[]
