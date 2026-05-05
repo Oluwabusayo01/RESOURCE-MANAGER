@@ -26,16 +26,20 @@ const registerSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
   department: z.string().min(1, 'Please select a department'),
-  role: z.string().min(1, 'Please select a role').refine(
-    (val): val is 'classrep' | 'staff' => ['classrep', 'staff'].includes(val),
-    { message: 'Please select a valid role' }
-  ),
+  role: z.string().min(1, 'Please select a role'),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
 })
 
-type RegisterFormValues = z.infer<typeof registerSchema>
+interface RegisterFormValues {
+  name: string
+  email: string
+  password: string
+  confirmPassword: string
+  department: string
+  role: string
+}
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -51,16 +55,17 @@ export default function RegisterPage() {
     watch,
     formState: { errors },
   } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema) as any,
     defaultValues: {
       name: '',
       email: '',
       password: '',
       confirmPassword: '',
       department: '',
-      role: undefined,
+      role: '',
     },
   })
+
 
   const selectedRole = watch('role')
 
