@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  --color-background: #FFFFFF;
+  --color-foreground: #0A0A0A;
+  
+  --color-accent: #111111;
+  --color-gold: #C9A84C;
+  --color-light-gray: #F5F5F5;
+  --color-mid-gray: #CCCCCC;
+  --color-dark-gray: #555555;
+
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: #FFFFFF;
+
+  --color-secondary: var(--color-light-gray);
+  --color-secondary-foreground: var(--color-accent);
+
+  --color-muted: var(--color-light-gray);
+  --color-muted-foreground: var(--color-dark-gray);
+
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: var(--color-foreground);
+
+  --color-card: #FFFFFF;
+  --color-card-foreground: var(--color-foreground);
+
+  --color-border: var(--color-mid-gray);
+  --color-input: var(--color-mid-gray);
+  --color-ring: var(--color-gold);
+
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* Status Badge Colors */
+.badge-confirmed { @apply bg-green-100 text-green-700; }
+.badge-pending { @apply bg-yellow-100 text-yellow-700; }
+.badge-cancelled { @apply bg-red-100 text-red-700; }
+.badge-rejected { @apply bg-red-100 text-red-700; }
+.badge-active { @apply bg-blue-100 text-blue-700; }
+.badge-inactive { @apply bg-gray-100 text-gray-500; }
