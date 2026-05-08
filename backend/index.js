@@ -4,10 +4,12 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import path from "path";
 import connectDatabase from "./config/database.js";
-   
+import authRoutes from "./routes/auth.route.js";   
+
+
 dotenv.config();   
 connectDatabase();
-
+    
 const app = express();
 const PORT = process.env.PORT || 8000;
 
@@ -25,6 +27,8 @@ app.use(
 app.use(express.json());
 
 const _dirname = path.resolve();
+
+app.use("/api", authRoutes); 
 
 
 // app.use(express.static(path.join(_dirname, "/frontend/dist")));
