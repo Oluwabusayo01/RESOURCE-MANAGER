@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import path from "path";
 import connectDatabase from "./config/database.js";
 import authRoutes from "./routes/auth.route.js";   
-
+import userRoutes from "./routes/user.route.js";
 
 dotenv.config();   
 connectDatabase();
@@ -29,7 +29,7 @@ app.use(express.json());
 const _dirname = path.resolve();
 
 app.use("/api", authRoutes); 
-
+app.use("/api", userRoutes);
 
 // app.use(express.static(path.join(_dirname, "/frontend/dist")));
 

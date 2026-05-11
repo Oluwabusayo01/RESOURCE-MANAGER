@@ -46,3 +46,30 @@ export const loginValidation = [
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters"),
 ];
+
+export const getAllUsersValidation = [
+  param("status")
+    .optional()
+    .isIn(["processing", "approved", "rejected"])
+    .withMessage("Invalid status"),
+
+  param("role")
+    .optional()
+    .isIn(["admin", "staff", "classrep"])
+    .withMessage("Invalid role"),
+
+  param("department")
+    .optional()
+    .isIn(["computer science", "cyber security", "information system"])
+    .withMessage("Invalid department"),
+
+    param("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+
+  param("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Limit must be a positive integer"),
+];
