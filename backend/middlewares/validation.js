@@ -11,7 +11,9 @@ export const registerValidation = [
     .notEmpty()
     .withMessage("Email is required")
     .isEmail()
-    .withMessage("Enter a valid email address"),
+    .withMessage("Enter a valid email address")
+    .custom((value) => value.toLowerCase().endsWith("@student.lautech.edu.ng"))
+    .withMessage("Enter a valid LAUTECH email address"),
 
   body("password")
     .notEmpty()

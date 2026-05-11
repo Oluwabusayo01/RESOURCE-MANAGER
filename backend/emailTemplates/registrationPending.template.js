@@ -3,7 +3,7 @@
 export const registrationEmailTemplate = (name = "User") => {
   const subject = "Registration Received - Await Admin Approval";
   const text = `Hello ${name},
-
+  
 Your registration was successful.
 
 Your account is currently pending admin approval. You will be notified once your account is approved.

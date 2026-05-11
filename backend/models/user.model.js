@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      validate: {
+        validator: function (value) {
+          return value.toLowerCase().endsWith("@student.lautech.edu.ng");
+        },
+        message: "Enter a valid LAUTECH email address",
+      },
     },
     password: {
       type: String,
@@ -30,7 +36,7 @@ const userSchema = new mongoose.Schema(
       enum: ["classrep", "staff", "admin"],
       default: "classrep",
       required: true,
-    },
+    },    
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],
