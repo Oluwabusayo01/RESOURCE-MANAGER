@@ -1,4 +1,4 @@
-import { body, param } from "express-validator";
+import { body, query, param } from "express-validator";
 
 export const registerValidation = [
   body("name")
@@ -48,28 +48,42 @@ export const loginValidation = [
 ];
 
 export const getAllUsersValidation = [
-  param("status")
+  query("status")
     .optional()
-    .isIn(["processing", "approved", "rejected"])
+    .isIn(["pending", "approved", "rejected"])
     .withMessage("Invalid status"),
 
-  param("role")
+  query("role")
     .optional()
     .isIn(["admin", "staff", "classrep"])
     .withMessage("Invalid role"),
 
-  param("department")
+  query("department")
     .optional()
-    .isIn(["computer science", "cyber security", "information system"])
+    .isIn([
+      "computer science",
+      "cyber security",
+      "imformation system",
+      "information system",
+    ])
     .withMessage("Invalid department"),
 
-    param("page")
+  query("page")
     .optional()
     .isInt({ min: 1 })
     .withMessage("Page must be a positive integer"),
 
-  param("limit")
+  query("limit")
     .optional()
     .isInt({ min: 1 })
     .withMessage("Limit must be a positive integer"),
+];
+
+
+export const approveOrRejectUserValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("User ID is required")
+    .isMongoId()
+    .withMessage("Invalid User ID")
 ];
