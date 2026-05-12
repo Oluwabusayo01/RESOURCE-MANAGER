@@ -7,7 +7,7 @@ import connectDatabase from "./config/database.js";
 import authRoutes from "./routes/auth.route.js";   
 import userRoutes from "./routes/user.route.js";
 import resourceRoutes from "./routes/resource.route.js";
-
+import uploadImageRoute from "./routes/uploadImage.route.js";
 
 dotenv.config();   
 connectDatabase();
@@ -33,7 +33,7 @@ const _dirname = path.resolve();
 app.use("/api", authRoutes); 
 app.use("/api", userRoutes);
 app.use("/api", resourceRoutes);
-
+app.use("/api", uploadImageRoute);
 
 // app.use(express.static(path.join(_dirname, "/frontend/dist")));
 
