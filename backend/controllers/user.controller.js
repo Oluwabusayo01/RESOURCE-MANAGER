@@ -38,7 +38,7 @@ export const getAllUsers = async (req, res, next) => {
     if (role) filter.role = role;
     if (department) {
       filter.department =
-        department === "information system" ? "imformation system" : department;
+        department === "information system" ? "information system" : department;
     }
 
     const [users, totalUsers] = await Promise.all([
@@ -186,3 +186,5 @@ export const rejectUser = async (req, res, next) => {
     });
   }
 };
+
+

@@ -87,3 +87,96 @@ export const approveOrRejectUserValidation = [
     .isMongoId()
     .withMessage("Invalid User ID")
 ];
+
+export const createResourceValidation = [
+  body("name")
+    .notEmpty()
+    .withMessage("Resource name is required")
+    .isString()
+    .withMessage("Resource name must be a string")
+    .trim(),
+
+  body("type").notEmpty().withMessage("Resource type is required"),
+
+  body("description")
+    .optional({ nullable: true })
+    .isString()
+    .withMessage("Description must be a string")
+    .trim(),
+
+  body("capacity")
+    .optional({ nullable: true })
+    .isInt({ min: 1 })
+    .withMessage("Capacity must be a positive integer"),
+
+  body("image")
+    .optional({ nullable: true })
+    .isString()
+    .withMessage("Image must be a string")
+    .trim(),
+
+  body("status")
+    .optional()
+    .isIn(["available", "unavailable"])
+    .withMessage("Invalid status"),
+];
+
+export const updateResourceValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("Resource ID is required")
+    .isMongoId()
+    .withMessage("Invalid Resource ID"),
+
+  body("name")
+    .optional()
+    .notEmpty()
+    .withMessage("Resource name cannot be empty")
+    .isString()
+    .withMessage("Resource name must be a string")
+    .trim(),
+
+  body("type")
+    .optional()
+    .notEmpty()
+    .withMessage("Resource type cannot be empty"),
+
+  body("description")
+    .optional({ nullable: true })
+    .isString()
+    .withMessage("Description must be a string")
+    .trim(),
+
+  body("capacity")
+    .optional({ nullable: true })
+    .isInt({ min: 1 })
+    .withMessage("Capacity must be a positive integer"),
+
+  body("image")
+    .optional({ nullable: true })
+    .isString()
+    .withMessage("Image must be a string")
+    .trim(),
+
+  body("status")
+    .optional()
+    .isIn(["available", "unavailable"])
+    .withMessage("Invalid status"),
+];
+
+export const getAllResourcesValidation = [
+  query("status")
+    .optional()
+    .isIn(["available", "unavailable"])
+    .withMessage("Invalid status"),
+
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Limit must be a positive integer"),
+];

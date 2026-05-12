@@ -156,7 +156,7 @@ Public. Query params (optional): `status` (`active` | `inactive`)
 ```
 `type` is one of: `lab` | `seminar` | `hall` | `equipment` | `meeting`
 `capacity` can be `null` for equipment.
-
+  
 ---
 
 ### POST /api/resources 🔒 Admin only
