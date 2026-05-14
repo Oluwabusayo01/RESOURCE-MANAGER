@@ -288,9 +288,18 @@ export const getPublicBookings = async (req, res, next) => {
 
 export const getAllBookings = async (req, res, next) => {
   try {
+    const {
+      status,
+      date,
+      department,
+      resource: resourceId,
+      user: userId,
+      page: pageParam,
+      limit: limitParam,
+    } = matchedData(req);
 
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    const page = Number(pageParam) || 1;
+    const limit = Number(limitParam) || 10;
     const skip = (page - 1) * limit;
 
     const filter = {};
@@ -301,19 +310,19 @@ export const getAllBookings = async (req, res, next) => {
     }
 
     // optional filters
-    if (req.query.status) filter.status = req.query.status;
-    if (req.query.date) filter.date = req.query.date;
-    if (req.query.department) filter.department = req.query.department;
-    if (req.query.resourceId) filter.resource = req.query.resourceId;
+    if (status) filter.status = status;
+    if (date) filter.date = date;
+    if (department) filter.department = department;
+    if (resourceId) filter.resource = resourceId;
 
     // admin only — filter by specific user
-    if (req.user.role === "admin" && req.query.userId) {
-      filter.user = req.query.userId;
+    if (req.user.role === "admin" && userId) {
+      filter.user = userId;
     }
 
     const [bookings, total] = await Promise.all([
       Booking.find(filter)
-        .populate("resource", "name type capacity status")
+        .populate("resource", "name type capacity status image")
         .populate("user", "name role department")
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -334,6 +343,10 @@ export const getAllBookings = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    console.error("Error getting bookings", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
   }
 };

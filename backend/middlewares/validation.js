@@ -180,7 +180,6 @@ export const getAllResourcesValidation = [
     .withMessage("Limit must be a positive integer"),
 ];
 
-
 export const createBookingValidation = [
   body("resource")
     .notEmpty()
@@ -240,7 +239,6 @@ export const createBookingValidation = [
 ];
 
 export const updateBookingValidation = [
-
   param("id")
     .notEmpty()
     .withMessage("Booking ID is required")
@@ -307,6 +305,12 @@ export const cancelBookingValidation = [
 ];
 
 export const getBookingsValidation = [
+  query("status")
+    .optional()
+    .isIn(["confirmed", "cancelled", "completed"])
+    .withMessage("Invalid status"),
+  query("resource").optional().isMongoId().withMessage("Invalid resource ID"),
+  query("user").optional().isMongoId().withMessage("Invalid user ID"),
   query("date")
     .optional()
     .matches(/^\d{4}-\d{2}-\d{2}$/)
@@ -324,4 +328,3 @@ export const getBookingsValidation = [
     .isInt({ min: 1 })
     .withMessage("Limit must be a positive integer"),
 ];
-
