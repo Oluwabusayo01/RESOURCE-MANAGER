@@ -8,7 +8,7 @@ import {
 } from "../middlewares/validation.js";
 import {
   createResource,
-  updateResource,
+  updateResource,   
   getAllResources,
 } from "../controllers/resource.controller.js";
   
@@ -19,3 +19,4 @@ router.get("/resources", verifiedUser, getAllResourcesValidation, getAllResource
 router.post("/resources", verifiedUser, isAdmin, createResourceValidation, createResource);
 router.patch("/resources/:id", verifiedUser, isAdmin, updateResourceValidation, updateResource);
 export default router;
+  

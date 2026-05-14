@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       validate: {
         validator: function (value) {
-          return value.toLowerCase().endsWith("@student.lautech.edu.ng");
+          return value.toLowerCase().endsWith("@lautech.edu.ng");
         },
         message: "Enter a valid LAUTECH email address",
       },
@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
     department: {
       type: String,
       required: true,
-      enum: ["computer science", "cyber security", "imformation system"],
+      enum: ["computer science", "cyber security", "information system"],
       trim: true,
     },
     role: {
