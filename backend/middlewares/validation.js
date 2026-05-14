@@ -12,7 +12,7 @@ export const registerValidation = [
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Enter a valid email address")
-    .custom((value) => value.toLowerCase().endsWith("@student.lautech.edu.ng"))
+    .custom((value) => value.toLowerCase().endsWith("@lautech.edu.ng"))
     .withMessage("Enter a valid LAUTECH email address"),
 
   body("password")
@@ -24,7 +24,7 @@ export const registerValidation = [
   body("department")
     .notEmpty()
     .withMessage("Department is required")
-    .isIn(["computer science", "cyber security", "imformation system"])
+    .isIn(["computer science", "cyber security", "information system"])
     .withMessage("Invalid Department"),
 
   body("role")
@@ -63,7 +63,7 @@ export const getAllUsersValidation = [
     .isIn([
       "computer science",
       "cyber security",
-      "imformation system",
+      "information system",
       "information system",
     ])
     .withMessage("Invalid department"),
@@ -79,13 +79,12 @@ export const getAllUsersValidation = [
     .withMessage("Limit must be a positive integer"),
 ];
 
-
 export const approveOrRejectUserValidation = [
   param("id")
     .notEmpty()
     .withMessage("User ID is required")
     .isMongoId()
-    .withMessage("Invalid User ID")
+    .withMessage("Invalid User ID"),
 ];
 
 export const createResourceValidation = [
@@ -175,6 +174,155 @@ export const getAllResourcesValidation = [
     .isInt({ min: 1 })
     .withMessage("Page must be a positive integer"),
 
+  query("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Limit must be a positive integer"),
+];
+
+export const createBookingValidation = [
+  body("resource")
+    .notEmpty()
+    .withMessage("Resource is required")
+    .isMongoId()
+    .withMessage("Invalid resource ID"),
+
+  body("course")
+    .notEmpty()
+    .withMessage("Course is required")
+    .trim()
+    .isLength({ min: 3, max: 100 })
+    .withMessage("Course must be between 3 and 100 characters"),
+
+  body("notes")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Notes must not exceed 500 characters"),
+
+  body("date")
+    .notEmpty()
+    .withMessage("Date is required")
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage("Date must be in YYYY-MM-DD format")
+    .custom((value) => {
+      const date = new Date(value);
+      if (isNaN(date.getTime())) throw new Error("Invalid date");
+
+      // Strip time from both sides for a clean date comparison
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      date.setHours(0, 0, 0, 0);
+
+      if (date < today) throw new Error("Booking date cannot be in the past");
+      return true;
+    }),
+
+  body("startTime")
+    .notEmpty()
+    .withMessage("Start time is required")
+    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .withMessage("Start time must be in HH:MM format"),
+
+  body("endTime")
+    .notEmpty()
+    .withMessage("End time is required")
+    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .withMessage("End time must be in HH:MM format")
+    .custom((value, { req }) => {
+      const start = req.body.startTime;
+      if (!start) return true; // startTime validation will catch this
+
+      if (value <= start) throw new Error("End time must be after start time");
+      return true;
+    }),
+];
+
+export const updateBookingValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("Booking ID is required")
+    .isMongoId()
+    .withMessage("Invalid Booking ID"),
+
+  body("course")
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 100 })
+    .withMessage("Course must be between 3 and 100 characters"),
+
+  body("notes")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Notes must not exceed 500 characters"),
+
+  body("date")
+    .optional()
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage("Date must be in YYYY-MM-DD format")
+    .custom((value) => {
+      const date = new Date(value);
+      if (isNaN(date.getTime())) throw new Error("Invalid date");
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      date.setHours(0, 0, 0, 0);
+
+      if (date < today) throw new Error("Booking date cannot be in the past");
+      return true;
+    }),
+
+  body("startTime")
+    .optional()
+    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .withMessage("Start time must be in HH:MM format"),
+
+  body("endTime")
+    .optional()
+    .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
+    .withMessage("End time must be in HH:MM format")
+    .custom((value, { req }) => {
+      const start = req.body.startTime;
+      if (!start) return true;
+
+      if (value <= start) throw new Error("End time must be after start time");
+      return true;
+    }),
+
+  body("attendance")
+    .optional()
+    .isInt({ min: 0 })
+    .withMessage("Attendance must be a positive number"),
+];
+
+export const cancelBookingValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("Booking ID is required")
+    .isMongoId()
+    .withMessage("Invalid Booking ID"),
+];
+
+export const getBookingsValidation = [
+  query("status")
+    .optional()
+    .isIn(["confirmed", "cancelled", "completed"])
+    .withMessage("Invalid status"),
+  query("resource").optional().isMongoId().withMessage("Invalid resource ID"),
+  query("user").optional().isMongoId().withMessage("Invalid user ID"),
+  query("date")
+    .optional()
+    .matches(/^\d{4}-\d{2}-\d{2}$/)
+    .withMessage("Date must be in YYYY-MM-DD format"),
+  query("department")
+    .optional()
+    .isIn(["computer science", "cyber security", "information system"])
+    .withMessage("Invalid department"),
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
   query("limit")
     .optional()
     .isInt({ min: 1 })

@@ -10,6 +10,6 @@ router.post(
   upload.single("image"),
   multerErrorHandler,
   uploadImage,
-);
+);  
 
 export default router;

@@ -167,12 +167,12 @@ Public. Query params (optional): `status` (`active` | `inactive`)
 **201 Response:** `{ "message": "Resource created.", "resource": { ...newResource } }`
 
 ---
-
+  
 ### PUT /api/resources/:id 🔒 Admin only
 **Body:** Same fields as POST (send only fields to update)
 **200 Response:** `{ "message": "Resource updated.", "resource": { ...updatedResource } }`
 
----
+---  
 
 ### PATCH /api/resources/:id/status 🔒 Admin only
 **Body:** `{ "status": "inactive" }`

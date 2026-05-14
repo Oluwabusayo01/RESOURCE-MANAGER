@@ -8,15 +8,16 @@ import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
 import resourceRoutes from "./routes/resource.route.js";
 import uploadImageRoute from "./routes/uploadImage.route.js";
+import bookingRoutes from "./routes/booking.route.js";
 
-dotenv.config();   
+dotenv.config();    
 connectDatabase();
-    
-const app = express();
+      
+const app = express()
 const PORT = process.env.PORT || 8000;
-
-app.use(cookieParser());
-
+ 
+app.use(cookieParser());     
+           
 app.use(
   cors({  
     origin: ["http://localhost:5173", ],
@@ -34,6 +35,8 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", resourceRoutes);
 app.use("/api", uploadImageRoute);
+app.use("/api", bookingRoutes);
+
 
 // app.use(express.static(path.join(_dirname, "/frontend/dist")));
 
