@@ -40,9 +40,9 @@ interface ClassUpdateModalProps {
 }
 
 const departments: Department[] = [
-  'Computer Science',
-  'Cyber Security',
-  'Information Systems Sciences (INS)',
+  'computer science',
+  'cyber security',
+  'information systems sciences (ins)',
 ]
 
 export default function ClassUpdateModal({ isOpen, onClose }: ClassUpdateModalProps) {
@@ -60,7 +60,7 @@ export default function ClassUpdateModal({ isOpen, onClose }: ClassUpdateModalPr
     defaultValues: {
       title: '',
       message: '',
-      department: user?.department || 'Computer Science',
+      department: user?.department || 'computer science',
     },
   })
 
@@ -102,14 +102,16 @@ export default function ClassUpdateModal({ isOpen, onClose }: ClassUpdateModalPr
             <Label htmlFor="department">Department</Label>
             <Select 
               onValueChange={(val) => setValue('department', val)} 
-              defaultValue={user?.department || 'Computer Science'}
+              defaultValue={user?.department || 'computer science'}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select Department" />
               </SelectTrigger>
               <SelectContent>
                 {departments.map((d) => (
-                  <SelectItem key={d} value={d}>{d}</SelectItem>
+                  <SelectItem key={d} value={d}>
+                    {d === 'information systems sciences (ins)' ? 'Information Systems (INS)' : d.charAt(0).toUpperCase() + d.slice(1)}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>

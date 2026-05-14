@@ -5,11 +5,11 @@ const delay = (ms = 600) => new Promise(resolve => setTimeout(resolve, ms))
 
 export const MOCK_DB = {
   users: [
-    { id: 'u1', name: 'Chukwuemeka Obi', email: 'emeka@fci.edu', password: 'password123', role: 'classrep' as UserRole, department: 'Computer Science' as Department, status: 'approved' as UserStatus },
-    { id: 'u2', name: 'Dr. Aisha Bello', email: 'aisha@fci.edu', password: 'password123', role: 'staff' as UserRole, department: 'Cyber Security' as Department, status: 'approved' as UserStatus },
-    { id: 'u3', name: 'Tunde Fashola', email: 'tunde@fci.edu', password: 'password123', role: 'classrep' as UserRole, department: 'Information Systems Sciences (INS)' as Department, status: 'pending' as UserStatus },
-    { id: 'u4', name: 'Prof. Kamoru Adeyemi', email: 'kamoru@fci.edu', password: 'password123', role: 'staff' as UserRole, department: 'Computer Science' as Department, status: 'pending' as UserStatus },
-    { id: 'admin', name: 'Faculty Admin', email: 'admin@fci.lautech.edu.ng', password: 'admin1234', role: 'admin' as UserRole, department: 'Computer Science' as Department, status: 'approved' as UserStatus },
+    { id: 'u1', name: 'Chukwuemeka Obi', email: 'emeka@fci.edu', password: 'password123', role: 'classrep' as UserRole, department: 'computer science' as Department, status: 'approved' as UserStatus },
+    { id: 'u2', name: 'Dr. Aisha Bello', email: 'aisha@fci.edu', password: 'password123', role: 'staff' as UserRole, department: 'cyber security' as Department, status: 'approved' as UserStatus },
+    { id: 'u3', name: 'Tunde Fashola', email: 'tunde@fci.edu', password: 'password123', role: 'classrep' as UserRole, department: 'information systems sciences (ins)' as Department, status: 'pending' as UserStatus },
+    { id: 'u4', name: 'Prof. Kamoru Adeyemi', email: 'kamoru@fci.edu', password: 'password123', role: 'staff' as UserRole, department: 'computer science' as Department, status: 'pending' as UserStatus },
+    { id: 'admin', name: 'Faculty Admin', email: 'admin@fci.lautech.edu.ng', password: 'admin1234', role: 'admin' as UserRole, department: 'computer science' as Department, status: 'approved' as UserStatus },
   ],
 
   resources: [
@@ -25,9 +25,9 @@ export const MOCK_DB = {
   ] as Resource[],
 
   bookings: [
-    { id: 'b1', resourceId: 'r1', resource: { id: 'r1', name: 'Computer Lab A', type: 'lab', capacity: 40, status: 'active' }, userId: 'u1', user: { id: 'u1', name: 'Chukwuemeka Obi', role: 'classrep', department: 'Computer Science' }, course: 'CSC 401 - Software Engineering', notes: 'Practical session', date: new Date().toISOString().split('T')[0], startTime: '09:00', endTime: '11:00', status: 'confirmed', attendance: 35, department: 'Computer Science', createdAt: new Date().toISOString() },
-    { id: 'b2', resourceId: 'r4', resource: { id: 'r4', name: 'Seminar Room 1', type: 'seminar', capacity: 60, status: 'active' }, userId: 'u2', user: { id: 'u2', name: 'Dr. Aisha Bello', role: 'staff', department: 'Cyber Security' }, course: 'CYB 301 - Network Security', notes: '', date: new Date().toISOString().split('T')[0], startTime: '13:00', endTime: '15:00', status: 'confirmed', attendance: null, department: 'Cyber Security', createdAt: new Date().toISOString() },
-    { id: 'b3', resourceId: 'r2', resource: { id: 'r2', name: 'Computer Lab B', type: 'lab', capacity: 40, status: 'active' }, userId: 'u1', user: { id: 'u1', name: 'Chukwuemeka Obi', role: 'classrep', department: 'Computer Science' }, course: 'CSC 305 - Database Systems', notes: '', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], startTime: '10:00', endTime: '12:00', status: 'confirmed', attendance: null, department: 'Computer Science', createdAt: new Date().toISOString() },
+    { id: 'b1', resourceId: 'r1', resource: { id: 'r1', name: 'Computer Lab A', type: 'lab', capacity: 40, status: 'active' }, userId: 'u1', user: { id: 'u1', name: 'Chukwuemeka Obi', role: 'classrep', department: 'computer science' }, course: 'CSC 401 - Software Engineering', notes: 'Practical session', date: new Date().toISOString().split('T')[0], startTime: '09:00', endTime: '11:00', status: 'confirmed', attendance: 35, department: 'computer science', createdAt: new Date().toISOString() },
+    { id: 'b2', resourceId: 'r4', resource: { id: 'r4', name: 'Seminar Room 1', type: 'seminar', capacity: 60, status: 'active' }, userId: 'u2', user: { id: 'u2', name: 'Dr. Aisha Bello', role: 'staff', department: 'cyber security' }, course: 'CYB 301 - Network Security', notes: '', date: new Date().toISOString().split('T')[0], startTime: '13:00', endTime: '15:00', status: 'confirmed', attendance: null, department: 'cyber security', createdAt: new Date().toISOString() },
+    { id: 'b3', resourceId: 'r2', resource: { id: 'r2', name: 'Computer Lab B', type: 'lab', capacity: 40, status: 'active' }, userId: 'u1', user: { id: 'u1', name: 'Chukwuemeka Obi', role: 'classrep', department: 'computer science' }, course: 'CSC 305 - Database Systems', notes: '', date: new Date(Date.now() + 86400000).toISOString().split('T')[0], startTime: '10:00', endTime: '12:00', status: 'confirmed', attendance: null, department: 'computer science', createdAt: new Date().toISOString() },
   ] as Booking[],
 
   notifications: [
@@ -37,9 +37,9 @@ export const MOCK_DB = {
   ] as Notification[],
 
   library: [
-    { id: 'm1', title: 'Introduction to Algorithms', course: 'CSC 201', department: 'Computer Science', description: 'Comprehensive lecture notes covering sorting, searching, and complexity.', uploadedBy: 'Dr. Aisha Bello', uploadedById: 'u2', fileType: 'pdf', fileUrl: '#', createdAt: '2026-04-10T09:00:00Z' },
-    { id: 'm2', title: 'Network Security Fundamentals', course: 'CYB 301', department: 'Cyber Security', description: 'Core concepts in network security and cryptography.', uploadedBy: 'Dr. Aisha Bello', uploadedById: 'u2', fileType: 'pdf', fileUrl: '#', createdAt: '2026-04-15T09:00:00Z' },
-    { id: 'm3', title: 'Database Design Principles', course: 'CSC 305', department: 'Computer Science', description: 'ER diagrams, normalization, and SQL fundamentals.', uploadedBy: 'Dr. Aisha Bello', uploadedById: 'u2', fileType: 'pptx', fileUrl: '#', createdAt: '2026-04-20T09:00:00Z' },
+    { id: 'm1', title: 'Introduction to Algorithms', course: 'CSC 201', department: 'computer science', description: 'Comprehensive lecture notes covering sorting, searching, and complexity.', uploadedBy: 'Dr. Aisha Bello', uploadedById: 'u2', fileType: 'pdf', fileUrl: '#', createdAt: '2026-04-10T09:00:00Z' },
+    { id: 'm2', title: 'Network Security Fundamentals', course: 'CYB 301', department: 'cyber security', description: 'Core concepts in network security and cryptography.', uploadedBy: 'Dr. Aisha Bello', uploadedById: 'u2', fileType: 'pdf', fileUrl: '#', createdAt: '2026-04-15T09:00:00Z' },
+    { id: 'm3', title: 'Database Design Principles', course: 'CSC 305', department: 'computer science', description: 'ER diagrams, normalization, and SQL fundamentals.', uploadedBy: 'Dr. Aisha Bello', uploadedById: 'u2', fileType: 'pptx', fileUrl: '#', createdAt: '2026-04-20T09:00:00Z' },
   ] as LibraryMaterial[],
 
   activity: [
@@ -339,7 +339,7 @@ export const getAdminStats = async () => {
 
 export const getBookingsByDepartment = async () => {
   await delay()
-  const depts = ['Computer Science', 'Cyber Security', 'Information Systems Sciences (INS)']
+  const depts = ['computer science', 'cyber security', 'information systems sciences (ins)']
   return depts.map(d => ({
     department: d,
     count: MOCK_DB.bookings.filter(b => b.department === d).length

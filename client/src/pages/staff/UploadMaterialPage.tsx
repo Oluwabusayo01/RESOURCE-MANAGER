@@ -183,9 +183,9 @@ export default function UploadMaterialPage() {
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Computer Science">Computer Science</SelectItem>
-                  <SelectItem value="Cyber Security">Cyber Security</SelectItem>
-                  <SelectItem value="Information Systems Sciences (INS)">INS</SelectItem>
+                  <SelectItem value="computer science">Computer Science</SelectItem>
+                  <SelectItem value="cyber security">Cyber Security</SelectItem>
+                  <SelectItem value="information systems sciences (ins)">Information Systems (INS)</SelectItem>
                 </SelectContent>
               </Select>
               {errors.department && <p className="text-xs text-red-500">{errors.department.message}</p>}

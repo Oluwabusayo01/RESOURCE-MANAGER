@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { authService } from '@/lib/apiService'
 import { useAuthStore } from '@/store/useAuthStore'
 import { toast } from 'sonner'
-import { Eye, EyeOff, Loader2, Info } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -66,13 +66,9 @@ export default function LoginPage() {
         navigate(dashboardMap[result.user.role] || '/')
       }
     } catch (err: any) {
-      const message = err.message || err.response?.data?.message || 'Something went wrong.'
-      if (message.toLowerCase().includes('invalid') || message.toLowerCase().includes('password')) {
-        setError('Invalid email or password.')
-      } else {
-        setError(message)
-        toast.error(message)
-      }
+      const message = err.response?.data?.message || err.message || 'Something went wrong.'
+      setError(message)
+      toast.error(message)
     } finally {
       setLoading(false)
     }
@@ -81,111 +77,159 @@ export default function LoginPage() {
   const isMock = import.meta.env.VITE_USE_MOCK === 'true'
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-screen flex items-center justify-center bg-light-gray p-4"
-    >
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg border border-mid-gray/20 p-8">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-1">
-            <span className="text-3xl font-black text-accent">RM</span>
-            <span className="text-sm font-bold text-gold ml-1 border-l border-mid-gray pl-2">
-              FCI LAUTECH
-            </span>
-          </Link>
-          <p className="text-dark-gray text-sm mt-2">Sign in to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] relative overflow-hidden p-4">
+      {/* Decorative background elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-gold/5 rounded-full blur-[120px]" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-accent/5 rounded-full blur-[120px]" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+        className="w-full max-w-md z-10"
+      >
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-mid-gray/20 overflow-hidden">
+          {/* Header/Logo Section */}
+          <div className="bg-accent p-8 text-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-full translate-x-16 -translate-y-16" />
+            <Link to="/" className="inline-flex items-center gap-2 relative z-10">
+              <span className="text-4xl font-black text-white tracking-tighter">RM</span>
+              <div className="h-8 w-px bg-white/20 mx-1" />
+              <div className="text-left">
+                <span className="block text-[10px] font-bold text-gold uppercase tracking-[0.2em] leading-none mb-1">
+                  Faculty of Computing
+                </span>
+                <span className="block text-xs font-medium text-white/80 leading-none">
+                  LAUTECH
+                </span>
+              </div>
+            </Link>
+          </div>
+
+          <div className="p-8">
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold text-accent tracking-tight">Welcome back</h1>
+              <p className="text-dark-gray text-sm mt-1">Please enter your details to sign in.</p>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Inline Error */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="bg-red-50 border border-red-100 text-red-600 text-sm px-4 py-3 rounded-xl font-medium flex items-center gap-2"
+                >
+                  <div className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse" />
+                  {error}
+                </motion.div>
+              )}
+
+              <div className="space-y-4">
+                {/* Email */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wider text-dark-gray/70">
+                    Email Address
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@fci.lautech.edu.ng"
+                    className="h-12 bg-light-gray/50 border-mid-gray/30 focus:border-gold focus:ring-gold/20 rounded-xl transition-all"
+                    {...register('email')}
+                  />
+                  {errors.email && <p className="text-xs text-red-500 font-medium">{errors.email.message}</p>}
+                </div>
+
+                {/* Password */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-xs font-bold uppercase tracking-wider text-dark-gray/70">
+                      Password
+                    </Label>
+                    <Link to="#" className="text-[11px] font-bold text-gold hover:text-gold/80 transition-colors">
+                      Forgot Password?
+                    </Link>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      className="h-12 bg-light-gray/50 border-mid-gray/30 focus:border-gold focus:ring-gold/20 rounded-xl pr-12 transition-all"
+                      {...register('password')}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-dark-gray hover:text-accent transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {errors.password && <p className="text-xs text-red-500 font-medium">{errors.password.message}</p>}
+                </div>
+              </div>
+
+              {/* Submit */}
+              <Button
+                type="submit"
+                className="w-full h-12 bg-accent text-white hover:bg-accent/90 rounded-xl font-bold text-base shadow-lg shadow-accent/10 transition-all active:scale-[0.98]"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Authenticating...
+                  </span>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-8 pt-6 border-t border-mid-gray/20 text-center">
+              <p className="text-sm text-dark-gray">
+                New member?{' '}
+                <Link to="/register" className="text-gold font-bold hover:text-gold/80 transition-colors">
+                  Create an account
+                </Link>
+              </p>
+            </div>
+
+            {/* Demo Credentials — only visible when VITE_USE_MOCK=true */}
+            {isMock && (
+              <div className="mt-8 p-5 bg-[#F9F9F9] border border-mid-gray/20 rounded-2xl">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 bg-gold rounded-full" />
+                  <span className="text-[10px] font-black text-accent uppercase tracking-widest">Demo Access</span>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { role: 'Admin', email: 'admin@fci.lautech.edu.ng', pass: 'admin1234' },
+                    { role: 'Class Rep', email: 'emeka@fci.edu', pass: 'password123' },
+                    { role: 'Staff', email: 'aisha@fci.edu', pass: 'password123' }
+                  ].map((cred, i) => (
+                    <div key={i} className="flex flex-col gap-1">
+                      <span className="text-[10px] font-bold text-dark-gray">{cred.role}</span>
+                      <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-mid-gray/10 shadow-sm">
+                        <span className="text-[11px] font-mono text-accent">{cred.email}</span>
+                        <span className="text-[11px] font-mono text-gold">{cred.pass}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Inline Error */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-lg font-medium">
-              {error}
-            </div>
-          )}
-
-          {/* Email */}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@fci.edu" {...register('email')} />
-            {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
-          </div>
-
-          {/* Password */}
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Enter your password"
-                {...register('password')}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-gray hover:text-accent transition-colors"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errors.password && <p className="text-xs text-red-500">{errors.password.message}</p>}
-          </div>
-
-          {/* Submit */}
-          <Button
-            type="submit"
-            className="w-full bg-accent text-white hover:bg-accent/90 font-bold"
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Signing in...
-              </span>
-            ) : (
-              'Sign In'
-            )}
-          </Button>
-        </form>
-
-        {/* Register Link */}
-        <p className="text-center text-sm text-dark-gray mt-6">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-gold font-bold hover:underline">
-            Register
-          </Link>
+        {/* Footer info */}
+        <p className="text-center text-[11px] text-dark-gray/60 mt-8 font-medium">
+          &copy; 2026 Faculty of Computing and Informatics, LAUTECH. All rights reserved.
         </p>
-
-        {/* Demo Credentials — only visible when VITE_USE_MOCK=true */}
-        {isMock && (
-          <div className="mt-6 p-4 bg-gold/5 border border-gold/20 rounded-lg">
-            <div className="flex items-center gap-2 mb-3">
-              <Info className="w-4 h-4 text-gold shrink-0" />
-              <span className="text-xs font-bold text-gold uppercase tracking-wider">Demo Credentials</span>
-            </div>
-            <div className="space-y-2 text-xs text-dark-gray">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-accent">Admin</span>
-                <span className="font-mono text-[11px]">admin@fci.lautech.edu.ng / admin1234</span>
-              </div>
-              <div className="border-t border-gold/10" />
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-accent">Class Rep</span>
-                <span className="font-mono text-[11px]">emeka@fci.edu / password123</span>
-              </div>
-              <div className="border-t border-gold/10" />
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-accent">Staff</span>
-                <span className="font-mono text-[11px]">aisha@fci.edu / password123</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   )
 }
+

@@ -107,9 +107,9 @@ export default function ELibraryPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Departments</SelectItem>
-            <SelectItem value="Computer Science">Computer Science</SelectItem>
-            <SelectItem value="Cyber Security">Cyber Security</SelectItem>
-            <SelectItem value="Information Systems Sciences (INS)">INS</SelectItem>
+            <SelectItem value="computer science">Computer Science</SelectItem>
+            <SelectItem value="cyber security">Cyber Security</SelectItem>
+            <SelectItem value="information systems sciences (ins)">INS</SelectItem>
           </SelectContent>
         </Select>
       </div>

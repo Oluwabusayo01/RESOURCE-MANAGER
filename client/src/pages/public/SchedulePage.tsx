@@ -125,8 +125,8 @@ export default function SchedulePage() {
 
   const eventPropGetter = (event: any) => {
     let backgroundColor = '#3B82F6' // Default Blue
-    if (event.department === 'Cyber Security') backgroundColor = '#8B5CF6' // Purple
-    if (event.department === 'Information Systems Sciences (INS)') backgroundColor = '#14B8A6' // Teal
+    if (event.department === 'cyber security') backgroundColor = '#8B5CF6' // Purple
+    if (event.department === 'information systems sciences (ins)') backgroundColor = '#14B8A6' // Teal
 
     return {
       style: {
@@ -185,9 +185,9 @@ export default function SchedulePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Departments</SelectItem>
-              <SelectItem value="Computer Science">Computer Science</SelectItem>
-              <SelectItem value="Cyber Security">Cyber Security</SelectItem>
-              <SelectItem value="Information Systems Sciences (INS)">INS</SelectItem>
+              <SelectItem value="computer science">Computer Science</SelectItem>
+              <SelectItem value="cyber security">Cyber Security</SelectItem>
+              <SelectItem value="information systems sciences (ins)">Information Systems (INS)</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -7,7 +7,7 @@ export type NotificationType =
   | 'booking_confirmed' | 'registration_approved' | 'registration_rejected'
   | 'class_update' | 'auto_reminder' | 'system'
 export type Department =
-  | 'Computer Science' | 'Cyber Security' | 'Information Systems Sciences (INS)'
+  | 'computer science' | 'cyber security' | 'information systems sciences (ins)'
 
 export interface User {
   id: string; name: string; email: string; role: UserRole
