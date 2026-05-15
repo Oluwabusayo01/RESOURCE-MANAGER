@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       validate: {
         validator: function (value) {
-          return value.toLowerCase().endsWith("@lautech.edu.ng");
+          return value.toLowerCase().endsWith("lautech.edu.ng");
         },
         message: "Enter a valid LAUTECH email address",
       },
