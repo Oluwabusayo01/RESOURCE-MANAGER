@@ -56,10 +56,16 @@ export default function ManageUsersPage() {
   const fetchUsers = async () => {
     setLoading(true)
     try {
-      const data = await userService.getAll()
+      const params: any = {}
+      if (roleFilter !== 'all') params.role = roleFilter
+      if (deptFilter !== 'all') params.department = deptFilter
+      if (statusFilter !== 'all') params.status = statusFilter
+      
+      const data = await userService.getAll(params)
       setUsers(data)
     } catch (err) {
       console.error('Failed to load users', err)
+      toast.error('Failed to load users.')
     } finally {
       setLoading(false)
     }
@@ -67,16 +73,7 @@ export default function ManageUsersPage() {
 
   useEffect(() => {
     fetchUsers()
-  }, [])
-
-  // Client-side filtering
-  const filteredUsers = useMemo(() => {
-    let result = users
-    if (roleFilter !== 'all') result = result.filter(u => u.role === roleFilter)
-    if (deptFilter !== 'all') result = result.filter(u => u.department === deptFilter)
-    if (statusFilter !== 'all') result = result.filter(u => u.status === statusFilter)
-    return result
-  }, [users, roleFilter, deptFilter, statusFilter])
+  }, [roleFilter, deptFilter, statusFilter])
 
   const handleConfirm = async () => {
     const { id, action } = confirmDialog
@@ -207,7 +204,7 @@ export default function ManageUsersPage() {
             <h2 className="text-lg font-black text-accent">Users</h2>
             {!loading && (
               <span className="text-xs font-bold text-dark-gray bg-light-gray px-3 py-1 rounded-full">
-                {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}
+                {users.length} user{users.length !== 1 ? 's' : ''}
               </span>
             )}
           </div>
@@ -218,7 +215,7 @@ export default function ManageUsersPage() {
                 <Skeleton key={i} className="h-12 w-full" />
               ))}
             </div>
-          ) : filteredUsers.length === 0 ? (
+          ) : users.length === 0 ? (
             <div className="p-12 text-center">
               <Users className="w-12 h-12 text-mid-gray mx-auto mb-3" />
               <p className="text-dark-gray font-medium">No users found.</p>
@@ -236,7 +233,7 @@ export default function ManageUsersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.map((u) => (
+                {users.map((u) => (
                   <TableRow key={u.id} className="hover:bg-light-gray/50">
                     <TableCell className="font-bold">{u.name}</TableCell>
                     <TableCell className="text-dark-gray text-sm">{u.email}</TableCell>

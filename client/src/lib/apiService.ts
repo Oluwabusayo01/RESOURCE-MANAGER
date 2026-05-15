@@ -14,7 +14,10 @@ export const authService = {
 
 export const resourceService = {
   getAll: (params?: any) =>
-    USE_MOCK ? mock.getResources(params) : api.get('/resources', { params }).then(r => r.data),
+    USE_MOCK ? mock.getResources(params) : api.get('/resources', { params }).then(r => {
+      const data = r.data.data || r.data || [];
+      return data.map((item: any) => ({ ...item, id: item._id }));
+    }),
   create: (payload: any) =>
     USE_MOCK ? mock.createResource(payload) : api.post('/resources', payload).then(r => r.data),
   update: (id: string, payload: any) =>
@@ -27,7 +30,10 @@ export const resourceService = {
 
 export const bookingService = {
   getAll: (params?: any) =>
-    USE_MOCK ? mock.getBookings(params) : api.get('/bookings', { params }).then(r => r.data),
+    USE_MOCK ? mock.getBookings(params) : api.get('/bookings', { params }).then(r => {
+      const data = r.data.data || r.data || [];
+      return data.map((item: any) => ({ ...item, id: item._id }));
+    }),
   getById: (id: string) =>
     USE_MOCK ? mock.getBookingById(id) : api.get(`/bookings/${id}`).then(r => r.data),
   create: (payload: any) =>
@@ -42,7 +48,10 @@ export const bookingService = {
 
 export const notificationService = {
   getAll: (params?: any) =>
-    USE_MOCK ? mock.getNotifications(params) : api.get('/notifications', { params }).then(r => r.data),
+    USE_MOCK ? mock.getNotifications(params) : api.get('/notifications', { params }).then(r => {
+      const data = r.data.data || r.data || [];
+      return data.map((item: any) => ({ ...item, id: item._id }));
+    }),
   markRead: (id: string) =>
     USE_MOCK ? mock.markNotificationRead(id) : api.patch(`/notifications/${id}/read`).then(r => r.data),
   markAllRead: () =>
@@ -53,7 +62,10 @@ export const notificationService = {
 
 export const libraryService = {
   getAll: (params?: any) =>
-    USE_MOCK ? mock.getLibrary(params) : api.get('/library', { params }).then(r => r.data),
+    USE_MOCK ? mock.getLibrary(params) : api.get('/library', { params }).then(r => {
+      const data = r.data.data || r.data || [];
+      return data.map((item: any) => ({ ...item, id: item._id }));
+    }),
   upload: (formData: FormData) =>
     USE_MOCK ? mock.uploadMaterial(formData) : api.post('/library', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data),
   download: (id: string) =>
@@ -64,20 +76,28 @@ export const libraryService = {
 
 export const userService = {
   getAll: (params?: any) =>
-    USE_MOCK ? mock.getUsers(params) : api.get('/users', { params }).then(r => r.data),
+    USE_MOCK 
+      ? mock.getUsers(params) 
+      : api.get('/users', { params }).then(r => {
+          const users = r.data.users || r.data.data || [];
+          return users.map((u: any) => ({ ...u, id: u._id }));
+        }),
   approve: (id: string) =>
-    USE_MOCK ? mock.approveUser(id) : api.patch(`/users/${id}/approve`).then(r => r.data),
+    USE_MOCK ? mock.approveUser(id) : api.patch(`/users/${id}/approve`).then(r => r.data.data || r.data),
   reject: (id: string) =>
-    USE_MOCK ? mock.rejectUser(id) : api.patch(`/users/${id}/reject`).then(r => r.data),
+    USE_MOCK ? mock.rejectUser(id) : api.patch(`/users/${id}/reject`).then(r => r.data.data || r.data),
 }
 
 export const adminService = {
   getStats: () =>
-    USE_MOCK ? mock.getAdminStats() : api.get('/admin/stats').then(r => r.data),
+    USE_MOCK ? mock.getAdminStats() : api.get('/admin/stats').then(r => r.data.data || r.data),
   getByDepartment: () =>
-    USE_MOCK ? mock.getBookingsByDepartment() : api.get('/admin/analytics/by-department').then(r => r.data),
+    USE_MOCK ? mock.getBookingsByDepartment() : api.get('/admin/analytics/by-department').then(r => r.data.data || r.data),
   getPeakHours: () =>
-    USE_MOCK ? mock.getPeakHours() : api.get('/admin/analytics/peak-hours').then(r => r.data),
+    USE_MOCK ? mock.getPeakHours() : api.get('/admin/analytics/peak-hours').then(r => r.data.data || r.data),
   getActivity: (params?: any) =>
-    USE_MOCK ? mock.getActivity(params) : api.get('/admin/activity', { params }).then(r => r.data),
+    USE_MOCK ? mock.getActivity(params) : api.get('/admin/activity', { params }).then(r => {
+      const data = r.data.data || r.data || [];
+      return data.map((item: any) => ({ ...item, id: item._id }));
+    }),
 }

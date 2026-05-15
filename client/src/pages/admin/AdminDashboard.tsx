@@ -87,20 +87,25 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [statsData, deptRes, peakRes, usersRes, activityRes] = await Promise.all([
-        adminService.getStats(),
-        adminService.getByDepartment(),
-        adminService.getPeakHours(),
-        userService.getAll({ status: 'pending' }),
-        adminService.getActivity({ limit: 5 }),
-      ])
-      setStats(statsData)
-      setDeptData(deptRes)
-      setPeakData(peakRes)
-      setPendingUsers(usersRes)
-      setActivity(activityRes)
+      // Fetch stats
+      adminService.getStats().then(setStats).catch(e => console.error("Stats fail:", e));
+      
+      // Fetch department analytics
+      adminService.getByDepartment().then(setDeptData).catch(e => console.error("Dept fail:", e));
+      
+      // Fetch peak hours
+      adminService.getPeakHours().then(setPeakData).catch(e => console.error("Peak fail:", e));
+      
+      // Fetch pending users (CRITICAL)
+      const users = await userService.getAll({ status: 'pending' });
+      setPendingUsers(users);
+      
+      // Fetch activity
+      adminService.getActivity({ limit: 5 }).then(setActivity).catch(e => console.error("Activity fail:", e));
+      
     } catch (err) {
-      console.error('Failed to load admin dashboard data', err)
+      console.error('Failed to load critical admin dashboard data', err)
+      toast.error("Failed to load some dashboard data.")
     } finally {
       setLoading(false)
     }
