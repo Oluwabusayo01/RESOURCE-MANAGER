@@ -1,6 +1,7 @@
 import Booking from "../models/booking.model.js";
 import Resource from "../models/resource.model.js";
 import { validationResult, matchedData } from "express-validator";
+import { autoCompleteBookings } from "../utils/autoCompleteBooking.js";
 
 export const createBooking = async (req, res, next) => {
   const errors = validationResult(req);
@@ -12,6 +13,8 @@ export const createBooking = async (req, res, next) => {
   }
 
   try {
+    await autoCompleteBookings();
+
     const {
       resource: resourceId,
       course,
@@ -96,6 +99,7 @@ export const updateBooking = async (req, res, next) => {
   }
 
   try {
+    await autoCompleteBookings();
     const { id, course, notes, date, startTime, endTime } = matchedData(req);
 
     // 1. Check booking exists
@@ -176,6 +180,8 @@ export const updateBooking = async (req, res, next) => {
 
 export const cancelBooking = async (req, res, next) => {
   try {
+    await autoCompleteBookings();
+
     const { id } = matchedData(req);
 
     // 1. Check booking exists
@@ -239,6 +245,8 @@ export const cancelBooking = async (req, res, next) => {
 
 export const getPublicBookings = async (req, res, next) => {
   try {
+    await autoCompleteBookings();
+
     const {
       date,
       department,
@@ -250,7 +258,7 @@ export const getPublicBookings = async (req, res, next) => {
     const limit = Number(limitParam) || 10;
     const skip = (page - 1) * limit;
 
-    const filter = { status: "confirmed" };
+    const filter = { status: { $in: ["confirmed", "completed"] } };
 
     if (date) filter.date = date;
     if (department) filter.department = department;
@@ -288,10 +296,11 @@ export const getPublicBookings = async (req, res, next) => {
 
 export const getAllBookings = async (req, res, next) => {
   try {
-    const {
-      status,
+    await autoCompleteBookings();
+    const {  
+      status,  
       date,
-      department,
+      department,  
       resource: resourceId,
       user: userId,
       page: pageParam,

@@ -9,6 +9,8 @@ import userRoutes from "./routes/user.route.js";
 import resourceRoutes from "./routes/resource.route.js";
 import uploadImageRoute from "./routes/uploadImage.route.js";
 import bookingRoutes from "./routes/booking.route.js";
+// import libraryRoutes from "./routes/library.route.js";
+
 
 dotenv.config();    
 connectDatabase();
@@ -17,11 +19,11 @@ const app = express()
 const PORT = process.env.PORT || 8000;
  
 app.use(cookieParser());     
-           
+                
 app.use(
   cors({  
     origin: ["http://localhost:5173", ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
 );
@@ -36,14 +38,14 @@ app.use("/api", userRoutes);
 app.use("/api", resourceRoutes);
 app.use("/api", uploadImageRoute);
 app.use("/api", bookingRoutes);
-
+// app.use("/api", libraryRoutes);
 
 // app.use(express.static(path.join(_dirname, "/frontend/dist")));
 
 // app.get("/*", (req, res) => {
 //   res.sendFile(path.join(_dirname, "/frontend/dist/index.html"));
 // });
-
+  
 app.listen(PORT, () => {
   console.log(` App running on port ${PORT}`);
 });

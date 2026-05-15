@@ -328,3 +328,86 @@ export const getBookingsValidation = [
     .isInt({ min: 1 })
     .withMessage("Limit must be a positive integer"),
 ];
+
+export const uploadMaterialValidation = [
+  body("title")
+    .notEmpty()
+    .withMessage("Title is required")
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage("Title must be between 3 and 200 characters"),
+
+  body("course")
+    .notEmpty()
+    .withMessage("Course is required")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Course must be between 2 and 100 characters"),
+
+  body("department")
+    .notEmpty()
+    .withMessage("Department is required")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Department must be between 2 and 100 characters"),
+
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Description must not exceed 500 characters"),
+
+  body("uploadedBy")
+    .notEmpty()
+    .withMessage("Uploaded by is required")
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Name must be between 2 and 100 characters")
+    .matches(/^[a-zA-Z\s.'-]+$/)
+    .withMessage("Name can only contain letters, spaces, and . ' -"),
+
+  body("fileUrl")
+    .notEmpty()
+    .withMessage("File URL is required")
+    .isURL()
+    .withMessage("File URL must be a valid URL"),
+
+  body("fileName")
+    .notEmpty()
+    .withMessage("File name is required")
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("File name must not exceed 255 characters"),
+
+  body("fileSize")
+    .notEmpty()
+    .withMessage("File size is required")
+    .isNumeric()
+    .withMessage("File size must be a number")
+    .custom((value) => {
+      if (value <= 0) throw new Error("File size must be greater than 0");
+      if (value > 50 * 1024 * 1024)
+        throw new Error("File size must not exceed 50MB");
+      return true;
+    }),
+
+  body("fileType")
+    .notEmpty()
+    .withMessage("File type is required")
+    .isIn(["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "txt"])
+    .withMessage("Invalid file type"),
+];
+
+export const downloadFileValidation = [
+  query("fileUrl")
+    .notEmpty()
+    .withMessage("fileUrl is required")
+    .isURL()
+    .withMessage("fileUrl must be a valid URL"),
+  query("fileName")
+    .notEmpty()
+    .withMessage("fileName is required")
+    .isString()
+    .withMessage("fileName must be a string")
+    .trim(),
+];
