@@ -139,15 +139,15 @@ export default function AllBookingsPage() {
       className="space-y-8"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-accent">All Bookings</h1>
-          <p className="text-dark-gray text-sm mt-1">View and manage all resource bookings across FCI.</p>
+          <h1 className="text-xl sm:text-3xl font-black text-accent">All Bookings</h1>
+          <p className="text-dark-gray text-[10px] sm:text-sm mt-1">View and manage all resource bookings across FCI.</p>
         </div>
         <Button
           variant="outline"
           onClick={() => toast.info('Export feature coming soon.')}
-          className="gap-2 font-bold text-dark-gray"
+          className="gap-2 font-bold text-dark-gray w-full sm:w-auto h-11 sm:h-10"
         >
           <Download className="w-4 h-4" />
           Export
@@ -157,11 +157,11 @@ export default function AllBookingsPage() {
       {/* 1. Filter Bar */}
       <Card className="border border-mid-gray/20 shadow-sm">
         <CardContent className="p-4">
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="space-y-1 min-w-[180px]">
-              <p className="text-xs font-bold text-dark-gray uppercase">Resource</p>
+          <div className="flex flex-wrap items-end gap-3 sm:gap-4">
+            <div className="space-y-1 w-full sm:w-auto sm:min-w-[150px]">
+              <p className="text-[10px] font-bold text-dark-gray uppercase">Resource</p>
               <Select value={resourceFilter} onValueChange={setResourceFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -173,32 +173,32 @@ export default function AllBookingsPage() {
               </Select>
             </div>
 
-            <div className="space-y-1 min-w-[180px]">
-              <p className="text-xs font-bold text-dark-gray uppercase">Department</p>
+            <div className="space-y-1 w-full sm:w-auto sm:min-w-[150px]">
+              <p className="text-[10px] font-bold text-dark-gray uppercase">Department</p>
               <Select value={deptFilter} onValueChange={setDeptFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Departments</SelectItem>
                   <SelectItem value="computer science">Computer Science</SelectItem>
                   <SelectItem value="cyber security">Cyber Security</SelectItem>
-                  <SelectItem value="information systems sciences (ins)">Information Systems (INS)</SelectItem>
+                  <SelectItem value="information system">Information Systems (INS)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-1">
-              <p className="text-xs font-bold text-dark-gray uppercase">From Date</p>
-              <Input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="w-[160px]" />
+            <div className="space-y-1 w-1/2 sm:w-auto">
+              <p className="text-[10px] font-bold text-dark-gray uppercase">From Date</p>
+              <Input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="h-9 text-sm w-full" />
             </div>
 
-            <div className="space-y-1">
-              <p className="text-xs font-bold text-dark-gray uppercase">To Date</p>
-              <Input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="w-[160px]" />
+            <div className="space-y-1 w-[45%] sm:w-auto">
+              <p className="text-[10px] font-bold text-dark-gray uppercase">To Date</p>
+              <Input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="h-9 text-sm w-full" />
             </div>
 
-            <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1 font-bold text-dark-gray">
+            <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1 font-bold text-dark-gray h-9 w-full sm:w-auto">
               <RotateCcw className="w-3 h-3" />
               Reset
             </Button>
@@ -222,56 +222,58 @@ export default function AllBookingsPage() {
             </div>
           ) : (
             <>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-bold">Resource</TableHead>
-                    <TableHead className="font-bold">Booked By</TableHead>
-                    <TableHead className="font-bold">Course</TableHead>
-                    <TableHead className="font-bold">Department</TableHead>
-                    <TableHead className="font-bold">Date</TableHead>
-                    <TableHead className="font-bold">Time</TableHead>
-                    <TableHead className="font-bold">Status</TableHead>
-                    <TableHead className="font-bold text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginatedBookings.map((b) => (
-                    <TableRow key={b.id} className="hover:bg-light-gray/50">
-                      <TableCell className="font-bold">{b.resource.name}</TableCell>
-                      <TableCell className="text-dark-gray text-sm">{b.user?.name || 'Unknown'}</TableCell>
-                      <TableCell className="text-sm">{b.course}</TableCell>
-                      <TableCell className="text-sm">{b.department}</TableCell>
-                      <TableCell className="text-sm">{b.date}</TableCell>
-                      <TableCell className="text-sm">{b.startTime} – {b.endTime}</TableCell>
-                      <TableCell><StatusBadge status={b.status} /></TableCell>
-                      <TableCell className="text-right space-x-1">
-                        <Button variant="ghost" size="sm" onClick={() => setViewBooking(b)} className="text-accent">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        {b.status === 'confirmed' && (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-bold whitespace-nowrap">Resource</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Booked By</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Course</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Department</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Date</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Time</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Status</TableHead>
+                      <TableHead className="font-bold text-right whitespace-nowrap">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedBookings.map((b) => (
+                      <TableRow key={b.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
+                        <TableCell className="font-bold whitespace-nowrap">{b.resource.name}</TableCell>
+                        <TableCell className="text-dark-gray text-xs whitespace-nowrap">{b.user?.name || 'Unknown'}</TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">{b.course}</TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">{b.department}</TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">{b.date}</TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">{b.startTime} – {b.endTime}</TableCell>
+                        <TableCell className="whitespace-nowrap"><StatusBadge status={b.status} /></TableCell>
+                        <TableCell className="text-right space-x-1 whitespace-nowrap">
+                          <Button variant="ghost" size="sm" onClick={() => setViewBooking(b)} className="text-accent h-8 w-8 p-0">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          {b.status === 'confirmed' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setCancelDialog({ open: true, id: b.id, name: b.resource.name })}
+                              className="text-red-500 h-8 w-8 p-0"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setCancelDialog({ open: true, id: b.id, name: b.resource.name })}
-                            className="text-red-500"
+                            onClick={() => setDeleteDialog({ open: true, id: b.id, name: b.resource.name })}
+                            className="text-red-500 h-8 w-8 p-0"
                           >
-                            <XCircle className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setDeleteDialog({ open: true, id: b.id, name: b.resource.name })}
-                          className="text-red-500"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
 
               {/* Pagination */}
               {totalPages > 1 && (

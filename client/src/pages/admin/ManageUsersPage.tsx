@@ -156,18 +156,18 @@ export default function ManageUsersPage() {
     >
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-accent">Manage Users</h1>
-        <p className="text-dark-gray text-sm mt-1">View, approve, and manage user registrations.</p>
+        <h1 className="text-xl sm:text-3xl font-black text-accent">Manage Users</h1>
+        <p className="text-dark-gray text-[10px] sm:text-sm mt-1">View, approve, and manage user registrations.</p>
       </div>
 
       {/* Filter Bar */}
       <Card className="border border-mid-gray/20 shadow-sm">
         <CardContent className="p-4">
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="space-y-1 min-w-[150px]">
-              <Label className="text-xs font-bold text-dark-gray uppercase">Role</Label>
+          <div className="flex flex-wrap items-end gap-3 sm:gap-4">
+            <div className="space-y-1 w-full sm:w-auto sm:min-w-[120px]">
+              <Label className="text-[10px] font-bold text-dark-gray uppercase">Role</Label>
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -178,25 +178,25 @@ export default function ManageUsersPage() {
               </Select>
             </div>
 
-            <div className="space-y-1 min-w-[180px]">
-              <Label className="text-xs font-bold text-dark-gray uppercase">Department</Label>
+            <div className="space-y-1 w-full sm:w-auto sm:min-w-[150px]">
+              <Label className="text-[10px] font-bold text-dark-gray uppercase">Department</Label>
               <Select value={deptFilter} onValueChange={setDeptFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Departments</SelectItem>
                   <SelectItem value="computer science">Computer Science</SelectItem>
                   <SelectItem value="cyber security">Cyber Security</SelectItem>
-                  <SelectItem value="information systems sciences (ins)">Information Systems (INS)</SelectItem>
+                  <SelectItem value="information system">Information Systems (INS)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-1 min-w-[150px]">
-              <Label className="text-xs font-bold text-dark-gray uppercase">Status</Label>
+            <div className="space-y-1 w-full sm:w-auto sm:min-w-[120px]">
+              <Label className="text-[10px] font-bold text-dark-gray uppercase">Status</Label>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -208,7 +208,7 @@ export default function ManageUsersPage() {
               </Select>
             </div>
 
-            <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1 font-bold text-dark-gray">
+            <Button variant="outline" size="sm" onClick={resetFilters} className="gap-1 font-bold text-dark-gray h-9 w-full sm:w-auto">
               <RotateCcw className="w-3 h-3" />
               Reset
             </Button>
@@ -240,77 +240,79 @@ export default function ManageUsersPage() {
               <p className="text-dark-gray font-medium">No users found.</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-bold">Name</TableHead>
-                  <TableHead className="font-bold">Email</TableHead>
-                  <TableHead className="font-bold">Role</TableHead>
-                  <TableHead className="font-bold">Department</TableHead>
-                  <TableHead className="font-bold">Status</TableHead>
-                  <TableHead className="font-bold text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {users.map((u) => (
-                  <TableRow key={u.id} className="hover:bg-light-gray/50">
-                    <TableCell className="font-bold">{u.name}</TableCell>
-                    <TableCell className="text-dark-gray text-sm">{u.email}</TableCell>
-                    <TableCell>
-                      <span className="text-xs font-bold px-2 py-1 bg-light-gray rounded-full capitalize">
-                        {u.role === 'classrep' ? 'Class Rep' : u.role}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-sm">{u.department}</TableCell>
-                    <TableCell><StatusBadge status={u.status as any} /></TableCell>
-                    <TableCell className="text-right space-x-2">
-                      {u.status === 'pending' && (
-                        <>
-                          <Button
-                            size="sm"
-                            onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'approve' })}
-                            className="bg-green-600 text-white hover:bg-green-700 text-xs font-bold"
-                          >
-                            <CheckCircle2 className="w-3 h-3 mr-1" />
-                            Approve
-                          </Button>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-bold whitespace-nowrap">Name</TableHead>
+                    <TableHead className="font-bold whitespace-nowrap">Email</TableHead>
+                    <TableHead className="font-bold whitespace-nowrap">Role</TableHead>
+                    <TableHead className="font-bold whitespace-nowrap">Department</TableHead>
+                    <TableHead className="font-bold whitespace-nowrap">Status</TableHead>
+                    <TableHead className="font-bold text-right whitespace-nowrap">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((u) => (
+                    <TableRow key={u.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
+                      <TableCell className="font-bold whitespace-nowrap">{u.name}</TableCell>
+                      <TableCell className="text-dark-gray text-xs whitespace-nowrap">{u.email}</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <span className="text-[10px] font-bold px-2 py-1 bg-light-gray rounded-full capitalize">
+                          {u.role === 'classrep' ? 'Class Rep' : u.role}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs whitespace-nowrap">{u.department}</TableCell>
+                      <TableCell className="whitespace-nowrap"><StatusBadge status={u.status as any} /></TableCell>
+                      <TableCell className="text-right space-x-2 whitespace-nowrap">
+                        {u.status === 'pending' && (
+                          <>
+                            <Button
+                              size="sm"
+                              onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'approve' })}
+                              className="bg-green-600 text-white hover:bg-green-700 text-[10px] sm:text-xs font-bold h-8 px-2 sm:px-3"
+                            >
+                              <CheckCircle2 className="w-3 h-3 mr-1" />
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'reject' })}
+                              className="border-red-300 text-red-600 hover:bg-red-50 text-[10px] sm:text-xs font-bold h-8 px-2 sm:px-3"
+                            >
+                              <XCircle className="w-3 h-3 mr-1" />
+                              Reject
+                            </Button>
+                          </>
+                        )}
+                        {u.status === 'approved' && (
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'reject' })}
-                            className="border-red-300 text-red-600 hover:bg-red-50 text-xs font-bold"
+                            onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'revoke' })}
+                            className="border-red-300 text-red-600 hover:bg-red-50 text-[10px] sm:text-xs font-bold h-8 px-2 sm:px-3"
                           >
-                            <XCircle className="w-3 h-3 mr-1" />
-                            Reject
+                            <ShieldOff className="w-3 h-3 mr-1" />
+                            Revoke Access
                           </Button>
-                        </>
-                      )}
-                      {u.status === 'approved' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'revoke' })}
-                          className="border-red-300 text-red-600 hover:bg-red-50 text-xs font-bold"
-                        >
-                          <ShieldOff className="w-3 h-3 mr-1" />
-                          Revoke Access
-                        </Button>
-                      )}
-                      {u.status === 'rejected' && (
-                        <Button
-                          size="sm"
-                          onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'reapprove' })}
-                          className="bg-green-600 text-white hover:bg-green-700 text-xs font-bold"
-                        >
-                          <CheckCircle2 className="w-3 h-3 mr-1" />
-                          Re-approve
-                        </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                        )}
+                        {u.status === 'rejected' && (
+                          <Button
+                            size="sm"
+                            onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'reapprove' })}
+                            className="bg-green-600 text-white hover:bg-green-700 text-[10px] sm:text-xs font-bold h-8 px-2 sm:px-3"
+                          >
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Re-approve
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
 
           {/* Pagination Controls */}

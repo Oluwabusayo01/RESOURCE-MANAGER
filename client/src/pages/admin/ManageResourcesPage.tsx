@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { resourceService } from '@/lib/apiService'
 import type { Resource } from '@/types'
+import { cn } from '@/lib/utils'
 
 import StatusBadge from '@/components/shared/StatusBadge'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
@@ -146,12 +147,12 @@ export default function ManageResourcesPage() {
       className="space-y-8"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-accent">Manage Resources</h1>
-          <p className="text-dark-gray text-sm mt-1">Add, edit, or deactivate faculty resources.</p>
+          <h1 className="text-xl sm:text-3xl font-black text-accent">Manage Resources</h1>
+          <p className="text-dark-gray text-[10px] sm:text-sm mt-1">Add, edit, or deactivate faculty resources.</p>
         </div>
-        <Button onClick={openAdd} className="bg-accent text-white hover:bg-accent/90 font-bold gap-2">
+        <Button onClick={openAdd} className="bg-accent text-white hover:bg-accent/90 font-bold gap-2 w-full sm:w-auto h-11 sm:h-10">
           <Plus className="w-4 h-4" />
           Add New Resource
         </Button>
@@ -172,50 +173,52 @@ export default function ManageResourcesPage() {
               <p className="text-dark-gray font-medium">No resources found.</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-bold">Name</TableHead>
-                  <TableHead className="font-bold">Type</TableHead>
-                  <TableHead className="font-bold">Capacity</TableHead>
-                  <TableHead className="font-bold">Status</TableHead>
-                  <TableHead className="font-bold text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {resources.map((r) => (
-                  <TableRow key={r.id} className="hover:bg-light-gray/50">
-                    <TableCell className="font-bold">{r.name}</TableCell>
-                    <TableCell className="capitalize">{r.type}</TableCell>
-                    <TableCell>{r.capacity ?? '—'}</TableCell>
-                    <TableCell><StatusBadge status={r.status} /></TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openEdit(r)}
-                        className="text-accent"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setToggleDialog({
-                          open: true,
-                          id: r.id,
-                          name: r.name,
-                          newStatus: r.status === 'active' ? 'inactive' : 'active',
-                        })}
-                        className={r.status === 'active' ? 'text-red-500' : 'text-green-500'}
-                      >
-                        <Power className="w-4 h-4" />
-                      </Button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-bold whitespace-nowrap">Name</TableHead>
+                    <TableHead className="font-bold whitespace-nowrap">Type</TableHead>
+                    <TableHead className="font-bold whitespace-nowrap">Capacity</TableHead>
+                    <TableHead className="font-bold whitespace-nowrap">Status</TableHead>
+                    <TableHead className="font-bold text-right whitespace-nowrap">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {resources.map((r) => (
+                    <TableRow key={r.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
+                      <TableCell className="font-bold whitespace-nowrap">{r.name}</TableCell>
+                      <TableCell className="capitalize whitespace-nowrap">{r.type}</TableCell>
+                      <TableCell className="whitespace-nowrap">{r.capacity ?? '—'}</TableCell>
+                      <TableCell className="whitespace-nowrap"><StatusBadge status={r.status} /></TableCell>
+                      <TableCell className="text-right space-x-2 whitespace-nowrap">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEdit(r)}
+                          className="text-accent h-8 w-8 p-0"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setToggleDialog({
+                            open: true,
+                            id: r.id,
+                            name: r.name,
+                            newStatus: r.status === 'active' ? 'inactive' : 'active',
+                          })}
+                          className={cn("h-8 w-8 p-0", r.status === 'active' ? 'text-red-500' : 'text-green-500')}
+                        >
+                          <Power className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

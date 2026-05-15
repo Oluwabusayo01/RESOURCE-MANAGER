@@ -84,32 +84,32 @@ export default function ELibraryPage() {
     >
       {/* 1. Page Header */}
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-black text-accent mb-3">E-Library</h1>
-        <p className="text-dark-gray max-w-lg mx-auto">
+        <h1 className="text-xl sm:text-4xl font-black text-accent mb-3">E-Library</h1>
+        <p className="text-dark-gray text-xs sm:text-base max-w-lg mx-auto">
           Study materials uploaded by FCI lecturers. Free to browse and download.
         </p>
       </div>
 
       {/* 2. Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-10">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-10">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-mid-gray" />
           <Input
             placeholder="Search by title or course..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-10 text-sm"
           />
         </div>
         <Select value={department} onValueChange={setDepartment}>
-          <SelectTrigger className="w-full sm:w-[220px]">
+          <SelectTrigger className="w-full sm:w-[220px] h-10 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Departments</SelectItem>
             <SelectItem value="computer science">Computer Science</SelectItem>
             <SelectItem value="cyber security">Cyber Security</SelectItem>
-            <SelectItem value="information systems sciences (ins)">INS</SelectItem>
+            <SelectItem value="information system">INS</SelectItem>
           </SelectContent>
         </Select>
       </div>

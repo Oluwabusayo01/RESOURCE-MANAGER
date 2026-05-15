@@ -161,16 +161,18 @@ export default function AdminDashboard() {
       className="space-y-8"
     >
       {/* 1. Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-accent">Admin Dashboard</h1>
-          <p className="text-dark-gray text-sm mt-1">Faculty of Computing and Informatics, LAUTECH</p>
+          <h1 className="text-xl sm:text-3xl font-black text-accent">Admin Dashboard</h1>
+          <p className="text-dark-gray text-[10px] sm:text-sm mt-1">Faculty of Computing and Informatics, LAUTECH</p>
         </div>
-        <NotificationBell />
+        <div className="flex items-center gap-4 self-end sm:self-auto">
+          <NotificationBell />
+        </div>
       </div>
 
       {/* 2. Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading
           ? [1, 2, 3, 4].map(i => (
               <Card key={i} className="border border-mid-gray/20">
@@ -299,50 +301,52 @@ export default function AdminDashboard() {
               <p className="text-dark-gray font-medium">No pending registrations. All clear!</p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-bold">Name</TableHead>
-                  <TableHead className="font-bold">Email</TableHead>
-                  <TableHead className="font-bold">Role</TableHead>
-                  <TableHead className="font-bold">Department</TableHead>
-                  <TableHead className="font-bold text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {pendingUsers.map((u) => (
-                  <TableRow key={u.id} className="hover:bg-light-gray/50">
-                    <TableCell className="font-bold">{u.name}</TableCell>
-                    <TableCell className="text-dark-gray">{u.email}</TableCell>
-                    <TableCell>
-                      <span className="text-xs font-bold px-2 py-1 bg-light-gray rounded-full capitalize">
-                        {u.role === 'classrep' ? 'Class Rep' : u.role}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-sm">{u.department}</TableCell>
-                    <TableCell className="text-right space-x-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleApprove(u.id)}
-                        className="bg-green-600 text-white hover:bg-green-700 text-xs font-bold"
-                      >
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setRejectDialog({ open: true, id: u.id, name: u.name })}
-                        className="border-red-300 text-red-600 hover:bg-red-50 text-xs font-bold"
-                      >
-                        <XCircle className="w-3 h-3 mr-1" />
-                        Reject
-                      </Button>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-bold">Name</TableHead>
+                    <TableHead className="font-bold">Email</TableHead>
+                    <TableHead className="font-bold">Role</TableHead>
+                    <TableHead className="font-bold">Department</TableHead>
+                    <TableHead className="font-bold text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {pendingUsers.map((u) => (
+                    <TableRow key={u.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
+                      <TableCell className="font-bold whitespace-nowrap">{u.name}</TableCell>
+                      <TableCell className="text-dark-gray whitespace-nowrap">{u.email}</TableCell>
+                      <TableCell className="whitespace-nowrap">
+                        <span className="text-[10px] font-bold px-2 py-1 bg-light-gray rounded-full capitalize">
+                          {u.role === 'classrep' ? 'Class Rep' : u.role}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs whitespace-nowrap">{u.department}</TableCell>
+                      <TableCell className="text-right space-x-2 whitespace-nowrap">
+                        <Button
+                          size="sm"
+                          onClick={() => handleApprove(u.id)}
+                          className="bg-green-600 text-white hover:bg-green-700 text-[10px] sm:text-xs font-bold h-8 px-2 sm:px-3"
+                        >
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setRejectDialog({ open: true, id: u.id, name: u.name })}
+                          className="border-red-300 text-red-600 hover:bg-red-50 text-[10px] sm:text-xs font-bold h-8 px-2 sm:px-3"
+                        >
+                          <XCircle className="w-3 h-3 mr-1" />
+                          Reject
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

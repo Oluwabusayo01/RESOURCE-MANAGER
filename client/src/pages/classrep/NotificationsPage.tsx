@@ -90,10 +90,10 @@ export default function NotificationsPage() {
       className="space-y-6"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-accent">Notifications</h1>
-          <p className="text-dark-gray text-sm mt-1">
+          <h1 className="text-xl sm:text-3xl font-black text-accent">Notifications</h1>
+          <p className="text-dark-gray text-[10px] sm:text-sm mt-1">
             {unreadCount > 0
               ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}.`
               : "You're all caught up!"}
@@ -103,7 +103,7 @@ export default function NotificationsPage() {
           <Button
             variant="outline"
             onClick={handleMarkAllRead}
-            className="gap-2 font-bold text-dark-gray"
+            className="gap-2 font-bold text-dark-gray w-full sm:w-auto h-11 sm:h-10"
           >
             <CheckCheck className="w-4 h-4" />
             Mark All as Read

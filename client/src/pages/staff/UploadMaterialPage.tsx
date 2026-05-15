@@ -185,7 +185,7 @@ export default function UploadMaterialPage() {
                 <SelectContent>
                   <SelectItem value="computer science">Computer Science</SelectItem>
                   <SelectItem value="cyber security">Cyber Security</SelectItem>
-                  <SelectItem value="information systems sciences (ins)">Information Systems (INS)</SelectItem>
+                  <SelectItem value="information system">Information Systems (INS)</SelectItem>
                 </SelectContent>
               </Select>
               {errors.department && <p className="text-xs text-red-500">{errors.department.message}</p>}

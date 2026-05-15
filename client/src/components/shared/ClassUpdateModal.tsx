@@ -42,7 +42,7 @@ interface ClassUpdateModalProps {
 const departments: Department[] = [
   'computer science',
   'cyber security',
-  'information systems sciences (ins)',
+  'information system',
 ]
 
 export default function ClassUpdateModal({ isOpen, onClose }: ClassUpdateModalProps) {
@@ -110,7 +110,7 @@ export default function ClassUpdateModal({ isOpen, onClose }: ClassUpdateModalPr
               <SelectContent>
                 {departments.map((d) => (
                   <SelectItem key={d} value={d}>
-                    {d === 'information systems sciences (ins)' ? 'Information Systems (INS)' : d.charAt(0).toUpperCase() + d.slice(1)}
+                    {d === 'information system' ? 'Information Systems (INS)' : d.charAt(0).toUpperCase() + d.slice(1)}
                   </SelectItem>
                 ))}
               </SelectContent>

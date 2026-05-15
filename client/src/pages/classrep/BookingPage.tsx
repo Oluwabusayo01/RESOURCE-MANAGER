@@ -154,11 +154,11 @@ export default function BookingPage() {
     >
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-accent flex items-center gap-3">
-          <CalendarPlus className="w-8 h-8 text-gold" />
+        <h1 className="text-xl sm:text-3xl font-black text-accent flex items-center gap-3">
+          <CalendarPlus className="w-6 h-6 sm:w-8 sm:h-8 text-gold" />
           Book a Resource
         </h1>
-        <p className="text-dark-gray text-sm mt-1">Reserve a lab, seminar room, or hall for your class.</p>
+        <p className="text-dark-gray text-[10px] sm:text-sm mt-1">Reserve a lab, seminar room, or hall for your class.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

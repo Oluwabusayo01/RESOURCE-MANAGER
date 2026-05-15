@@ -107,18 +107,20 @@ export default function ClassRepDashboard() {
       className="space-y-8"
     >
       {/* 1. Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-accent">
+          <h1 className="text-xl sm:text-3xl font-black text-accent">
             Welcome back, {user?.name?.split(' ')[0]} 👋
           </h1>
-          <p className="text-dark-gray text-sm mt-1">Here's what's happening with your bookings today.</p>
+          <p className="text-dark-gray text-[10px] sm:text-sm mt-1">Here's what's happening with your bookings today.</p>
         </div>
-        <NotificationBell />
+        <div className="flex items-center gap-4 self-end sm:self-auto">
+          <NotificationBell />
+        </div>
       </div>
 
       {/* 2. Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading
           ? [1, 2, 3, 4].map(i => (
             <Card key={i} className="border border-mid-gray/20">
@@ -192,49 +194,51 @@ export default function ClassRepDashboard() {
             <p className="text-dark-gray font-medium">You have no bookings yet.</p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="font-bold">Resource</TableHead>
-                <TableHead className="font-bold">Course</TableHead>
-                <TableHead className="font-bold">Date</TableHead>
-                <TableHead className="font-bold">Time</TableHead>
-                <TableHead className="font-bold">Status</TableHead>
-                <TableHead className="font-bold text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentBookings.map((b) => (
-                <TableRow key={b.id} className="hover:bg-light-gray/50">
-                  <TableCell className="font-bold">{b.resource.name}</TableCell>
-                  <TableCell className="text-dark-gray">{b.course}</TableCell>
-                  <TableCell>{b.date}</TableCell>
-                  <TableCell className="text-sm">{b.startTime} – {b.endTime}</TableCell>
-                  <TableCell><StatusBadge status={b.status} /></TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate(`/classrep/bookings/${b.id}`)}
-                      className="text-accent"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                    {b.status === 'confirmed' && b.date >= today && (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-bold whitespace-nowrap">Resource</TableHead>
+                  <TableHead className="font-bold whitespace-nowrap">Course</TableHead>
+                  <TableHead className="font-bold whitespace-nowrap">Date</TableHead>
+                  <TableHead className="font-bold whitespace-nowrap">Time</TableHead>
+                  <TableHead className="font-bold whitespace-nowrap">Status</TableHead>
+                  <TableHead className="font-bold text-right whitespace-nowrap">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {recentBookings.map((b) => (
+                  <TableRow key={b.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
+                    <TableCell className="font-bold whitespace-nowrap">{b.resource.name}</TableCell>
+                    <TableCell className="text-dark-gray whitespace-nowrap">{b.course}</TableCell>
+                    <TableCell className="whitespace-nowrap">{b.date}</TableCell>
+                    <TableCell className="text-[10px] sm:text-sm whitespace-nowrap">{b.startTime} – {b.endTime}</TableCell>
+                    <TableCell className="whitespace-nowrap"><StatusBadge status={b.status} /></TableCell>
+                    <TableCell className="text-right space-x-2 whitespace-nowrap">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => setCancelDialog({ open: true, id: b.id })}
-                        className="text-red-500 hover:text-red-600"
+                        onClick={() => navigate(`/classrep/bookings/${b.id}`)}
+                        className="text-accent h-8 w-8 p-0"
                       >
-                        <XCircle className="w-4 h-4" />
+                        <Eye className="w-4 h-4" />
                       </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                      {b.status === 'confirmed' && b.date >= today && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setCancelDialog({ open: true, id: b.id })}
+                          className="text-red-500 hover:text-red-600 h-8 w-8 p-0"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         )}
       </div>
 

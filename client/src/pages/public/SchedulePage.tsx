@@ -126,7 +126,7 @@ export default function SchedulePage() {
   const eventPropGetter = (event: any) => {
     let backgroundColor = '#3B82F6' // Default Blue
     if (event.department === 'cyber security') backgroundColor = '#8B5CF6' // Purple
-    if (event.department === 'information systems sciences (ins)') backgroundColor = '#14B8A6' // Teal
+    if (event.department === 'information system') backgroundColor = '#14B8A6' // Teal
 
     return {
       style: {
@@ -156,16 +156,16 @@ export default function SchedulePage() {
       className="container mx-auto px-4 py-10"
     >
       <div className="mb-10">
-        <h1 className="text-4xl font-black text-accent mb-2">Resource Schedule</h1>
-        <p className="text-dark-gray">View all confirmed bookings across FCI resources.</p>
+        <h1 className="text-xl sm:text-4xl font-black text-accent mb-2">Resource Schedule</h1>
+        <p className="text-dark-gray text-xs sm:text-base">View all confirmed bookings across FCI resources.</p>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-6 rounded-xl border border-mid-gray/20 shadow-sm mb-8 flex flex-wrap items-end gap-4">
-        <div className="space-y-2 flex-1 min-w-[200px]">
-          <label className="text-xs font-bold uppercase text-dark-gray">Resource</label>
+      <div className="bg-white p-4 sm:p-6 rounded-xl border border-mid-gray/20 shadow-sm mb-8 flex flex-wrap items-end gap-3 sm:gap-4">
+        <div className="space-y-2 w-full sm:flex-1 sm:min-w-[200px]">
+          <label className="text-[10px] sm:text-xs font-bold uppercase text-dark-gray">Resource</label>
           <Select value={resourceFilter} onValueChange={setResourceFilter}>
-            <SelectTrigger>
+            <SelectTrigger className="h-9 sm:h-10 text-sm">
               <SelectValue placeholder="All Resources" />
             </SelectTrigger>
             <SelectContent>
@@ -177,31 +177,32 @@ export default function SchedulePage() {
           </Select>
         </div>
 
-        <div className="space-y-2 flex-1 min-w-[200px]">
-          <label className="text-xs font-bold uppercase text-dark-gray">Department</label>
+        <div className="space-y-2 w-full sm:flex-1 sm:min-w-[200px]">
+          <label className="text-[10px] sm:text-xs font-bold uppercase text-dark-gray">Department</label>
           <Select value={deptFilter} onValueChange={setDeptFilter}>
-            <SelectTrigger>
+            <SelectTrigger className="h-9 sm:h-10 text-sm">
               <SelectValue placeholder="All Departments" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Departments</SelectItem>
               <SelectItem value="computer science">Computer Science</SelectItem>
               <SelectItem value="cyber security">Cyber Security</SelectItem>
-              <SelectItem value="information systems sciences (ins)">Information Systems (INS)</SelectItem>
+              <SelectItem value="information system">Information Systems (INS)</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="space-y-2 flex-1 min-w-[200px]">
-          <label className="text-xs font-bold uppercase text-dark-gray">Date</label>
+        <div className="space-y-2 w-full sm:flex-1 sm:min-w-[150px]">
+          <label className="text-[10px] sm:text-xs font-bold uppercase text-dark-gray">Date</label>
           <Input
             type="date"
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
+            className="h-9 sm:h-10 text-sm"
           />
         </div>
 
-        <Button variant="outline" onClick={resetFilters} className="gap-2">
+        <Button variant="outline" onClick={resetFilters} className="gap-2 h-9 sm:h-10 w-full sm:w-auto font-bold text-dark-gray">
           <RotateCcw className="w-4 h-4" />
           Reset
         </Button>

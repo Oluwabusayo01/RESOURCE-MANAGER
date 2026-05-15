@@ -7,7 +7,7 @@ export const MOCK_DB = {
   users: [
     { id: 'u1', name: 'Chukwuemeka Obi', email: 'emeka@fci.edu', password: 'password123', role: 'classrep' as UserRole, department: 'computer science' as Department, status: 'approved' as UserStatus },
     { id: 'u2', name: 'Dr. Aisha Bello', email: 'aisha@fci.edu', password: 'password123', role: 'staff' as UserRole, department: 'cyber security' as Department, status: 'approved' as UserStatus },
-    { id: 'u3', name: 'Tunde Fashola', email: 'tunde@fci.edu', password: 'password123', role: 'classrep' as UserRole, department: 'information systems sciences (ins)' as Department, status: 'pending' as UserStatus },
+    { id: 'u3', name: 'Tunde Fashola', email: 'tunde@fci.edu', password: 'password123', role: 'classrep' as UserRole, department: 'information system' as Department, status: 'pending' as UserStatus },
     { id: 'u4', name: 'Prof. Kamoru Adeyemi', email: 'kamoru@fci.edu', password: 'password123', role: 'staff' as UserRole, department: 'computer science' as Department, status: 'pending' as UserStatus },
     { id: 'admin', name: 'Faculty Admin', email: 'admin@fci.lautech.edu.ng', password: 'admin1234', role: 'admin' as UserRole, department: 'computer science' as Department, status: 'approved' as UserStatus },
   ],
@@ -355,7 +355,7 @@ export const getAdminStats = async () => {
 
 export const getBookingsByDepartment = async () => {
   await delay()
-  const depts = ['computer science', 'cyber security', 'information systems sciences (ins)']
+  const depts = ['computer science', 'cyber security', 'information system']
   return depts.map(d => ({
     department: d,
     count: MOCK_DB.bookings.filter(b => b.department === d).length
