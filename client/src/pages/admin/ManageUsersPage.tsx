@@ -24,7 +24,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { CheckCircle2, XCircle, ShieldOff, Users, RotateCcw } from 'lucide-react'
+import { CheckCircle2, XCircle, ShieldOff, Users, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface UserItem {
@@ -44,6 +44,13 @@ export default function ManageUsersPage() {
   const [roleFilter, setRoleFilter] = useState('all')
   const [deptFilter, setDeptFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [page, setPage] = useState(1)
+  const [pagination, setPagination] = useState({
+    totalPages: 1,
+    totalUsers: 0,
+    hasNextPage: false,
+    limit: 10
+  })
 
   // Confirm dialog state
   const [confirmDialog, setConfirmDialog] = useState<{
@@ -56,13 +63,14 @@ export default function ManageUsersPage() {
   const fetchUsers = async () => {
     setLoading(true)
     try {
-      const params: any = {}
+      const params: any = { page, limit: 10 }
       if (roleFilter !== 'all') params.role = roleFilter
       if (deptFilter !== 'all') params.department = deptFilter
       if (statusFilter !== 'all') params.status = statusFilter
       
-      const data = await userService.getAll(params)
-      setUsers(data)
+      const res = await userService.getAll(params)
+      setUsers(res.users)
+      setPagination(res.pagination)
     } catch (err) {
       console.error('Failed to load users', err)
       toast.error('Failed to load users.')
@@ -72,8 +80,12 @@ export default function ManageUsersPage() {
   }
 
   useEffect(() => {
-    fetchUsers()
+    setPage(1) // Reset to first page when filters change
   }, [roleFilter, deptFilter, statusFilter])
+
+  useEffect(() => {
+    fetchUsers()
+  }, [roleFilter, deptFilter, statusFilter, page])
 
   const handleConfirm = async () => {
     const { id, action } = confirmDialog
@@ -126,6 +138,13 @@ export default function ManageUsersPage() {
     setRoleFilter('all')
     setDeptFilter('all')
     setStatusFilter('all')
+    setPage(1)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      setPage(newPage)
+    }
   }
 
   return (
@@ -204,7 +223,7 @@ export default function ManageUsersPage() {
             <h2 className="text-lg font-black text-accent">Users</h2>
             {!loading && (
               <span className="text-xs font-bold text-dark-gray bg-light-gray px-3 py-1 rounded-full">
-                {users.length} user{users.length !== 1 ? 's' : ''}
+                {pagination.totalUsers} user{pagination.totalUsers !== 1 ? 's' : ''}
               </span>
             )}
           </div>
@@ -292,6 +311,46 @@ export default function ManageUsersPage() {
                 ))}
               </TableBody>
             </Table>
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between p-4 border-t bg-light-gray/30">
+              <p className="text-xs font-bold text-dark-gray uppercase tracking-wider">
+                Page {page} of {pagination.totalPages}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page === 1}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                {[...Array(pagination.totalPages)].map((_, i) => (
+                  <Button
+                    key={i + 1}
+                    variant={page === i + 1 ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handlePageChange(i + 1)}
+                    className="h-8 w-8 p-0 text-xs font-bold"
+                  >
+                    {i + 1}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={!pagination.hasNextPage}
+                  className="h-8 w-8 p-0"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>

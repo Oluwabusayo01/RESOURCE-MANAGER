@@ -77,10 +77,14 @@ export const libraryService = {
 export const userService = {
   getAll: (params?: any) =>
     USE_MOCK 
-      ? mock.getUsers(params) 
+      ? mock.getUsers(params).then(res => ({
+          users: res.users.map((u: any) => ({ ...u, id: u.id || u._id })),
+          pagination: res.pagination
+        }))
       : api.get('/users', { params }).then(r => {
-          const users = r.data.users || r.data.data || [];
-          return users.map((u: any) => ({ ...u, id: u._id }));
+          const usersRaw = r.data.users || r.data.data || [];
+          const users = usersRaw.map((u: any) => ({ ...u, id: u._id }));
+          return { users, pagination: r.data.pagination };
         }),
   approve: (id: string) =>
     USE_MOCK ? mock.approveUser(id) : api.patch(`/users/${id}/approve`).then(r => r.data.data || r.data),

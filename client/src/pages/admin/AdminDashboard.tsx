@@ -97,8 +97,8 @@ export default function AdminDashboard() {
       adminService.getPeakHours().then(setPeakData).catch(e => console.error("Peak fail:", e));
       
       // Fetch pending users (CRITICAL)
-      const users = await userService.getAll({ status: 'pending' });
-      setPendingUsers(users);
+      const res = await userService.getAll({ status: 'pending' });
+      setPendingUsers(res.users);
       
       // Fetch activity
       adminService.getActivity({ limit: 5 }).then(setActivity).catch(e => console.error("Activity fail:", e));

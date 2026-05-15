@@ -298,7 +298,23 @@ export const getUsers = async (params?: any) => {
   if (params?.role) users = users.filter(u => u.role === params.role)
   if (params?.department) users = users.filter(u => u.department === params.department)
   if (params?.status) users = users.filter(u => u.status === params.status)
-  return users
+
+  const page = parseInt(params?.page) || 1
+  const limit = parseInt(params?.limit) || 10
+  const skip = (page - 1) * limit
+  const totalUsers = users.length
+  const paginatedUsers = users.slice(skip, skip + limit)
+
+  return {
+    users: paginatedUsers,
+    pagination: {
+      totalUsers,
+      page,
+      limit,
+      totalPages: Math.ceil(totalUsers / limit),
+      hasNextPage: page * limit < totalUsers
+    }
+  }
 }
 
 export const approveUser = async (id: string) => {
