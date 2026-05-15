@@ -194,7 +194,7 @@ Public. Query params (all required):
 ## BOOKING ENDPOINTS
 
 ### GET /api/bookings
-- Public/unauthenticated: returns confirmed bookings only
+- Public/unauthenticated: returns confirmed and completed bookings
 - Class Rep / Staff 🔒: returns their own bookings
 - Admin 🔒: returns all bookings
 
