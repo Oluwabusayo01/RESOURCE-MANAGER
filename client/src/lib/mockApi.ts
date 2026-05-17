@@ -191,6 +191,16 @@ export const logAttendance = async (id: string, attendance: number) => {
   throw new Error('Booking not found')
 }
 
+export const updateBooking = async (id: string, payload: any) => {
+  await delay()
+  const index = MOCK_DB.bookings.findIndex(b => b.id === id)
+  if (index !== -1) {
+    MOCK_DB.bookings[index] = { ...MOCK_DB.bookings[index], ...payload }
+    return MOCK_DB.bookings[index]
+  }
+  throw new Error('Booking not found')
+}
+
 export const deleteBooking = async (id: string) => {
   await delay()
   const index = MOCK_DB.bookings.findIndex(b => b.id === id)

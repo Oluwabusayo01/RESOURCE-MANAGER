@@ -73,7 +73,7 @@ export default function SchedulePage() {
     const fetchData = async () => {
       try {
         const [bookingsData, resourcesData] = await Promise.all([
-          bookingService.getAll({ status: 'confirmed' }),
+          bookingService.getPublic({ status: 'confirmed' }),
           resourceService.getAll()
         ])
         setBookings(bookingsData)

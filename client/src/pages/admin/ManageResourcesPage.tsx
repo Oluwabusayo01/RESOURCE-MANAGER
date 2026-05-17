@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog,
@@ -44,9 +45,10 @@ interface ResourceForm {
   type: string
   capacity: string
   status: string
+  description: string
 }
 
-const emptyForm: ResourceForm = { name: '', type: '', capacity: '', status: 'active' }
+const emptyForm: ResourceForm = { name: '', type: '', capacity: '', status: 'active', description: '' }
 
 export default function ManageResourcesPage() {
   const [resources, setResources] = useState<Resource[]>([])
@@ -90,6 +92,7 @@ export default function ManageResourcesPage() {
       type: r.type,
       capacity: r.capacity !== null ? String(r.capacity) : '',
       status: r.status,
+      description: r.description || '',
     })
     setDialogOpen(true)
   }
@@ -107,6 +110,7 @@ export default function ManageResourcesPage() {
         type: form.type,
         capacity: form.capacity ? parseInt(form.capacity, 10) : null,
         status: form.status,
+        description: form.description || '',
       }
 
       if (editingId) {
@@ -187,7 +191,14 @@ export default function ManageResourcesPage() {
                 <TableBody>
                   {resources.map((r) => (
                     <TableRow key={r.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
-                      <TableCell className="font-bold whitespace-nowrap">{r.name}</TableCell>
+                      <TableCell className="font-bold">
+                        <span className="block">{r.name}</span>
+                        {r.description && (
+                          <span className="block text-[11px] text-dark-gray font-normal mt-0.5 max-w-[300px] truncate" title={r.description}>
+                            {r.description}
+                          </span>
+                        )}
+                      </TableCell>
                       <TableCell className="capitalize whitespace-nowrap">{r.type}</TableCell>
                       <TableCell className="whitespace-nowrap">{r.capacity ?? '—'}</TableCell>
                       <TableCell className="whitespace-nowrap"><StatusBadge status={r.status} /></TableCell>
@@ -267,6 +278,16 @@ export default function ManageResourcesPage() {
                 placeholder="e.g. 40"
                 value={form.capacity}
                 onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Description (Optional)</Label>
+              <Textarea
+                placeholder="e.g. Fully equipped computer laboratory with 40 workstations and projector support."
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                rows={3}
               />
             </div>
 

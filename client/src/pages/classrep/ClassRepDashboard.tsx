@@ -50,14 +50,19 @@ export default function ClassRepDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [bookingsData, notifData] = await Promise.all([
-        bookingService.getAll({ userId: user?.id }),
-        notificationService.getAll({ userId: user?.id, limit: 3 }),
-      ])
-      setBookings(bookingsData)
-      setNotifications(notifData)
-    } catch (err) {
-      console.error('Failed to load dashboard data', err)
+      try {
+        const bookingsData = await bookingService.getAll({ userId: user?.id })
+        setBookings(bookingsData)
+      } catch (err) {
+        console.error('Failed to load bookings in dashboard', err)
+      }
+
+      try {
+        const notifData = await notificationService.getAll({ userId: user?.id, limit: 3 })
+        setNotifications(notifData)
+      } catch (err) {
+        console.error('Failed to load notifications in dashboard', err)
+      }
     } finally {
       setLoading(false)
     }

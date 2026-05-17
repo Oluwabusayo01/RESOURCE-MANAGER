@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Toaster } from '@/components/ui/sonner'
-import { useEffect } from 'react'
-import { useAuthStore } from '@/store/useAuthStore'
 
 // Public Pages
 import HomePage from '@/pages/public/HomePage'
@@ -37,20 +35,6 @@ import DashboardLayout from '@/components/shared/DashboardLayout'
 import ProtectedRoute from '@/components/shared/ProtectedRoute'
 
 function App() {
-  const { setUser, setToken } = useAuthStore()
-
-  useEffect(() => {
-    const user = localStorage.getItem('rm_user')
-    const token = localStorage.getItem('rm_token')
-    if (user && token) {
-      try {
-        setUser(JSON.parse(user))
-        setToken(token)
-      } catch (e) {
-        console.error('Failed to parse user from localStorage', e)
-      }
-    }
-  }, [setUser, setToken])
 
   return (
     <Router>

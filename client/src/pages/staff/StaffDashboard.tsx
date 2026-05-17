@@ -53,16 +53,26 @@ export default function StaffDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [bookingsData, notifData, libraryData] = await Promise.all([
-        bookingService.getAll({ userId: user?.id }),
-        notificationService.getAll({ userId: user?.id, limit: 3 }),
-        libraryService.getAll({ uploadedById: user?.id }),
-      ])
-      setBookings(bookingsData)
-      setNotifications(notifData)
-      setMaterials(libraryData)
-    } catch (err) {
-      console.error('Failed to load dashboard data', err)
+      try {
+        const bookingsData = await bookingService.getAll({ userId: user?.id })
+        setBookings(bookingsData)
+      } catch (err) {
+        console.error('Failed to load bookings in dashboard', err)
+      }
+
+      try {
+        const notifData = await notificationService.getAll({ userId: user?.id, limit: 3 })
+        setNotifications(notifData)
+      } catch (err) {
+        console.error('Failed to load notifications in dashboard', err)
+      }
+
+      try {
+        const libraryData = await libraryService.getAll({ uploadedById: user?.id })
+        setMaterials(libraryData)
+      } catch (err) {
+        console.error('Failed to load library materials in dashboard', err)
+      }
     } finally {
       setLoading(false)
     }
