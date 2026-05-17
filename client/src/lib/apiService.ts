@@ -135,7 +135,17 @@ export const bookingService = {
       return data.map(mapBooking);
     }),
   getById: (id: string) =>
-    USE_MOCK ? mock.getBookingById(id) : api.get(`/bookings/${id}`).then(r => mapBooking(r.data.data || r.data)),
+    USE_MOCK 
+      ? mock.getBookingById(id) 
+      : bookingService.getAll().then(bookings => {
+          const found = bookings.find((b: any) => b.id === id);
+          if (!found) {
+            const err = new Error("Booking not found") as any;
+            err.response = { status: 404, data: { message: "Booking not found" } };
+            throw err;
+          }
+          return found;
+        }),
   create: (payload: any) => {
     const apiPayload = { ...payload }
     if (apiPayload.resourceId) {
