@@ -17,13 +17,19 @@ export const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, department, role } = matchedData(req);
 
-    const existingUser = await User.findOne({ email }).lean(); 
+    const existingUser = await User.findOne({ email }).lean();
+
     if (existingUser) {
-      return res.status(409).json({
-        statusCode: 409,
-        success: false,
-        message: "Email already exists",
-      });
+      if (existingUser.status === "rejected") {
+        // Delete the rejected user so they can re-register with the same email
+        await User.deleteOne({ email });
+      } else {
+        return res.status(409).json({
+          statusCode: 409,
+          success: false,
+          message: "Email already exists",
+        });
+      }
     }
 
     const newUser = new User({ name, email, password, department, role });
@@ -49,7 +55,6 @@ export const registerUser = async (req, res, next) => {
     });
   }
 };
-
 export const loginUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

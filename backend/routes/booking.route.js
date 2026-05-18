@@ -5,6 +5,7 @@ import {
   createBookingValidation,
   updateBookingValidation,
   getBookingsValidation,
+  getSingleBookingValidation,
 } from "../middlewares/validation.js";
 import {
   createBooking,
@@ -12,6 +13,7 @@ import {
   cancelBooking,
   getPublicBookings,
   getAllBookings,
+  getSingleBooking,
 } from "../controllers/booking.controller.js";
 
 const router = express.Router();
@@ -19,12 +21,13 @@ const router = express.Router();
 router.get("/bookings/public", getBookingsValidation, getPublicBookings);
 router.get("/bookings/", verifiedUser, getBookingsValidation, getAllBookings);
 router.post("/bookings", verifiedUser, createBookingValidation, createBooking);
+router.get("/bookings/:id", getSingleBookingValidation, getSingleBooking);
 router.patch(
   "/bookings/:id",
   verifiedUser,
   updateBookingValidation,
   updateBooking,
-);
+);  
 router.patch(
   "/bookings/cancel/:id",
   verifiedUser,

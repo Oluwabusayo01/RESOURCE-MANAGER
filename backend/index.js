@@ -26,11 +26,11 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
-);
-
-
+);  
+              
+  
 app.use(express.json());
-
+  
 const _dirname = path.resolve();
 
 app.use("/api", authRoutes); 

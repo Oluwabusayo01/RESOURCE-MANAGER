@@ -87,6 +87,14 @@ export const approveOrRejectUserValidation = [
     .withMessage("Invalid User ID"),
 ];
 
+export const revokeUserValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("User ID is required")
+    .isMongoId()
+    .withMessage("Invalid User ID"),
+];
+
 export const createResourceValidation = [
   body("name")
     .notEmpty()
@@ -327,6 +335,14 @@ export const getBookingsValidation = [
     .optional()
     .isInt({ min: 1 })
     .withMessage("Limit must be a positive integer"),
+];
+
+export const getSingleBookingValidation = [   
+  param("id")
+    .notEmpty()
+    .withMessage("Booking ID is required")
+    .isMongoId()
+    .withMessage("Invalid Booking ID"),
 ];
 
 export const uploadMaterialValidation = [

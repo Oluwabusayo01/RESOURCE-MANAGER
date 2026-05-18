@@ -5,6 +5,7 @@ import User from "../models/user.model.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { registrationApprovedEmailTemplate } from "../emailTemplates/registrationApproved.template.js";
 import { registrationRejectedEmailTemplate } from "../emailTemplates/registrationRejected.template.js";
+import { registrationRevokedEmailTemplate } from "../emailTemplates/registrationRevoked.template.js";
 
 dotenv.config();
 
@@ -99,13 +100,6 @@ export const approveUser = async (req, res, next) => {
       });
     }
 
-    if (user.status === "rejected") {
-      return res.status(400).json({
-        success: false,
-        message: "Cannot approved an already rejected user",
-      });
-    }
-
     user.status = "approved";
     await user.save();
 
@@ -187,4 +181,52 @@ export const rejectUser = async (req, res, next) => {
   }
 };
 
+export const revokeUser = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      statusCode: 400,
+      success: false,
+      message: errors.array()[0].msg,
+    });
+  }
 
+  try {
+    const { id } = matchedData(req);
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    if (user.status !== "approved") {
+      return res.status(400).json({
+        success: false,
+        message: "Only approved users can be revoked",
+      });
+    }
+
+    // Delete the user from the database
+    await user.deleteOne();
+
+    sendEmail({
+      to: user.email,
+      ...registrationRevokedEmailTemplate(user.name),
+    }).catch((emailError) => {
+      console.error("Failed to send revoke email:", emailError.message);
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "User revoked and deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error while revoking user:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
