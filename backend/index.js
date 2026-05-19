@@ -9,14 +9,14 @@ import userRoutes from "./routes/user.route.js";
 import resourceRoutes from "./routes/resource.route.js";
 import uploadImageRoute from "./routes/uploadImage.route.js";
 import bookingRoutes from "./routes/booking.route.js";
-// import libraryRoutes from "./routes/library.route.js";
+import libraryRoutes from "./routes/library.route.js";
 
 
 dotenv.config();    
 connectDatabase();
       
 const app = express()
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
  
 app.use(cookieParser());     
                 
@@ -38,7 +38,7 @@ app.use("/api", userRoutes);
 app.use("/api", resourceRoutes);
 app.use("/api", uploadImageRoute);
 app.use("/api", bookingRoutes);
-// app.use("/api", libraryRoutes);
+app.use("/api", libraryRoutes);
 
 // app.use(express.static(path.join(_dirname, "/frontend/dist")));
 

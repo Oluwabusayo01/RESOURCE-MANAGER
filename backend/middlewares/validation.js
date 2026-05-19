@@ -420,10 +420,5 @@ export const downloadFileValidation = [
     .withMessage("fileUrl is required")
     .isURL()
     .withMessage("fileUrl must be a valid URL"),
-  query("fileName")
-    .notEmpty()
-    .withMessage("fileName is required")
-    .isString()
-    .withMessage("fileName must be a string")
-    .trim(),
+
 ];
