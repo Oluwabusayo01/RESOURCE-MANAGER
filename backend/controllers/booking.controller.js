@@ -179,6 +179,14 @@ export const updateBooking = async (req, res, next) => {
 };
 
 export const cancelBooking = async (req, res, next) => {
+
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(422).json({
+       success: false,
+       message: errors.array()[0].msg,
+     });
+   }
   try {
     await autoCompleteBookings();
 
@@ -244,6 +252,14 @@ export const cancelBooking = async (req, res, next) => {
 };
 
 export const getPublicBookings = async (req, res, next) => {
+
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(422).json({
+       success: false,
+       message: errors.array()[0].msg,
+     });
+   }
   try {
     await autoCompleteBookings();
 
@@ -284,6 +300,44 @@ export const getPublicBookings = async (req, res, next) => {
         totalPages: Math.ceil(total / limit),
         hasNextPage: page * limit < total,
       },
+    });
+  } catch (error) {
+    console.error("Error getting booking", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+export const getSingleBooking = async (req, res, next) => {   
+
+   const errors = validationResult(req);
+   if (!errors.isEmpty()) {
+     return res.status(422).json({
+       success: false,
+       message: errors.array()[0].msg,
+     });
+   }
+   
+  try {
+
+    const { id } = matchedData(req);
+
+    const booking = await Booking.findById(id)
+      .populate("resource", "name type capacity status image")
+      .populate("user", "name role department");
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: booking,
     });
   } catch (error) {
     console.error("Error getting booking", error.message);

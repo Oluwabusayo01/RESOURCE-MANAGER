@@ -87,6 +87,14 @@ export const approveOrRejectUserValidation = [
     .withMessage("Invalid User ID"),
 ];
 
+export const revokeUserValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("User ID is required")
+    .isMongoId()
+    .withMessage("Invalid User ID"),
+];
+
 export const createResourceValidation = [
   body("name")
     .notEmpty()
@@ -329,6 +337,14 @@ export const getBookingsValidation = [
     .withMessage("Limit must be a positive integer"),
 ];
 
+export const getSingleBookingValidation = [   
+  param("id")
+    .notEmpty()
+    .withMessage("Booking ID is required")
+    .isMongoId()
+    .withMessage("Invalid Booking ID"),
+];
+
 export const uploadMaterialValidation = [
   body("title")
     .notEmpty()
@@ -366,11 +382,11 @@ export const uploadMaterialValidation = [
     .matches(/^[a-zA-Z\s.'-]+$/)
     .withMessage("Name can only contain letters, spaces, and . ' -"),
 
-  body("fileUrl")
+  body("pdfUrl")
     .notEmpty()
-    .withMessage("File URL is required")
+    .withMessage("PDF URL is required")
     .isURL()
-    .withMessage("File URL must be a valid URL"),
+    .withMessage("PDF URL must be a valid URL"),
 
   body("fileName")
     .notEmpty()
@@ -404,10 +420,5 @@ export const downloadFileValidation = [
     .withMessage("fileUrl is required")
     .isURL()
     .withMessage("fileUrl must be a valid URL"),
-  query("fileName")
-    .notEmpty()
-    .withMessage("fileName is required")
-    .isString()
-    .withMessage("fileName must be a string")
-    .trim(),
+
 ];
