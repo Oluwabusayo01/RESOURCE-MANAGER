@@ -15,7 +15,7 @@ export interface User {
 }
 export interface Resource {
   id: string; name: string; type: ResourceType
-  capacity: number | null; status: ResourceStatus; description?: string
+  capacity: number | null; status: ResourceStatus; description?: string; image?: string | null
 }
 export interface Booking {
   id: string; resourceId: string; resource: Resource

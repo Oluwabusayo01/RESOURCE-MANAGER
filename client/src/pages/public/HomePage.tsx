@@ -17,6 +17,7 @@ import StatusBadge from '@/components/shared/StatusBadge'
 import { bookingService } from '@/lib/apiService'
 import { useAuthStore } from '@/store/useAuthStore'
 import type { Booking } from '@/types'
+import ResourceImage from '@/components/shared/ResourceImage'
 
 export default function HomePage() {
   const { user } = useAuthStore()
@@ -180,12 +181,15 @@ export default function HomePage() {
               ))
             ) : bookings.length > 0 ? (
               bookings.map((b) => (
-                <div key={b.id} className="bg-white p-6 rounded-xl border border-mid-gray/20 shadow-sm hover:shadow-md transition-shadow">
-                  <h4 className="font-bold text-accent truncate mb-1">{b.resource.name}</h4>
-                  <p className="text-sm text-dark-gray mb-4 truncate">{b.course}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gold">{b.startTime} - {b.endTime}</span>
-                    <StatusBadge status={b.status} className="text-[10px] py-0 px-2" />
+                <div key={b.id} className="bg-white p-6 rounded-xl border border-mid-gray/20 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
+                  <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} className="w-12 h-12 rounded-lg object-cover border border-mid-gray/20 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-bold text-accent truncate mb-1">{b.resource.name}</h4>
+                    <p className="text-sm text-dark-gray mb-4 truncate">{b.course}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-gold">{b.startTime} - {b.endTime}</span>
+                      <StatusBadge status={b.status} className="text-[10px] py-0 px-2" />
+                    </div>
                   </div>
                 </div>
               ))

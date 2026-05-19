@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Resource } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import StatusBadge from './StatusBadge'
@@ -23,14 +24,24 @@ const typeIcons: Record<string, any> = {
 
 export default function ResourceCard({ resource }: ResourceCardProps) {
   const Icon = typeIcons[resource.type] || Monitor
+  const [imgError, setImgError] = useState(false)
 
   return (
     <Card className="overflow-hidden border-l-4 border-l-gold shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-5 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="p-3 bg-light-gray rounded-lg">
-            <Icon className="w-6 h-6 text-accent" />
-          </div>
+          {resource.image && !imgError ? (
+            <img
+              src={resource.image}
+              alt={resource.name}
+              onError={() => setImgError(true)}
+              className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 flex-shrink-0"
+            />
+          ) : (
+            <div className="p-4 bg-light-gray rounded-lg flex-shrink-0">
+              <Icon className="w-6 h-6 text-accent" />
+            </div>
+          )}
           <div>
             <h3 className="font-bold text-accent text-lg leading-none mb-1">
               {resource.name}

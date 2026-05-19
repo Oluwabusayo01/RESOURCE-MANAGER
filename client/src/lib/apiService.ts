@@ -29,13 +29,36 @@ export const resourceService = {
       });
     })
   },
-  create: (payload: any) => {
-    let apiPayload = { ...payload }
+  create: async (payload: any) => {
+    let imageLink = payload.image;
+    if (payload.image instanceof File) {
+      if (USE_MOCK) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const type = payload.type || 'lab';
+        const stockImages: Record<string, string> = {
+          lab: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800",
+          seminar: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
+          hall: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800",
+          equipment: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=800",
+          meeting: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=800",
+        };
+        imageLink = stockImages[type] || "https://images.unsplash.com/photo-1541829019-259276a7f013?w=800";
+      } else {
+        const formData = new FormData();
+        formData.append('image', payload.image);
+        const uploadRes = await api.post('/upload-image', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        imageLink = uploadRes.data.imageUrl;
+      }
+    }
+
+    let apiPayload = { ...payload, image: imageLink }
     if (apiPayload.status) {
       if (apiPayload.status === 'active') apiPayload.status = 'available'
       else if (apiPayload.status === 'inactive') apiPayload.status = 'unavailable'
     }
-    return USE_MOCK ? mock.createResource(payload) : api.post('/resources', apiPayload).then(r => {
+    return USE_MOCK ? mock.createResource(apiPayload) : api.post('/resources', apiPayload).then(r => {
       const item = r.data.data || r.data
       let status = item.status
       if (status === 'available') status = 'active'
@@ -43,13 +66,36 @@ export const resourceService = {
       return { ...item, id: item._id, status }
     })
   },
-  update: (id: string, payload: any) => {
-    let apiPayload = { ...payload }
+  update: async (id: string, payload: any) => {
+    let imageLink = payload.image;
+    if (payload.image instanceof File) {
+      if (USE_MOCK) {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const type = payload.type || 'lab';
+        const stockImages: Record<string, string> = {
+          lab: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800",
+          seminar: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
+          hall: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800",
+          equipment: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=800",
+          meeting: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=800",
+        };
+        imageLink = stockImages[type] || "https://images.unsplash.com/photo-1541829019-259276a7f013?w=800";
+      } else {
+        const formData = new FormData();
+        formData.append('image', payload.image);
+        const uploadRes = await api.post('/upload-image', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        imageLink = uploadRes.data.imageUrl;
+      }
+    }
+
+    let apiPayload = { ...payload, image: imageLink }
     if (apiPayload.status) {
       if (apiPayload.status === 'active') apiPayload.status = 'available'
       else if (apiPayload.status === 'inactive') apiPayload.status = 'unavailable'
     }
-    return USE_MOCK ? mock.updateResource(id, payload) : api.patch(`/resources/${id}`, apiPayload).then(r => {
+    return USE_MOCK ? mock.updateResource(id, apiPayload) : api.patch(`/resources/${id}`, apiPayload).then(r => {
       const item = r.data.data || r.data
       let status = item.status
       if (status === 'available') status = 'active'
@@ -191,7 +237,7 @@ export const libraryService = {
       return data.map((item: any) => ({ ...item, id: item._id }));
     }),
   upload: (formData: FormData) =>
-    USE_MOCK ? mock.uploadMaterial(formData) : api.post('/library', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data),
+    USE_MOCK ? mock.uploadMaterial(formData) : api.post('/library/upload-pdf', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data),
   download: (id: string) =>
     USE_MOCK ? mock.downloadMaterial(id) : api.get(`/library/${id}/download`).then(r => r.data),
   delete: (id: string) =>
@@ -229,3 +275,6 @@ export const adminService = {
       return data.map((item: any) => ({ ...item, id: item._id }));
     }),
 }
+
+
+//verify e-library implementation

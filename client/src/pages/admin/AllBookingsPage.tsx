@@ -5,6 +5,7 @@ import type { Booking, Resource } from '@/types'
 
 import StatusBadge from '@/components/shared/StatusBadge'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import ResourceImage from '@/components/shared/ResourceImage'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -239,7 +240,12 @@ export default function AllBookingsPage() {
                   <TableBody>
                     {paginatedBookings.map((b) => (
                       <TableRow key={b.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
-                        <TableCell className="font-bold whitespace-nowrap">{b.resource.name}</TableCell>
+                        <TableCell className="font-bold whitespace-nowrap">
+                          <div className="flex items-center gap-3">
+                            <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
+                            <span>{b.resource.name}</span>
+                          </div>
+                        </TableCell>
                         <TableCell className="text-dark-gray text-xs whitespace-nowrap">{b.user?.name || 'Unknown'}</TableCell>
                         <TableCell className="text-xs whitespace-nowrap">{b.course}</TableCell>
                         <TableCell className="text-xs whitespace-nowrap">{b.department}</TableCell>
@@ -315,14 +321,14 @@ export default function AllBookingsPage() {
 
       {/* View Booking Dialog */}
       <Dialog open={!!viewBooking} onOpenChange={(open) => !open && setViewBooking(null)}>
-        <DialogContent className="sm:max-w-[480px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[480px] w-[95vw] max-h-[85vh] flex flex-col overflow-hidden p-0 gap-0">
+          <DialogHeader className="p-6 pb-4 border-b">
             <DialogTitle>Booking Details</DialogTitle>
             <DialogDescription>Full information about this booking.</DialogDescription>
           </DialogHeader>
 
           {viewBooking && (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 px-6 overflow-y-auto flex-1 max-h-[55vh] sm:max-h-[60vh]">
               <div className="flex items-start justify-between">
                 <h3 className="text-xl font-black text-accent">{viewBooking.resource.name}</h3>
                 <StatusBadge status={viewBooking.status} />

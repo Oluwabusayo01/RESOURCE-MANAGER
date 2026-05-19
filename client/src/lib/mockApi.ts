@@ -13,15 +13,15 @@ export const MOCK_DB = {
   ],
 
   resources: [
-    { id: 'r1', name: 'Computer Lab A', type: 'lab', capacity: 40, status: 'active' },
-    { id: 'r2', name: 'Computer Lab B', type: 'lab', capacity: 40, status: 'active' },
-    { id: 'r3', name: 'Computer Lab C', type: 'lab', capacity: 30, status: 'active' },
-    { id: 'r4', name: 'Seminar Room 1', type: 'seminar', capacity: 60, status: 'active' },
-    { id: 'r5', name: 'Seminar Room 2', type: 'seminar', capacity: 60, status: 'active' },
-    { id: 'r6', name: 'Departmental Hall', type: 'hall', capacity: 200, status: 'active' },
-    { id: 'r7', name: 'Projector Unit 1', type: 'equipment', capacity: null, status: 'active' },
-    { id: 'r8', name: 'Projector Unit 2', type: 'equipment', capacity: null, status: 'active' },
-    { id: 'r9', name: 'Faculty Meeting Room', type: 'meeting', capacity: 20, status: 'active' },
+    { id: 'r1', name: 'Computer Lab A', type: 'lab', capacity: 40, status: 'active', image: 'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800' },
+    { id: 'r2', name: 'Computer Lab B', type: 'lab', capacity: 40, status: 'active', image: 'https://images.unsplash.com/photo-1562774053-701939374585?w=800' },
+    { id: 'r3', name: 'Computer Lab C', type: 'lab', capacity: 30, status: 'active', image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800' },
+    { id: 'r4', name: 'Seminar Room 1', type: 'seminar', capacity: 60, status: 'active', image: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800' },
+    { id: 'r5', name: 'Seminar Room 2', type: 'seminar', capacity: 60, status: 'active', image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800' },
+    { id: 'r6', name: 'Departmental Hall', type: 'hall', capacity: 200, status: 'active', image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800' },
+    { id: 'r7', name: 'Projector Unit 1', type: 'equipment', capacity: null, status: 'active', image: 'https://images.unsplash.com/photo-1535016120720-40c646be5580?w=800' },
+    { id: 'r8', name: 'Projector Unit 2', type: 'equipment', capacity: null, status: 'active', image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800' },
+    { id: 'r9', name: 'Faculty Meeting Room', type: 'meeting', capacity: 20, status: 'active', image: 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=800' },
   ] as Resource[],
 
   bookings: [

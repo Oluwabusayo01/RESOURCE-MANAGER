@@ -83,15 +83,16 @@ export default function ClassUpdateModal({ isOpen, onClose }: ClassUpdateModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[85vh] flex flex-col overflow-hidden p-0 gap-0">
+        <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle>Push Class Update</DialogTitle>
           <DialogDescription>
             This will notify all students in the selected department.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 overflow-hidden">
+          <div className="space-y-4 py-4 px-6 overflow-y-auto flex-1 max-h-[50vh] sm:max-h-[55vh]">
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input id="title" placeholder="e.g. Schedule Change for CSC 401" {...register('title')} />
@@ -129,7 +130,9 @@ export default function ClassUpdateModal({ isOpen, onClose }: ClassUpdateModalPr
             {errors.message && <p className="text-xs text-red-500">{errors.message.message}</p>}
           </div>
 
-          <DialogFooter>
+          </div>
+
+          <DialogFooter className="m-0 p-6 bg-light-gray/30 border-t rounded-b-xl">
             <Button 
               type="button" 
               variant="outline" 

@@ -8,6 +8,7 @@ import type { Booking, Notification } from '@/types'
 
 import NotificationBell from '@/components/shared/NotificationBell'
 import StatusBadge from '@/components/shared/StatusBadge'
+import ResourceImage from '@/components/shared/ResourceImage'
 import ClassUpdateModal from '@/components/shared/ClassUpdateModal'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 
@@ -95,7 +96,7 @@ export default function ClassRepDashboard() {
   }
 
   const statCards = [
-    { label: 'Total My Bookings', value: stats.total, icon: CalendarCheck, color: 'text-blue-500', bg: 'bg-blue-50' },
+    { label: 'My Total Bookings', value: stats.total, icon: CalendarCheck, color: 'text-blue-500', bg: 'bg-blue-50' },
     { label: 'Upcoming Sessions', value: stats.upcoming, icon: Clock, color: 'text-gold', bg: 'bg-gold/10' },
     { label: 'Class Updates Sent', value: stats.classUpdates, icon: Megaphone, color: 'text-purple-500', bg: 'bg-purple-50' },
     { label: 'Attendance Logged', value: stats.attendance, icon: Users, color: 'text-green-500', bg: 'bg-green-50' },
@@ -177,7 +178,7 @@ export default function ClassRepDashboard() {
       <div className="bg-white rounded-xl border border-mid-gray/20 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between p-5 border-b">
           <h2 className="text-lg font-black text-accent">Recent Bookings</h2>
-          <button 
+          <button
             onClick={() => navigate('/classrep/bookings')}
             className="text-gold text-sm font-bold flex items-center gap-1 hover:underline"
           >
@@ -214,7 +215,12 @@ export default function ClassRepDashboard() {
               <TableBody>
                 {recentBookings.map((b) => (
                   <TableRow key={b.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
-                    <TableCell className="font-bold whitespace-nowrap">{b.resource.name}</TableCell>
+                    <TableCell className="font-bold whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
+                        <span>{b.resource.name}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-dark-gray whitespace-nowrap">{b.course}</TableCell>
                     <TableCell className="whitespace-nowrap">{b.date}</TableCell>
                     <TableCell className="text-[10px] sm:text-sm whitespace-nowrap">{b.startTime} – {b.endTime}</TableCell>

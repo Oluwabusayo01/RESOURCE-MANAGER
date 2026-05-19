@@ -118,7 +118,7 @@ export const getAllResources = async (req, res, next) => {
   try {
     const { status, page: pageParam, limit: limitParam } = matchedData(req);
     const page = Number(pageParam) || 1;
-    const limit = Number(limitParam) || 10;
+    const limit = limitParam ? Number(limitParam) : 100;
     const skip = (page - 1) * limit;
 
     const filter = {};

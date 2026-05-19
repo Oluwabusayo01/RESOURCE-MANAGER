@@ -255,7 +255,7 @@ export const getPublicBookings = async (req, res, next) => {
     } = matchedData(req);
 
     const page = Number(pageParam) || 1;
-    const limit = Number(limitParam) || 10;
+    const limit = limitParam ? Number(limitParam) : 1000;
     const skip = (page - 1) * limit;
 
     const filter = { status: { $in: ["confirmed", "completed"] } };

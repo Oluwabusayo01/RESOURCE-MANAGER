@@ -39,6 +39,41 @@ import {
 
 import { Plus, Pencil, Power, Loader2, Server } from 'lucide-react'
 import { toast } from 'sonner'
+import ResourceImage from '@/components/shared/ResourceImage'
+
+function FormImagePreview({ src, onRemove }: { src: string | null | undefined; onRemove: () => void }) {
+  const [error, setError] = useState(false)
+
+  useEffect(() => {
+    setError(false)
+  }, [src])
+
+  if (!src || error) {
+    return (
+      <div className="w-20 h-20 rounded-lg border border-dashed border-mid-gray flex items-center justify-center bg-light-gray text-dark-gray flex-shrink-0">
+        <Server className="w-8 h-8 opacity-40" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-mid-gray/30 group flex-shrink-0">
+      <img
+        src={src}
+        alt="Preview"
+        onError={() => setError(true)}
+        className="w-full h-full object-cover"
+      />
+      <button
+        type="button"
+        onClick={onRemove}
+        className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-white text-[10px] font-bold"
+      >
+        Remove
+      </button>
+    </div>
+  )
+}
 
 interface ResourceForm {
   name: string
@@ -46,9 +81,10 @@ interface ResourceForm {
   capacity: string
   status: string
   description: string
+  image: File | string | null
 }
 
-const emptyForm: ResourceForm = { name: '', type: '', capacity: '', status: 'active', description: '' }
+const emptyForm: ResourceForm = { name: '', type: '', capacity: '', status: 'active', description: '', image: null }
 
 export default function ManageResourcesPage() {
   const [resources, setResources] = useState<Resource[]>([])
@@ -58,10 +94,24 @@ export default function ManageResourcesPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<ResourceForm>(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const [toggleDialog, setToggleDialog] = useState<{ open: boolean; id: string; name: string; newStatus: string }>({
     open: false, id: '', name: '', newStatus: '',
   })
+
+  useEffect(() => {
+    if (!form.image) {
+      setPreviewUrl(null)
+      return
+    }
+    if (form.image instanceof File) {
+      const objectUrl = URL.createObjectURL(form.image)
+      setPreviewUrl(objectUrl)
+      return () => URL.revokeObjectURL(objectUrl)
+    }
+    setPreviewUrl(form.image)
+  }, [form.image])
 
   const fetchResources = async () => {
     setLoading(true)
@@ -93,6 +143,7 @@ export default function ManageResourcesPage() {
       capacity: r.capacity !== null ? String(r.capacity) : '',
       status: r.status,
       description: r.description || '',
+      image: r.image || null,
     })
     setDialogOpen(true)
   }
@@ -111,6 +162,7 @@ export default function ManageResourcesPage() {
         capacity: form.capacity ? parseInt(form.capacity, 10) : null,
         status: form.status,
         description: form.description || '',
+        image: form.image,
       }
 
       if (editingId) {
@@ -192,12 +244,17 @@ export default function ManageResourcesPage() {
                   {resources.map((r) => (
                     <TableRow key={r.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
                       <TableCell className="font-bold">
-                        <span className="block">{r.name}</span>
-                        {r.description && (
-                          <span className="block text-[11px] text-dark-gray font-normal mt-0.5 max-w-[300px] truncate" title={r.description}>
-                            {r.description}
-                          </span>
-                        )}
+                        <div className="flex items-center gap-3">
+                          <ResourceImage src={r.image} name={r.name} type={r.type} />
+                          <div>
+                            <span className="block text-accent font-bold">{r.name}</span>
+                            {r.description && (
+                              <span className="block text-[11px] text-dark-gray font-normal mt-0.5 max-w-[250px] truncate" title={r.description}>
+                                {r.description}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell className="capitalize whitespace-nowrap">{r.type}</TableCell>
                       <TableCell className="whitespace-nowrap">{r.capacity ?? '—'}</TableCell>
@@ -236,15 +293,15 @@ export default function ManageResourcesPage() {
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={(open) => !open && setDialogOpen(false)}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[450px] w-[95vw] max-h-[85vh] flex flex-col overflow-hidden p-0 gap-0">
+          <DialogHeader className="p-6 pb-4 border-b">
             <DialogTitle>{editingId ? 'Edit Resource' : 'Add New Resource'}</DialogTitle>
             <DialogDescription>
               {editingId ? 'Update the resource details below.' : 'Fill in the details to add a new faculty resource.'}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 px-6 overflow-y-auto flex-1 max-h-[50vh] sm:max-h-[55vh]">
             <div className="space-y-2">
               <Label>Name</Label>
               <Input
@@ -292,6 +349,27 @@ export default function ManageResourcesPage() {
             </div>
 
             <div className="space-y-2">
+              <Label>Resource Image (Optional)</Label>
+              <div className="flex items-center gap-4">
+                <FormImagePreview src={previewUrl} onRemove={() => setForm({ ...form, image: null })} />
+                <div className="flex-1">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] || null
+                      setForm({ ...form, image: file })
+                    }}
+                    className="cursor-pointer text-xs h-10"
+                  />
+                  <p className="text-[10px] text-dark-gray mt-1">
+                    PNG, JPG or JPEG. Max 20MB.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label>Status</Label>
               <Select value={form.status} onValueChange={(val) => setForm({ ...form, status: val })}>
                 <SelectTrigger>
@@ -305,7 +383,7 @@ export default function ManageResourcesPage() {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="m-0 p-6 bg-light-gray/30 border-t rounded-b-xl">
             <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={saving}>
               Cancel
             </Button>

@@ -7,6 +7,7 @@ import type { Booking } from '@/types'
 
 import StatusBadge from '@/components/shared/StatusBadge'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import ResourceImage from '@/components/shared/ResourceImage'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -146,9 +147,12 @@ export default function BookingDetailPage() {
       <Card className="border border-mid-gray/20 shadow-sm">
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-black text-accent">{booking.resource.name}</h1>
-              <p className="text-dark-gray font-medium mt-1">{booking.course}</p>
+            <div className="flex items-start gap-4">
+              <ResourceImage src={booking.resource.image} name={booking.resource.name} type={booking.resource.type} className="w-16 h-16 rounded-xl object-cover border border-mid-gray/20 flex-shrink-0" />
+              <div>
+                <h1 className="text-2xl font-black text-accent">{booking.resource.name}</h1>
+                <p className="text-dark-gray font-medium mt-1">{booking.course}</p>
+              </div>
             </div>
             <StatusBadge status={booking.status} />
           </div>

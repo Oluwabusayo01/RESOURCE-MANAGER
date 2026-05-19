@@ -15,7 +15,7 @@ import {
 
 const router = express.Router();
 
-router.get("/resources", verifiedUser, getAllResourcesValidation, getAllResources)
+router.get("/resources", getAllResourcesValidation, getAllResources)
 router.post("/resources", verifiedUser, isAdmin, createResourceValidation, createResource);
 router.patch("/resources/:id", verifiedUser, isAdmin, updateResourceValidation, updateResource);
 export default router;

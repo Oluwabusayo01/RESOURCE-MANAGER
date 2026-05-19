@@ -25,6 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import StatusBadge from '@/components/shared/StatusBadge'
 import { bookingService, resourceService } from '@/lib/apiService'
 import type { Booking, Resource } from '@/types'
+import ResourceImage from '@/components/shared/ResourceImage'
 import { RotateCcw, Info } from 'lucide-react'
 
 // Calendar localizer setup
@@ -73,8 +74,8 @@ export default function SchedulePage() {
     const fetchData = async () => {
       try {
         const [bookingsData, resourcesData] = await Promise.all([
-          bookingService.getPublic({ status: 'confirmed' }),
-          resourceService.getAll()
+          bookingService.getPublic({ status: 'confirmed', limit: 1000 }),
+          resourceService.getAll({ limit: 100 })
         ])
         setBookings(bookingsData)
         setResources(resourcesData)
@@ -247,7 +248,7 @@ export default function SchedulePage() {
 
       {/* Event Detail Dialog */}
       <Dialog open={!!selectedEvent} onOpenChange={(open) => !open && setSelectedEvent(null)}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] w-[95vw] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Info className="w-5 h-5 text-gold" />
@@ -260,10 +261,13 @@ export default function SchedulePage() {
 
           {selectedEvent && (
             <div className="py-6 space-y-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-xl font-bold text-accent">{selectedEvent.resource.name}</h3>
-                  <p className="text-dark-gray font-medium">{selectedEvent.course}</p>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
+                  <ResourceImage src={selectedEvent.resource.image} name={selectedEvent.resource.name} type={selectedEvent.resource.type} className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-xl font-bold text-accent truncate">{selectedEvent.resource.name}</h3>
+                    <p className="text-dark-gray font-medium truncate">{selectedEvent.course}</p>
+                  </div>
                 </div>
                 <StatusBadge status={selectedEvent.status} />
               </div>

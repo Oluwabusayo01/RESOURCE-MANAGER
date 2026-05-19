@@ -6,6 +6,7 @@ import { bookingService } from '@/lib/apiService'
 import type { Booking } from '@/types'
 import StatusBadge from '@/components/shared/StatusBadge'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
+import ResourceImage from '@/components/shared/ResourceImage'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -126,7 +127,12 @@ export default function MyBookingsPage() {
               <TableBody>
                 {filteredBookings.map((b) => (
                   <TableRow key={b.id} className="hover:bg-light-gray/30">
-                    <TableCell className="font-bold text-accent">{b.resource.name}</TableCell>
+                    <TableCell className="font-bold text-accent">
+                      <div className="flex items-center gap-3">
+                        <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
+                        <span>{b.resource.name}</span>
+                      </div>
+                    </TableCell>
                     <TableCell className="text-dark-gray font-medium">{b.course}</TableCell>
                     <TableCell className="font-medium">{b.date}</TableCell>
                     <TableCell className="text-sm font-medium">{b.startTime} – {b.endTime}</TableCell>
