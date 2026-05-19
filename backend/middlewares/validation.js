@@ -382,11 +382,11 @@ export const uploadMaterialValidation = [
     .matches(/^[a-zA-Z\s.'-]+$/)
     .withMessage("Name can only contain letters, spaces, and . ' -"),
 
-  body("fileUrl")
+  body("pdfUrl")
     .notEmpty()
-    .withMessage("File URL is required")
+    .withMessage("PDF URL is required")
     .isURL()
-    .withMessage("File URL must be a valid URL"),
+    .withMessage("PDF URL must be a valid URL"),
 
   body("fileName")
     .notEmpty()
