@@ -41,6 +41,24 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
+const format12Hour = (timeStr: string) => {
+  if (!timeStr) return ''
+  const [hourStr, minStr] = timeStr.split(':')
+  const hour = parseInt(hourStr, 10)
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  const hourPad = hour12.toString().padStart(2, '0')
+  return `${hourPad}:${minStr} ${ampm}`
+}
+
+const calendarFormats = {
+  timeGutterFormat: 'h:mm a',
+  eventTimeRangeFormat: ({ start, end }: any, culture: any, localizer: any) =>
+    `${localizer.format(start, 'h:mm a', culture)} - ${localizer.format(end, 'h:mm a', culture)}`,
+  agendaTimeRangeFormat: ({ start, end }: any, culture: any, localizer: any) =>
+    `${localizer.format(start, 'h:mm a', culture)} - ${localizer.format(end, 'h:mm a', culture)}`,
+}
+
 export default function SchedulePage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [resources, setResources] = useState<Resource[]>([])
@@ -51,7 +69,7 @@ export default function SchedulePage() {
   const [resourceFilter, setResourceFilter] = useState<string>('all')
   const [deptFilter, setDeptFilter] = useState<string>('all')
   const [dateFilter, setDateFilter] = useState<string>('')
-  
+
   // View state for mobile responsiveness
   const [currentView, setCurrentView] = useState<any>(Views.WEEK)
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -64,7 +82,7 @@ export default function SchedulePage() {
         setCurrentView(Views.WEEK)
       }
     }
-    
+
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
@@ -238,6 +256,7 @@ export default function SchedulePage() {
               setDateFilter(dateString)
             }}
             views={[Views.WEEK, Views.DAY, Views.AGENDA]}
+            formats={calendarFormats}
             eventPropGetter={eventPropGetter}
             onSelectEvent={(event) => setSelectedEvent(event as Booking)}
             style={{ height: '100%' }}
@@ -263,7 +282,7 @@ export default function SchedulePage() {
             <div className="py-6 space-y-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  <ResourceImage src={selectedEvent.resource.image} name={selectedEvent.resource.name} type={selectedEvent.resource.type} className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 flex-shrink-0" />
+                  <ResourceImage src={selectedEvent.resource.image} name={selectedEvent.resource.name} type={selectedEvent.resource.type} className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <h3 className="text-xl font-bold text-accent truncate">{selectedEvent.resource.name}</h3>
                     <p className="text-dark-gray font-medium truncate">{selectedEvent.course}</p>
@@ -279,7 +298,7 @@ export default function SchedulePage() {
                 </div>
                 <div className="p-3 bg-light-gray rounded-lg">
                   <p className="text-[10px] font-bold text-dark-gray uppercase mb-1">Time Range</p>
-                  <p className="text-sm font-bold">{selectedEvent.startTime} - {selectedEvent.endTime}</p>
+                  <p className="text-sm font-bold">{format12Hour(selectedEvent.startTime)} - {format12Hour(selectedEvent.endTime)}</p>
                 </div>
               </div>
 

@@ -37,7 +37,6 @@ import {
 import {
   Eye,
   XCircle,
-  Trash2,
   Download,
   RotateCcw,
   ChevronLeft,
@@ -52,6 +51,16 @@ import {
 import { toast } from 'sonner'
 
 const PER_PAGE = 10
+
+const format12Hour = (timeStr: string) => {
+  if (!timeStr) return ''
+  const [hourStr, minStr] = timeStr.split(':')
+  const hour = parseInt(hourStr, 10)
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  const hourPad = hour12.toString().padStart(2, '0')
+  return `${hourPad}:${minStr} ${ampm}`
+}
 
 export default function AllBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([])
@@ -70,12 +79,11 @@ export default function AllBookingsPage() {
 
   // Confirm dialogs
   const [cancelDialog, setCancelDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
-  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' })
 
   const fetchData = async () => {
     setLoading(true)
     try {
-      const params: any = {}
+      const params: any = { limit: 1000 }
       if (resourceFilter !== 'all') params.resourceId = resourceFilter
       if (deptFilter !== 'all') params.department = deptFilter
       if (fromDate) params.from = fromDate
@@ -85,7 +93,15 @@ export default function AllBookingsPage() {
         bookingService.getAll(params),
         resourceService.getAll(),
       ])
-      setBookings(bookingsData)
+
+      // Sort bookings: latest created/scheduled first
+      const sortedBookings = [...bookingsData].sort((a: any, b: any) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : new Date(`${a.date}T${a.startTime || '00:00'}`).getTime()
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : new Date(`${b.date}T${b.startTime || '00:00'}`).getTime()
+        return dateB - dateA
+      })
+
+      setBookings(sortedBookings)
       setResources(resourcesData)
       setPage(1)
     } catch (err) {
@@ -118,17 +134,6 @@ export default function AllBookingsPage() {
       fetchData()
     } catch (err: any) {
       toast.error(err.message || 'Failed to cancel booking.')
-    }
-  }
-
-  const handleDelete = async () => {
-    try {
-      await bookingService.delete(deleteDialog.id)
-      toast.success('Booking deleted.')
-      setDeleteDialog({ open: false, id: '', name: '' })
-      fetchData()
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to delete booking.')
     }
   }
 
@@ -250,7 +255,7 @@ export default function AllBookingsPage() {
                         <TableCell className="text-xs whitespace-nowrap">{b.course}</TableCell>
                         <TableCell className="text-xs whitespace-nowrap">{b.department}</TableCell>
                         <TableCell className="text-xs whitespace-nowrap">{b.date}</TableCell>
-                        <TableCell className="text-xs whitespace-nowrap">{b.startTime} – {b.endTime}</TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">{format12Hour(b.startTime)} – {format12Hour(b.endTime)}</TableCell>
                         <TableCell className="whitespace-nowrap"><StatusBadge status={b.status} /></TableCell>
                         <TableCell className="text-right space-x-1 whitespace-nowrap">
                           <Button variant="ghost" size="sm" onClick={() => setViewBooking(b)} className="text-accent h-8 w-8 p-0">
@@ -266,14 +271,6 @@ export default function AllBookingsPage() {
                               <XCircle className="w-4 h-4" />
                             </Button>
                           )}
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeleteDialog({ open: true, id: b.id, name: b.resource.name })}
-                            className="text-red-500 h-8 w-8 p-0"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -361,7 +358,7 @@ export default function AllBookingsPage() {
                     <Clock className="w-3 h-3 text-gold" />
                     <span className="text-[10px] font-bold text-dark-gray uppercase">Time</span>
                   </div>
-                  <p className="text-sm font-bold text-accent">{viewBooking.startTime} – {viewBooking.endTime}</p>
+                  <p className="text-sm font-bold text-accent">{format12Hour(viewBooking.startTime)} – {format12Hour(viewBooking.endTime)}</p>
                 </div>
               </div>
 
@@ -406,15 +403,6 @@ export default function AllBookingsPage() {
         onCancel={() => setCancelDialog({ open: false, id: '', name: '' })}
       />
 
-      {/* Delete Confirm */}
-      <ConfirmDialog
-        isOpen={deleteDialog.open}
-        title="Delete Booking"
-        description={`Are you sure you want to permanently delete the booking for "${deleteDialog.name}"? This action cannot be undone.`}
-        confirmLabel="Delete"
-        onConfirm={handleDelete}
-        onCancel={() => setDeleteDialog({ open: false, id: '', name: '' })}
-      />
     </motion.div>
   )
 }

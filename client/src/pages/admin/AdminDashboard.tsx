@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
-import { adminService, userService } from '@/lib/apiService'
+import { bookingService, userService } from '@/lib/apiService'
 import {
   BarChart,
   Bar,
@@ -75,6 +75,16 @@ interface ActivityItem {
   timestamp: string
 }
 
+const format12Hour = (timeStr: string) => {
+  if (!timeStr) return ''
+  const [hourStr, minStr] = timeStr.split(':')
+  const hour = parseInt(hourStr, 10)
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  const hourPad = hour12.toString().padStart(2, '0')
+  return `${hourPad}:${minStr} ${ampm}`
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [deptData, setDeptData] = useState<DeptData[]>([])
@@ -87,25 +97,100 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      // Fetch stats
-      adminService.getStats().then(setStats).catch(e => console.error("Stats fail:", e));
-      
-      // Fetch department analytics
-      adminService.getByDepartment().then(setDeptData).catch(e => console.error("Dept fail:", e));
-      
-      // Fetch peak hours
-      adminService.getPeakHours().then(setPeakData).catch(e => console.error("Peak fail:", e));
-      
-      // Fetch pending users (CRITICAL)
-      const res = await userService.getAll({ status: 'pending' });
-      setPendingUsers(res.users);
-      
-      // Fetch activity
-      adminService.getActivity({ limit: 5 }).then(setActivity).catch(e => console.error("Activity fail:", e));
-      
+      // Fetch bookings, all users, and pending users in parallel
+      const [bookings, allUsersRes, pendingUsersRes] = await Promise.all([
+        bookingService.getAll({ limit: 1000 }).catch(e => {
+          console.error("Failed to fetch bookings:", e)
+          return []
+        }),
+        userService.getAll({ limit: 1000 }).catch(e => {
+          console.error("Failed to fetch users:", e)
+          return { users: [] }
+        }),
+        userService.getAll({ status: 'pending' }).catch(e => {
+          console.error("Failed to fetch pending users:", e)
+          return { users: [] }
+        })
+      ])
+
+      const allUsers = allUsersRes.users || []
+      const pendingUsersList = pendingUsersRes.users || []
+      setPendingUsers(pendingUsersList)
+
+      // Calculate stats
+      const counts: Record<string, number> = {}
+      bookings.forEach((b: any) => {
+        const name = b.resource?.name || 'Unknown'
+        counts[name] = (counts[name] || 0) + 1
+      })
+      let mostBooked = 'None'
+      let maxCount = 0
+      Object.entries(counts).forEach(([name, count]) => {
+        if (count > maxCount) {
+          maxCount = count
+          mostBooked = name
+        }
+      })
+
+      setStats({
+        totalBookings: bookings.length,
+        pendingUsers: pendingUsersList.length,
+        totalUsers: allUsers.length,
+        mostBookedResource: mostBooked
+      })
+
+      // Calculate bookings by department
+      const deptCounts: Record<string, number> = {}
+      bookings.forEach((b: any) => {
+        const dept = b.department || b.user?.department || 'Unknown'
+        // Format to match UI
+        const formattedDept = dept === 'information system' ? 'INS' : dept
+        deptCounts[formattedDept] = (deptCounts[formattedDept] || 0) + 1
+      })
+      const mappedDeptData = Object.entries(deptCounts).map(([department, count]) => ({
+        department,
+        count
+      }))
+      setDeptData(mappedDeptData)
+
+      // Calculate peak booking hours
+      const hourCounts: Record<string, number> = {}
+      bookings.forEach((b: any) => {
+        if (b.startTime) {
+          const hour = b.startTime.split(':')[0] + ':00'
+          hourCounts[hour] = (hourCounts[hour] || 0) + 1
+        }
+      })
+      const mappedPeakData = Object.entries(hourCounts)
+        .map(([hour, count]) => ({ hour, count }))
+        .sort((a, b) => a.hour.localeCompare(b.hour))
+        .map(item => ({
+          ...item,
+          hour: format12Hour(item.hour)
+        }))
+      setPeakData(mappedPeakData)
+
+      // Calculate recent activity feed from bookings and user registers
+      const bookingActivities = bookings.map((b: any) => ({
+        id: `booking-${b.id}`,
+        type: 'booking_created',
+        description: `${b.course || 'Resource'} booked for ${b.resource?.name || 'Resource'} by ${b.user?.name || 'User'}`,
+        timestamp: b.createdAt || b.date
+      }))
+      const userActivities = allUsers.map((u: any) => ({
+        id: `user-${u.id}`,
+        type: 'user_registered',
+        description: `${u.name} registered as ${u.role === 'classrep' ? 'Class Rep' : u.role}`,
+        timestamp: u.createdAt || new Date().toISOString()
+      }))
+      const combinedActivities = [...bookingActivities, ...userActivities]
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 5)
+      setActivity(combinedActivities)
+
     } catch (err) {
-      console.error('Failed to load critical admin dashboard data', err)
-      toast.error("Failed to load some dashboard data.")
+      console.error('Failed to load admin dashboard data', err)
+      toast.error("Failed to load dashboard data.")
     } finally {
       setLoading(false)
     }

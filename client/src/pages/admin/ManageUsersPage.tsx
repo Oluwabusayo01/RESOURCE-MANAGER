@@ -93,9 +93,12 @@ export default function ManageUsersPage() {
       if (action === 'approve' || action === 'reapprove') {
         await userService.approve(id)
         toast.success('User approved successfully.')
-      } else if (action === 'reject' || action === 'revoke') {
+      } else if (action === 'reject') {
         await userService.reject(id)
-        toast.success(action === 'revoke' ? 'Access revoked.' : 'User rejected.')
+        toast.success('User rejected.')
+      } else if (action === 'revoke') {
+        await userService.revoke(id)
+        toast.success('Access revoked.')
       }
       setConfirmDialog({ open: false, id: '', name: '', action: 'approve' })
       fetchUsers()

@@ -260,6 +260,8 @@ export const userService = {
     USE_MOCK ? mock.approveUser(id) : api.patch(`/users/${id}/approve`).then(r => r.data.data || r.data),
   reject: (id: string) =>
     USE_MOCK ? mock.rejectUser(id) : api.patch(`/users/${id}/reject`).then(r => r.data.data || r.data),
+  revoke: (id: string) =>
+    USE_MOCK ? mock.revokeUser(id) : api.patch(`/users/${id}/revoke`).then(r => r.data.data || r.data),
 }
 
 export const adminService = {

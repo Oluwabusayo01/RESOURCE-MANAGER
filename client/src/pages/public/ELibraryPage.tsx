@@ -27,9 +27,12 @@ import {
 
 import {
   FileText, FileType, Presentation, Download, Search, BookOpen,
-  Upload, CloudUpload, X, CheckCircle, Loader2,
+  Upload, CloudUpload, X, CheckCircle, Loader2, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
+
+const PER_PAGE = 9
+
 
 const ALLOWED_TYPES = [
   'application/pdf',
@@ -68,6 +71,7 @@ export default function ELibraryPage() {
 
   const [materials, setMaterials] = useState<LibraryMaterial[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
 
   const [search, setSearch] = useState('')
   const [department, setDepartment] = useState('all')
@@ -111,9 +115,15 @@ export default function ELibraryPage() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       fetchMaterials(search, department)
+      setPage(1)
     }, 300)
     return () => clearTimeout(timeout)
   }, [search, department, fetchMaterials])
+
+  // Pagination logic
+  const totalPages = Math.ceil(materials.length / PER_PAGE)
+  const paginatedMaterials = materials.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
 
   const handleDownload = async (material: LibraryMaterial) => {
     try {
@@ -295,54 +305,90 @@ export default function ELibraryPage() {
           <p className="text-sm text-mid-gray mt-1">Try a different search.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {materials.map((m, i) => {
-            const Icon = getFileIcon(m.fileType)
-            return (
-              <motion.div
-                key={m.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-                className="bg-white rounded-xl border border-mid-gray/20 p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 flex flex-col"
-              >
-                {/* File Type Icon */}
-                <div className="w-12 h-12 bg-gold/10 rounded-lg flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-gold" />
-                </div>
-
-                {/* Title & Course */}
-                <h3 className="text-lg font-black text-accent mb-1 line-clamp-2">{m.title}</h3>
-                <p className="text-sm text-dark-gray font-medium mb-2">{m.course}</p>
-
-                {/* Department Badge */}
-                <span className="inline-flex self-start text-[10px] font-bold px-2.5 py-1 bg-light-gray text-dark-gray rounded-full mb-3 uppercase tracking-wider">
-                  {m.department}
-                </span>
-
-                {/* Description */}
-                {m.description && (
-                  <p className="text-sm text-dark-gray mb-4 line-clamp-2 flex-1">{m.description}</p>
-                )}
-
-                {/* Uploader & Date */}
-                <div className="text-xs text-mid-gray mb-4 mt-auto">
-                  <span>Uploaded by <span className="font-bold text-dark-gray">{m.uploadedBy}</span></span>
-                  <span className="mx-1">·</span>
-                  <span>{format(new Date(m.createdAt), 'MMM d, yyyy')}</span>
-                </div>
-
-                {/* Download Button */}
-                <Button
-                  onClick={() => handleDownload(m)}
-                  className="w-full bg-accent text-white hover:bg-accent/90 font-bold gap-2"
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedMaterials.map((m, i) => {
+              const Icon = getFileIcon(m.fileType)
+              return (
+                <motion.div
+                  key={m.id}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08 }}
+                  className="bg-white rounded-xl border border-mid-gray/20 p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 flex flex-col animate-hover"
                 >
-                  <Download className="w-4 h-4" />
-                  Download {m.fileType.toUpperCase()}
+                  {/* File Type Icon */}
+                  <div className="w-12 h-12 bg-gold/10 rounded-lg flex items-center justify-center mb-4">
+                    <Icon className="w-6 h-6 text-gold" />
+                  </div>
+
+                  {/* Title & Course */}
+                  <h3 className="text-lg font-black text-accent mb-1 line-clamp-2">{m.title}</h3>
+                  <p className="text-sm text-dark-gray font-medium mb-2">{m.course}</p>
+
+                  {/* Department Badge */}
+                  <span className="inline-flex self-start text-[10px] font-bold px-2.5 py-1 bg-light-gray text-dark-gray rounded-full mb-3 uppercase tracking-wider">
+                    {m.department}
+                  </span>
+
+                  {/* Description */}
+                  {m.description && (
+                    <p className="text-sm text-dark-gray mb-4 line-clamp-2 flex-1">{m.description}</p>
+                  )}
+
+                  {/* Uploader & Date */}
+                  <div className="text-xs text-mid-gray mb-4 mt-auto">
+                    <span>Uploaded by <span className="font-bold text-dark-gray">{m.uploadedBy}</span></span>
+                    <span className="mx-1">·</span>
+                    <span>{format(new Date(m.createdAt), 'MMM d, yyyy')}</span>
+                  </div>
+
+                  {/* Download Button */}
+                  <Button
+                    onClick={() => handleDownload(m)}
+                    className="w-full bg-accent text-white hover:bg-accent/90 font-bold gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download {m.fileType.toUpperCase()}
+                  </Button>
+                </motion.div>
+              )
+            })}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between p-4 border rounded-xl bg-white shadow-sm">
+              <p className="text-xs font-bold text-dark-gray uppercase tracking-wider">
+                Page {page} of {totalPages}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Prev
                 </Button>
-              </motion.div>
-            )
-          })}
+                <span className="text-sm font-bold text-accent px-2">
+                  {page} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="gap-1"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -350,7 +396,7 @@ export default function ELibraryPage() {
       <Dialog open={uploadOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="sm:max-w-[520px] w-[95vw] max-h-[85vh] flex flex-col overflow-hidden p-0 gap-0">
           {/* Decorative gradient header */}
-          <div className="relative bg-gradient-to-br from-accent via-accent to-gold/40 px-6 pt-6 pb-5 flex-shrink-0">
+          <div className="relative bg-gradient-to-br from-accent via-accent to-gold/40 px-6 pt-6 pb-5 shrink-0">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_20%,rgba(201,168,76,0.6),transparent_60%)]" />
             <DialogHeader className="relative z-10">
               <DialogTitle className="text-white text-xl font-black flex items-center gap-2">

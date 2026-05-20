@@ -347,6 +347,17 @@ export const rejectUser = async (id: string) => {
   throw new Error('User not found')
 }
 
+export const revokeUser = async (id: string) => {
+  await delay()
+  const index = MOCK_DB.users.findIndex(u => u.id === id)
+  if (index !== -1) {
+    const user = MOCK_DB.users[index]
+    MOCK_DB.users.splice(index, 1)
+    return user
+  }
+  throw new Error('User not found')
+}
+
 export const getAdminStats = async () => {
   await delay()
   const mostBooked = MOCK_DB.bookings.reduce((acc: any, b) => {

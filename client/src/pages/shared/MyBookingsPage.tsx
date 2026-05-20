@@ -17,9 +17,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { CalendarCheck, Eye, XCircle, Search } from 'lucide-react'
+import { CalendarCheck, Eye, XCircle, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
+
+const PER_PAGE = 10
+
+const format12Hour = (timeStr: string) => {
+  if (!timeStr) return ''
+  const [hourStr, minStr] = timeStr.split(':')
+  const hour = parseInt(hourStr, 10)
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  const hourPad = hour12.toString().padStart(2, '0')
+  return `${hourPad}:${minStr} ${ampm}`
+}
 
 export default function MyBookingsPage() {
   const { user } = useAuthStore()
@@ -27,6 +39,7 @@ export default function MyBookingsPage() {
   const [bookings, setBookings] = useState<Booking[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [page, setPage] = useState(1)
   const [cancelDialog, setCancelDialog] = useState<{ open: boolean; id: string }>({ open: false, id: '' })
 
   const fetchData = async () => {
@@ -45,6 +58,10 @@ export default function MyBookingsPage() {
     fetchData()
   }, [user?.id])
 
+  useEffect(() => {
+    setPage(1)
+  }, [searchQuery])
+
   const handleCancel = async () => {
     try {
       await bookingService.cancel(cancelDialog.id)
@@ -60,6 +77,10 @@ export default function MyBookingsPage() {
     b.resource.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     b.course.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  // Pagination
+  const totalPages = Math.ceil(filteredBookings.length / PER_PAGE)
+  const paginatedBookings = filteredBookings.slice((page - 1) * PER_PAGE, page * PER_PAGE)
 
   const today = new Date().toISOString().split('T')[0]
   const basePath = user?.role === 'staff' ? '/staff' : '/classrep'
@@ -112,56 +133,92 @@ export default function MyBookingsPage() {
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-light-gray/50 hover:bg-light-gray/50">
-                  <TableHead className="font-bold">Resource</TableHead>
-                  <TableHead className="font-bold">Course</TableHead>
-                  <TableHead className="font-bold">Date</TableHead>
-                  <TableHead className="font-bold">Time</TableHead>
-                  <TableHead className="font-bold">Status</TableHead>
-                  <TableHead className="font-bold text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredBookings.map((b) => (
-                  <TableRow key={b.id} className="hover:bg-light-gray/30">
-                    <TableCell className="font-bold text-accent">
-                      <div className="flex items-center gap-3">
-                        <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
-                        <span>{b.resource.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-dark-gray font-medium">{b.course}</TableCell>
-                    <TableCell className="font-medium">{b.date}</TableCell>
-                    <TableCell className="text-sm font-medium">{b.startTime} – {b.endTime}</TableCell>
-                    <TableCell><StatusBadge status={b.status} /></TableCell>
-                    <TableCell className="text-right space-x-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate(`${basePath}/bookings/${b.id}`)}
-                        className="text-accent hover:bg-accent/5"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      {b.status === 'confirmed' && b.date >= today && (
+          <>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-light-gray/50 hover:bg-light-gray/50">
+                    <TableHead className="font-bold">Resource</TableHead>
+                    <TableHead className="font-bold">Course</TableHead>
+                    <TableHead className="font-bold">Date</TableHead>
+                    <TableHead className="font-bold">Time</TableHead>
+                    <TableHead className="font-bold">Status</TableHead>
+                    <TableHead className="font-bold text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedBookings.map((b) => (
+                    <TableRow key={b.id} className="hover:bg-light-gray/30">
+                      <TableCell className="font-bold text-accent">
+                        <div className="flex items-center gap-3">
+                          <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
+                          <span>{b.resource.name}</span>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-dark-gray font-medium">{b.course}</TableCell>
+                      <TableCell className="font-medium">{b.date}</TableCell>
+                      <TableCell className="text-sm font-medium">{format12Hour(b.startTime)} – {format12Hour(b.endTime)}</TableCell>
+                      <TableCell><StatusBadge status={b.status} /></TableCell>
+                      <TableCell className="text-right space-x-1">
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => setCancelDialog({ open: true, id: b.id })}
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                          onClick={() => navigate(`${basePath}/bookings/${b.id}`)}
+                          className="text-accent hover:bg-accent/5"
                         >
-                          <XCircle className="w-4 h-4" />
+                          <Eye className="w-4 h-4" />
                         </Button>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                        {b.status === 'confirmed' && b.date >= today && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setCancelDialog({ open: true, id: b.id })}
+                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between p-4 border-t bg-light-gray/30">
+                <p className="text-xs font-bold text-dark-gray uppercase tracking-wider">
+                  Page {page} of {totalPages}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="gap-1"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Prev
+                  </Button>
+                  <span className="text-sm font-bold text-accent px-2">
+                    {page} / {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    disabled={page === totalPages}
+                    className="gap-1"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

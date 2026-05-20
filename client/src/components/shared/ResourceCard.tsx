@@ -2,12 +2,12 @@ import { useState } from 'react'
 import type { Resource } from '@/types'
 import { Card, CardContent } from '@/components/ui/card'
 import StatusBadge from './StatusBadge'
-import { 
-  Monitor, 
-  Users, 
-  Building2, 
-  Projector, 
-  Users2 
+import {
+  Monitor,
+  Users,
+  Building2,
+  Projector,
+  Users2
 } from 'lucide-react'
 
 interface ResourceCardProps {
@@ -35,10 +35,10 @@ export default function ResourceCard({ resource }: ResourceCardProps) {
               src={resource.image}
               alt={resource.name}
               onError={() => setImgError(true)}
-              className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 flex-shrink-0"
+              className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 shrink-0"
             />
           ) : (
-            <div className="p-4 bg-light-gray rounded-lg flex-shrink-0">
+            <div className="p-4 bg-light-gray rounded-lg shrink-0">
               <Icon className="w-6 h-6 text-accent" />
             </div>
           )}

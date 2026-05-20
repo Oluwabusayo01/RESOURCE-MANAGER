@@ -17,9 +17,14 @@ import {
   Info,
   CheckCheck,
   Bell,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useState } from 'react'
+
+const PER_PAGE = 10
+
 
 const iconMap: Record<NotificationType, { icon: typeof CalendarCheck; color: string }> = {
   booking_confirmed: { icon: CalendarCheck, color: 'text-green-600' },
@@ -33,6 +38,7 @@ const iconMap: Record<NotificationType, { icon: typeof CalendarCheck; color: str
 export default function NotificationsPage() {
   const { notifications, setNotifications, setUnreadCount } = useNotificationStore()
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
 
   const fetchNotifications = async () => {
     setLoading(true)
@@ -51,8 +57,13 @@ export default function NotificationsPage() {
     }
   }
 
+  // Pagination logic
+  const totalPages = Math.ceil(notifications.length / PER_PAGE)
+  const paginatedNotifications = notifications.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
   useEffect(() => {
     fetchNotifications()
+
   }, [])
 
   const handleMarkRead = async (id: string) => {
@@ -124,45 +135,81 @@ export default function NotificationsPage() {
           <p className="text-lg font-bold text-dark-gray">You have no notifications yet.</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {notifications.map((n, i) => {
-            const config = iconMap[n.type] || iconMap.system
-            const Icon = config.icon
+        <div className="space-y-4">
+          <div className="space-y-2">
+            {paginatedNotifications.map((n, i) => {
+              const config = iconMap[n.type] || iconMap.system
+              const Icon = config.icon
 
-            return (
-              <motion.div
-                key={n.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-                onClick={() => !n.read && handleMarkRead(n.id)}
-                className={`flex items-start gap-4 p-4 rounded-xl transition-all cursor-pointer ${n.read
-                    ? 'bg-white hover:bg-light-gray/50'
-                    : 'bg-[#FAFAFA] border-l-4 border-gold hover:bg-gold/5'
-                  }`}
-              >
-                {/* Icon */}
-                <div className={`p-2.5 rounded-lg shrink-0 ${n.read ? 'bg-light-gray' : 'bg-gold/10'}`}>
-                  <Icon className={`w-5 h-5 ${config.color}`} />
-                </div>
+              return (
+                <motion.div
+                  key={n.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  onClick={() => !n.read && handleMarkRead(n.id)}
+                  className={`flex items-start gap-4 p-4 rounded-xl transition-all cursor-pointer ${n.read
+                      ? 'bg-white hover:bg-light-gray/50 animate-hover'
+                      : 'bg-[#FAFAFA] border-l-4 border-gold hover:bg-gold/5 animate-hover'
+                    }`}
+                >
+                  {/* Icon */}
+                  <div className={`p-2.5 rounded-lg shrink-0 ${n.read ? 'bg-light-gray' : 'bg-gold/10'}`}>
+                    <Icon className={`w-5 h-5 ${config.color}`} />
+                  </div>
 
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${n.read ? 'text-dark-gray' : 'text-accent font-bold'}`}>
-                    {n.message}
-                  </p>
-                  <p className="text-xs text-mid-gray mt-1">
-                    {formatDistanceToNow(new Date(n.timestamp), { addSuffix: true })}
-                  </p>
-                </div>
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm ${n.read ? 'text-dark-gray' : 'text-accent font-bold'}`}>
+                      {n.message}
+                    </p>
+                    <p className="text-xs text-mid-gray mt-1">
+                      {formatDistanceToNow(new Date(n.timestamp), { addSuffix: true })}
+                    </p>
+                  </div>
 
-                {/* Unread Dot */}
-                {!n.read && (
-                  <div className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-2" />
-                )}
-              </motion.div>
-            )
-          })}
+                  {/* Unread Dot */}
+                  {!n.read && (
+                    <div className="w-2.5 h-2.5 rounded-full bg-gold shrink-0 mt-2" />
+                  )}
+                </motion.div>
+              )
+            })}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between p-4 border rounded-xl bg-white shadow-sm">
+              <p className="text-xs font-bold text-dark-gray uppercase tracking-wider">
+                Page {page} of {totalPages}
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="gap-1"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Prev
+                </Button>
+                <span className="text-sm font-bold text-accent px-2">
+                  {page} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="gap-1"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </motion.div>

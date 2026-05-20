@@ -17,11 +17,11 @@ interface ResourceImageProps {
   iconClassName?: string
 }
 
-export default function ResourceImage({ 
-  src, 
-  name, 
-  type, 
-  className = "w-10 h-10 rounded-md object-cover border border-mid-gray/20 flex-shrink-0",
+export default function ResourceImage({
+  src,
+  name,
+  type,
+  className = "w-10 h-10 rounded-md object-cover border border-mid-gray/20 shrink-0",
   iconClassName = "w-5 h-5 text-dark-gray opacity-45"
 }: ResourceImageProps) {
   const [error, setError] = useState(false)

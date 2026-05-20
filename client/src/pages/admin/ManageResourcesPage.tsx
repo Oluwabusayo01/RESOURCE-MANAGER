@@ -37,9 +37,12 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-import { Plus, Pencil, Power, Loader2, Server } from 'lucide-react'
+import { Plus, Pencil, Power, Loader2, Server, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import ResourceImage from '@/components/shared/ResourceImage'
+
+const PER_PAGE = 10
+
 
 function FormImagePreview({ src, onRemove }: { src: string | null | undefined; onRemove: () => void }) {
   const [error, setError] = useState(false)
@@ -50,14 +53,14 @@ function FormImagePreview({ src, onRemove }: { src: string | null | undefined; o
 
   if (!src || error) {
     return (
-      <div className="w-20 h-20 rounded-lg border border-dashed border-mid-gray flex items-center justify-center bg-light-gray text-dark-gray flex-shrink-0">
+      <div className="w-20 h-20 rounded-lg border border-dashed border-mid-gray flex items-center justify-center bg-light-gray text-dark-gray shrink-0">
         <Server className="w-8 h-8 opacity-40" />
       </div>
     )
   }
 
   return (
-    <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-mid-gray/30 group flex-shrink-0">
+    <div className="relative w-20 h-20 rounded-lg overflow-hidden border border-mid-gray/30 group shrink-0">
       <img
         src={src}
         alt="Preview"
@@ -89,6 +92,7 @@ const emptyForm: ResourceForm = { name: '', type: '', capacity: '', status: 'act
 export default function ManageResourcesPage() {
   const [resources, setResources] = useState<Resource[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
 
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -124,6 +128,11 @@ export default function ManageResourcesPage() {
       setLoading(false)
     }
   }
+
+  // Pagination logic
+  const totalPages = Math.ceil(resources.length / PER_PAGE)
+  const paginatedResources = resources.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+
 
   useEffect(() => {
     fetchResources()
@@ -229,64 +238,100 @@ export default function ManageResourcesPage() {
               <p className="text-dark-gray font-medium">No resources found.</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="font-bold whitespace-nowrap">Name</TableHead>
-                    <TableHead className="font-bold whitespace-nowrap">Type</TableHead>
-                    <TableHead className="font-bold whitespace-nowrap">Capacity</TableHead>
-                    <TableHead className="font-bold whitespace-nowrap">Status</TableHead>
-                    <TableHead className="font-bold text-right whitespace-nowrap">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {resources.map((r) => (
-                    <TableRow key={r.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
-                      <TableCell className="font-bold">
-                        <div className="flex items-center gap-3">
-                          <ResourceImage src={r.image} name={r.name} type={r.type} />
-                          <div>
-                            <span className="block text-accent font-bold">{r.name}</span>
-                            {r.description && (
-                              <span className="block text-[11px] text-dark-gray font-normal mt-0.5 max-w-[250px] truncate" title={r.description}>
-                                {r.description}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="capitalize whitespace-nowrap">{r.type}</TableCell>
-                      <TableCell className="whitespace-nowrap">{r.capacity ?? '—'}</TableCell>
-                      <TableCell className="whitespace-nowrap"><StatusBadge status={r.status} /></TableCell>
-                      <TableCell className="text-right space-x-2 whitespace-nowrap">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => openEdit(r)}
-                          className="text-accent h-8 w-8 p-0"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setToggleDialog({
-                            open: true,
-                            id: r.id,
-                            name: r.name,
-                            newStatus: r.status === 'active' ? 'inactive' : 'active',
-                          })}
-                          className={cn("h-8 w-8 p-0", r.status === 'active' ? 'text-red-500' : 'text-green-500')}
-                        >
-                          <Power className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
+            <>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-bold whitespace-nowrap">Name</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Type</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Capacity</TableHead>
+                      <TableHead className="font-bold whitespace-nowrap">Status</TableHead>
+                      <TableHead className="font-bold text-right whitespace-nowrap">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedResources.map((r) => (
+                      <TableRow key={r.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
+                        <TableCell className="font-bold">
+                          <div className="flex items-center gap-3">
+                            <ResourceImage src={r.image} name={r.name} type={r.type} />
+                            <div>
+                              <span className="block text-accent font-bold">{r.name}</span>
+                              {r.description && (
+                                <span className="block text-[11px] text-dark-gray font-normal mt-0.5 max-w-[250px] truncate" title={r.description}>
+                                  {r.description}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="capitalize whitespace-nowrap">{r.type}</TableCell>
+                        <TableCell className="whitespace-nowrap">{r.capacity ?? '—'}</TableCell>
+                        <TableCell className="whitespace-nowrap"><StatusBadge status={r.status} /></TableCell>
+                        <TableCell className="text-right space-x-2 whitespace-nowrap">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openEdit(r)}
+                            className="text-accent h-8 w-8 p-0"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setToggleDialog({
+                              open: true,
+                              id: r.id,
+                              name: r.name,
+                              newStatus: r.status === 'active' ? 'inactive' : 'active',
+                            })}
+                            className={cn("h-8 w-8 p-0", r.status === 'active' ? 'text-red-500' : 'text-green-500')}
+                          >
+                            <Power className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between p-4 border-t bg-light-gray/30">
+                  <p className="text-xs font-bold text-dark-gray uppercase tracking-wider">
+                    Page {page} of {totalPages}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="gap-1"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      Prev
+                    </Button>
+                    <span className="text-sm font-bold text-accent px-2">
+                      {page} / {totalPages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page === totalPages}
+                      className="gap-1"
+                    >
+                      Next
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

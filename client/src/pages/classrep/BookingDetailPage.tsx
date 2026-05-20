@@ -30,6 +30,16 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+const format12Hour = (timeStr: string) => {
+  if (!timeStr) return ''
+  const [hourStr, minStr] = timeStr.split(':')
+  const hour = parseInt(hourStr, 10)
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  const hourPad = hour12.toString().padStart(2, '0')
+  return `${hourPad}:${minStr} ${ampm}`
+}
+
 export default function BookingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuthStore()
@@ -148,7 +158,7 @@ export default function BookingDetailPage() {
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-4">
-              <ResourceImage src={booking.resource.image} name={booking.resource.name} type={booking.resource.type} className="w-16 h-16 rounded-xl object-cover border border-mid-gray/20 flex-shrink-0" />
+              <ResourceImage src={booking.resource.image} name={booking.resource.name} type={booking.resource.type} className="w-16 h-16 rounded-xl object-cover border border-mid-gray/20 shrink-0" />
               <div>
                 <h1 className="text-2xl font-black text-accent">{booking.resource.name}</h1>
                 <p className="text-dark-gray font-medium mt-1">{booking.course}</p>
@@ -177,7 +187,7 @@ export default function BookingDetailPage() {
                 <Clock className="w-4 h-4 text-gold" />
                 <span className="text-[10px] font-bold text-dark-gray uppercase">Time</span>
               </div>
-              <p className="font-bold text-accent">{booking.startTime} – {booking.endTime}</p>
+              <p className="font-bold text-accent">{format12Hour(booking.startTime)} – {format12Hour(booking.endTime)}</p>
             </div>
             <div className="bg-light-gray rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">

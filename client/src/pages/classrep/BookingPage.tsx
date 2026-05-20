@@ -92,8 +92,20 @@ export default function BookingPage() {
       if (resourceId && date && startTime && endTime && endTime > startTime) {
         setChecking(true)
         try {
-          const res = await resourceService.checkAvailability(resourceId, { date, startTime, endTime })
-          setAvailable(res.available)
+          const publicBookings = await bookingService.getPublic({
+            date,
+            limit: 1000
+          })
+          const resourceBookings = publicBookings.filter((b: any) => {
+            const bResourceId = b.resource && typeof b.resource === 'object'
+              ? (b.resource.id || b.resource._id)
+              : b.resource
+            return bResourceId === resourceId && b.status === 'confirmed'
+          })
+          const hasOverlap = resourceBookings.some((b: any) => {
+            return b.startTime < endTime && b.endTime > startTime
+          })
+          setAvailable(!hasOverlap)
         } catch (err) {
           console.error('Availability check failed', err)
           setAvailable(null)

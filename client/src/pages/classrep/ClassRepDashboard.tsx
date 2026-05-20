@@ -37,6 +37,16 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+const format12Hour = (timeStr: string) => {
+  if (!timeStr) return ''
+  const [hourStr, minStr] = timeStr.split(':')
+  const hour = parseInt(hourStr, 10)
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12
+  const hourPad = hour12.toString().padStart(2, '0')
+  return `${hourPad}:${minStr} ${ampm}`
+}
+
 export default function ClassRepDashboard() {
   const { user } = useAuthStore()
   const navigate = useNavigate()
@@ -223,7 +233,7 @@ export default function ClassRepDashboard() {
                     </TableCell>
                     <TableCell className="text-dark-gray whitespace-nowrap">{b.course}</TableCell>
                     <TableCell className="whitespace-nowrap">{b.date}</TableCell>
-                    <TableCell className="text-[10px] sm:text-sm whitespace-nowrap">{b.startTime} – {b.endTime}</TableCell>
+                    <TableCell className="text-[10px] sm:text-sm whitespace-nowrap">{format12Hour(b.startTime)} – {format12Hour(b.endTime)}</TableCell>
                     <TableCell className="whitespace-nowrap"><StatusBadge status={b.status} /></TableCell>
                     <TableCell className="text-right space-x-2 whitespace-nowrap">
                       <Button
