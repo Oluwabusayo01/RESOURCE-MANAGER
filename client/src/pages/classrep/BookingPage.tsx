@@ -47,7 +47,7 @@ interface BookingFormValues {
 }
 
 export default function BookingPage() {
-  const { user } = useAuthStore()
+  const { user, logout } = useAuthStore()
   const navigate = useNavigate()
   const { scheduleReminder } = useBookingReminder()
 
@@ -148,8 +148,14 @@ export default function BookingPage() {
       const dashboardPath = user?.role === 'staff' ? '/staff/dashboard' : '/classrep/dashboard'
       navigate(dashboardPath)
     } catch (err: any) {
-      const message = err.message || 'Failed to create booking.'
-      toast.error(message)
+      const message = err.response?.data?.message || err.message || ''
+      if (message === 'User not found') {
+        toast.error('User not found. Your account may have been revoked.')
+        logout()
+        navigate('/')
+      } else {
+        toast.error(message || 'Failed to create booking.')
+      }
     } finally {
       setSubmitting(false)
     }

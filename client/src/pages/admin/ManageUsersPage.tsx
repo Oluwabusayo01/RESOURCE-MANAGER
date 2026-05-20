@@ -300,16 +300,7 @@ export default function ManageUsersPage() {
                             Revoke Access
                           </Button>
                         )}
-                        {u.status === 'rejected' && (
-                          <Button
-                            size="sm"
-                            onClick={() => setConfirmDialog({ open: true, id: u.id, name: u.name, action: 'reapprove' })}
-                            className="bg-green-600 text-white hover:bg-green-700 text-[10px] sm:text-xs font-bold h-8 px-2 sm:px-3"
-                          >
-                            <CheckCircle2 className="w-3 h-3 mr-1" />
-                            Re-approve
-                          </Button>
-                        )}
+
                       </TableCell>
                     </TableRow>
                   ))}

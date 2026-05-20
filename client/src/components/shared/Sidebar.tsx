@@ -12,7 +12,8 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  Home
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -36,6 +37,7 @@ export default function Sidebar() {
       { name: 'Book a Resource', path: '/classrep/book', icon: CalendarPlus },
       { name: 'My Bookings', path: '/classrep/bookings', icon: History },
       { name: 'Notifications', path: '/classrep/notifications', icon: Bell },
+      { name: 'Go to Home', path: '/', icon: Home },
     ],
     staff: [
       { name: 'Dashboard', path: '/staff/dashboard', icon: LayoutDashboard },
@@ -43,12 +45,14 @@ export default function Sidebar() {
       { name: 'My Bookings', path: '/staff/bookings', icon: History },
       { name: 'Upload Material', path: '/staff/upload', icon: Upload },
       { name: 'Notifications', path: '/staff/notifications', icon: Bell },
+      { name: 'Go to Home', path: '/', icon: Home },
     ],
     admin: [
       { name: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
       { name: 'Manage Users', path: '/admin/users', icon: Users },
       { name: 'Manage Resources', path: '/admin/resources', icon: Settings },
       { name: 'All Bookings', path: '/admin/bookings', icon: History },
+      { name: 'Go to Home', path: '/', icon: Home },
     ],
   }
 

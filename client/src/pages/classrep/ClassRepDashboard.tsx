@@ -34,6 +34,7 @@ import {
   XCircle,
   Bell,
   ArrowRight,
+  Home,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -131,6 +132,15 @@ export default function ClassRepDashboard() {
           <p className="text-dark-gray text-[10px] sm:text-sm mt-1">Here's what's happening with your bookings today.</p>
         </div>
         <div className="flex items-center gap-4 self-end sm:self-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="font-bold gap-1 text-xs border-mid-gray/20 hover:bg-light-gray"
+          >
+            <Home className="w-4 h-4" />
+            Home Page
+          </Button>
           <NotificationBell />
         </div>
       </div>

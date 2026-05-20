@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
 import { bookingService, userService } from '@/lib/apiService'
@@ -39,6 +40,7 @@ import {
   Activity,
   CalendarPlus,
   UserCheck,
+  Home,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -86,6 +88,7 @@ const format12Hour = (timeStr: string) => {
 }
 
 export default function AdminDashboard() {
+  const navigate = useNavigate()
   const [stats, setStats] = useState<AdminStats | null>(null)
   const [deptData, setDeptData] = useState<DeptData[]>([])
   const [peakData, setPeakData] = useState<HourData[]>([])
@@ -252,6 +255,15 @@ export default function AdminDashboard() {
           <p className="text-dark-gray text-[10px] sm:text-sm mt-1">Faculty of Computing and Informatics, LAUTECH</p>
         </div>
         <div className="flex items-center gap-4 self-end sm:self-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="font-bold gap-1 text-xs border-mid-gray/20 hover:bg-light-gray"
+          >
+            <Home className="w-4 h-4" />
+            Home Page
+          </Button>
           <NotificationBell />
         </div>
       </div>
