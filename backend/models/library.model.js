@@ -37,7 +37,7 @@ const librarySchema = new mongoose.Schema(
       enum: ["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "txt"],
       required: true,
     },
-    pdfUrl: {
+    fileUrl: {
       type: String,
       required: true,
     },

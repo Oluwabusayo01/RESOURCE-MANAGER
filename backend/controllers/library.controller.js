@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY,
 );
 
-export const uploadPdfController = async (req, res) => {
+export const uploadFileController = async (req, res) => {
   if (!req.file)
     return res
       .status(400)
@@ -30,7 +30,7 @@ export const uploadPdfController = async (req, res) => {
     const { error } = await supabase.storage
       .from("pdf's") 
       .upload(filename, req.file.buffer, {
-        contentType: "application/pdf",
+        contentType: req.file.mimetype || "application/octet-stream",
         upsert: false,
       });
 
@@ -43,10 +43,11 @@ export const uploadPdfController = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "PDF uploaded successfully",
-      pdfUrl: urlData.publicUrl,
+      message: "File uploaded successfully",
+      fileUrl: urlData.publicUrl,
       fileName: originalName,
       fileSize: req.file.size,
+      mimeType: req.file.mimetype,
     });
   } catch (error) {
     return res.status(500).json({
