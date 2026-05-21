@@ -6,6 +6,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 import { registrationApprovedEmailTemplate } from "../emailTemplates/registrationApproved.template.js";
 import { registrationRejectedEmailTemplate } from "../emailTemplates/registrationRejected.template.js";
 import { registrationRevokedEmailTemplate } from "../emailTemplates/registrationRevoked.template.js";
+import { createNotification } from "../utils/createNotification.js";
 
 dotenv.config();
 
@@ -103,6 +104,12 @@ export const approveUser = async (req, res, next) => {
     user.status = "approved";
     await user.save();
 
+    await createNotification(
+      user._id,
+      "registration_approved",
+      "Your registration has been approved. You can now log in.",
+    );
+
     sendEmail({
       to: user.email,
       ...registrationApprovedEmailTemplate(user.name),
@@ -160,6 +167,12 @@ export const rejectUser = async (req, res, next) => {
 
     user.status = "rejected";
     await user.save();
+
+    await createNotification(
+      user._id,
+      "registration_rejected",
+      "Your registration has been rejected.",
+    );
 
     sendEmail({
       to: user.email,

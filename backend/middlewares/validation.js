@@ -385,7 +385,7 @@ export const uploadMaterialValidation = [
   body("fileUrl")
     .notEmpty()
     .withMessage("File URL is required")
-    .isURL()
+    .isURL()  
     .withMessage("File URL must be a valid URL"),
   body("fileName")
     .notEmpty()
@@ -412,6 +412,91 @@ export const uploadMaterialValidation = [
     .isIn(["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "txt"])
     .withMessage("Invalid file type"),
 ];
+  
+
+export const updateMaterialValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("Material ID is required")
+    .isMongoId()
+    .withMessage("Invalid Material ID"),
+
+  body("title")
+    .optional()
+    .trim()
+    .isLength({ min: 3, max: 200 })
+    .withMessage("Title must be between 3 and 200 characters"),
+
+  body("course")
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Course must be between 2 and 100 characters"),
+
+  body("department")
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Department must be between 2 and 100 characters"),
+
+  body("description")
+    .optional()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("Description must not exceed 500 characters"),
+
+  body("uploadedBy")
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Name must be between 2 and 100 characters")
+    .matches(/^[a-zA-Z\s.'-]+$/)
+    .withMessage("Name can only contain letters, spaces, and . ' -"),
+
+  body("fileUrl")
+    .optional()
+    .isURL()
+    .withMessage("File URL must be a valid URL"),
+
+  body("fileName")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("File name must not exceed 255 characters"),
+
+  body("fileSize")
+    .optional()
+    .isNumeric()
+    .withMessage("File size must be a number")
+    .custom((value) => {
+      if (value <= 0) throw new Error("File size must be greater than 0");
+      if (value > 50 * 1024 * 1024)
+        throw new Error("File size must not exceed 50MB");
+      return true;
+    }),
+
+  body("fileType")
+    .optional()
+    .isIn(["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "txt"])
+    .withMessage("Invalid file type"),
+];
+
+export const deleteMaterialValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("Material ID is required")
+    .isMongoId()
+    .withMessage("Invalid Material ID"),
+];
+
+export const getSingleMaterialValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("Material ID is required")
+    .isMongoId()
+    .withMessage("Invalid Material ID"),
+];
+
 
 export const downloadFileValidation = [
   query("fileUrl")
@@ -420,4 +505,40 @@ export const downloadFileValidation = [
     .isURL()
     .withMessage("fileUrl must be a valid URL"),
 
+];
+
+export const getLibraryMaterialsValidation = [
+  query("search")
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Search must be between 1 and 100 characters"),
+
+  query("department")
+    .optional()
+    .trim()
+    .isLength({ min: 2, max: 100 })
+    .withMessage("Department must be between 2 and 100 characters"),
+
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Limit must be a positive integer"),
+];
+
+export const getNotificationsValidation = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+
+  query("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Limit must be a positive integer"),
 ];

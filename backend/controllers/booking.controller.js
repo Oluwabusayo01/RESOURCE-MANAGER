@@ -2,6 +2,7 @@ import Booking from "../models/booking.model.js";
 import Resource from "../models/resource.model.js";
 import { validationResult, matchedData } from "express-validator";
 import { autoCompleteBookings } from "../utils/autoCompleteBooking.js";
+import { createNotification } from "../utils/createNotification.js";
 
 export const createBooking = async (req, res, next) => {
   const errors = validationResult(req);
@@ -57,7 +58,7 @@ export const createBooking = async (req, res, next) => {
       });
     }
 
-    // 4. Create booking — pull department from the logged in user
+    // 4. Create booking
     const newBooking = await Booking.create({
       resource: resourceId,
       user: req.user.id,
@@ -68,6 +69,12 @@ export const createBooking = async (req, res, next) => {
       endTime,
       department: req.user.department,
     });
+
+    await createNotification(
+      newBooking.user,
+      "booking_confirmed",
+      `Your booking for ${resource.name} (${course}) has been confirmed.`,
+    );
 
     // 5. Populate resource and user for the response
     await newBooking.populate([
@@ -159,6 +166,16 @@ export const updateBooking = async (req, res, next) => {
 
     await booking.save();
 
+    const bookingResource = await Resource.findById(booking.resource)
+      .select("name")
+      .lean();
+
+    await createNotification(
+      booking.user,
+      "booking_updated",
+      `Your booking for ${bookingResource?.name || "this resource"} (${booking.course}) has been updated.`,
+    );
+
     await booking.populate([
       { path: "resource", select: "name type capacity status image" },
       { path: "user", select: "name role department" },
@@ -230,6 +247,16 @@ export const cancelBooking = async (req, res, next) => {
     booking.cancelledBy = req.user.id;
 
     await booking.save();
+
+    const bookingResource = await Resource.findById(booking.resource)
+      .select("name")
+      .lean();
+
+    await createNotification(
+      booking.user,
+      "booking_cancelled",
+      `Your booking for ${bookingResource?.name || "this resource"} (${booking.course}) has been cancelled.`,
+    );
 
     await booking.populate([
       { path: "resource", select: "name type capacity status, image" },

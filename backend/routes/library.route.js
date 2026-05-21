@@ -1,43 +1,36 @@
 import express from "express";
-import multer from "multer";
 import {
   uploadFileController,
   downloadFile,
+  upload,
+  createMaterial,
+  updateMaterial,
+  deleteMaterial,
+  getSingleMaterial,
+  getAllLibraryMaterials,
+  getMyLibraryMaterials,
 } from "../controllers/library.controller.js";
 import { verifiedUser } from "../middlewares/verifiedUser.js";
-import { downloadFileValidation } from "../middlewares/validation.js";
+import {
+  downloadFileValidation,
+  getLibraryMaterialsValidation,
+  uploadMaterialValidation,
+  updateMaterialValidation,
+  deleteMaterialValidation,
+  getSingleMaterialValidation,
+} from "../middlewares/validation.js";
 import { multerErrorHandler } from "../middlewares/multerErrorHandler.js";
 
 const router = express.Router();
 
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 50 * 1024 * 1024 },
-  fileFilter: (req, file, cb) => {
-    const allowedExtensions = [
-      ".pdf",
-      ".doc",
-      ".docx",
-      ".ppt",
-      ".pptx",
-      ".xls",
-      ".xlsx",
-      ".txt",
-    ];
-
-    const fileName = (file.originalname || "").toLowerCase();
-    const hasAllowedExtension = allowedExtensions.some((extension) =>
-      fileName.endsWith(extension),
-    );
-
-    if (hasAllowedExtension) return cb(null, true);
-    return cb(
-      new Error("Invalid file type. Allowed types: pdf, doc, docx, ppt, pptx, xls, xlsx, txt"),
-      false,
-    );
-  },
-});
-
+router.get("/library", getLibraryMaterialsValidation, getAllLibraryMaterials);
+router.get(
+  "/library/staff",
+  verifiedUser,
+  getLibraryMaterialsValidation,
+  getMyLibraryMaterials,
+);
+router.post("/library", verifiedUser, uploadMaterialValidation, createMaterial);
 
 router.post(
   "/library/upload-file",
@@ -48,5 +41,18 @@ router.post(
 );
 
 router.get("/library/download-file", downloadFileValidation, downloadFile);
+router.patch(
+  "/library/:id",
+  verifiedUser,
+  updateMaterialValidation,
+  updateMaterial,
+);
+router.delete(
+  "/library/:id",
+  verifiedUser,
+  deleteMaterialValidation,
+  deleteMaterial,
+);
+router.get("/library/:id", getSingleMaterialValidation, getSingleMaterial);
 
 export default router;

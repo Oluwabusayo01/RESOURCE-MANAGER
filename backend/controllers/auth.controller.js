@@ -3,6 +3,7 @@ import User from "../models/user.model.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { registrationEmailTemplate } from "../emailTemplates/registrationPending.template.js";
 import generateToken from "../utils/generateToken.js";
+import { createNotification } from "../utils/createNotification.js";
 
 export const registerUser = async (req, res, next) => {
   const errors = validationResult(req);
@@ -34,6 +35,20 @@ export const registerUser = async (req, res, next) => {
 
     const newUser = new User({ name, email, password, department, role });
     await newUser.save();
+
+    const admins = await User.find({ role: "admin", status: "approved" })
+      .select("_id")
+      .lean();
+
+    await Promise.all(
+      admins.map((admin) =>
+        createNotification(
+          admin._id,
+          "system",
+          `New user registration: ${newUser.name} (${newUser.department}) is awaiting approval.`,
+        ),
+      ),
+    );
 
     sendEmail({
       to: email,
