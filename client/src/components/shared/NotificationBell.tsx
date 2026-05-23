@@ -32,7 +32,7 @@ export default function NotificationBell() {
     const pathMap: Record<string, string> = {
       classrep: '/classrep/notifications',
       staff: '/staff/notifications',
-      admin: '/admin/dashboard', // Admin might see notifications on dashboard
+      admin: '/admin/notifications',
     }
     navigate(pathMap[user.role] || '/')
   }

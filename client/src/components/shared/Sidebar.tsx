@@ -13,7 +13,8 @@ import {
   LogOut,
   Menu,
   X,
-  Home
+  Home,
+  BookOpen
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -52,6 +53,8 @@ export default function Sidebar() {
       { name: 'Manage Users', path: '/admin/users', icon: Users },
       { name: 'Manage Resources', path: '/admin/resources', icon: Settings },
       { name: 'All Bookings', path: '/admin/bookings', icon: History },
+      { name: 'E-Library', path: '/admin/library', icon: BookOpen },
+      { name: 'Notifications', path: '/admin/notifications', icon: Bell },
       { name: 'Go to Home', path: '/', icon: Home },
     ],
   }
@@ -61,13 +64,13 @@ export default function Sidebar() {
   const sidebarContent = (
     <div className="flex flex-col h-full bg-accent text-white p-6 shadow-2xl">
       {/* Top Section */}
-      <div className="mb-10">
+      <div className="mb-10 pl-12 lg:pl-0">
         <h1 className="text-2xl font-black tracking-tighter">RM</h1>
         <p className="text-xs font-bold text-gold tracking-widest uppercase">FCI LAUTECH</p>
       </div>
 
       {/* Nav Links */}
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-2 overflow-y-auto pr-1">
         {links.map((link) => {
           const Icon = link.icon
           const active = location.pathname === link.path
@@ -127,7 +130,7 @@ export default function Sidebar() {
       </div>
 
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0">
+      <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0 bg-accent text-white shadow-2xl">
         {sidebarContent}
       </aside>
 
@@ -147,7 +150,7 @@ export default function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-72 z-55 lg:hidden"
+              className="fixed inset-y-0 left-0 w-72 z-55 lg:hidden bg-accent text-white shadow-2xl"
             >
               {sidebarContent}
             </motion.aside>

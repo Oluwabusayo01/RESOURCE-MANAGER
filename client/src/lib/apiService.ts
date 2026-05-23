@@ -217,15 +217,73 @@ export const bookingService = {
 }
 
 export const notificationService = {
-  getAll: (params?: any) =>
-    USE_MOCK ? mock.getNotifications(params) : api.get('/notifications', { params }).then(r => {
-      const data = r.data.data || r.data || [];
-      return data.map((item: any) => ({ ...item, id: item._id }));
-    }),
-  markRead: (id: string) =>
-    USE_MOCK ? mock.markNotificationRead(id) : api.patch(`/notifications/${id}/read`).then(r => r.data),
-  markAllRead: () =>
-    USE_MOCK ? mock.markAllNotificationsRead() : api.patch('/notifications/read-all').then(r => r.data),
+  getAll: (params?: any) => {
+    const { page, limit } = params || {}
+    const apiParams = { page, limit }
+    return USE_MOCK ? mock.getNotifications(params) : api.get('/notifications', { params: apiParams }).then(r => {
+      const data = r.data.data || r.data || []
+      let readIds: string[] = []
+      try {
+        const stored = localStorage.getItem('rm_read_notification_ids')
+        if (stored) {
+          readIds = JSON.parse(stored)
+        }
+      } catch (e) {
+        console.error('Failed to parse read notification IDs', e)
+      }
+      let mapped = data.map((item: any) => ({
+        ...item,
+        id: item._id,
+        timestamp: item.createdAt || item.timestamp || new Date().toISOString(),
+        read: readIds.includes(item._id)
+      }))
+      if (params?.unread) {
+        mapped = mapped.filter((item: any) => !item.read)
+      }
+      if (params?.limit) {
+        mapped = mapped.slice(0, params.limit)
+      }
+      return mapped
+    })
+  },
+  markRead: (id: string) => {
+    if (USE_MOCK) {
+      return mock.markNotificationRead(id)
+    } else {
+      try {
+        const stored = localStorage.getItem('rm_read_notification_ids')
+        let readIds: string[] = stored ? JSON.parse(stored) : []
+        if (!readIds.includes(id)) {
+          readIds.push(id)
+          localStorage.setItem('rm_read_notification_ids', JSON.stringify(readIds))
+        }
+      } catch (e) {
+        console.error('Failed to save read notification ID', e)
+      }
+      return Promise.resolve({ success: true, message: "Marked as read locally." })
+    }
+  },
+  markAllRead: () => {
+    if (USE_MOCK) {
+      return mock.markAllNotificationsRead()
+    } else {
+      return notificationService.getAll({ limit: 1000 }).then(notifs => {
+        try {
+          const stored = localStorage.getItem('rm_read_notification_ids')
+          let readIds: string[] = stored ? JSON.parse(stored) : []
+          notifs.forEach((n: any) => {
+            if (!readIds.includes(n.id)) {
+              readIds.push(n.id)
+            }
+          });
+          localStorage.setItem('rm_read_notification_ids', JSON.stringify(readIds))
+        } catch (e) {
+          console.error('Failed to save read notification IDs', e)
+        }
+        return { success: true, message: "All marked as read locally." }
+      })
+    }
+  },
   pushClassUpdate: (payload: any) =>
     USE_MOCK ? mock.pushClassUpdate(payload) : api.post('/notifications/class-update', payload).then(r => r.data),
 }

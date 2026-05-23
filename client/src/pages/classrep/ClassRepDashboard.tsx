@@ -197,10 +197,10 @@ export default function ClassRepDashboard() {
       {/* 4. My Bookings Table */}
       <div className="bg-white rounded-xl border border-mid-gray/20 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-lg font-black text-accent">Recent Bookings</h2>
+          <h2 className="text-base sm:text-lg font-black text-accent whitespace-nowrap">Recent Bookings</h2>
           <button
             onClick={() => navigate('/classrep/bookings')}
-            className="text-gold text-sm font-bold flex items-center gap-1 hover:underline"
+            className="text-gold text-xs sm:text-sm font-bold flex items-center gap-1 hover:underline whitespace-nowrap"
           >
             View All <ArrowRight className="w-3 h-3" />
           </button>
@@ -237,8 +237,8 @@ export default function ClassRepDashboard() {
                   <TableRow key={b.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
                     <TableCell className="font-bold whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
-                        <span>{b.resource.name}</span>
+                        <ResourceImage src={b.resource?.image} name={b.resource?.name || 'Unknown Resource'} type={b.resource?.type || 'lab'} />
+                        <span>{b.resource?.name || 'Unknown Resource'}</span>
                       </div>
                     </TableCell>
                     <TableCell className="text-dark-gray whitespace-nowrap">{b.course}</TableCell>
@@ -276,10 +276,10 @@ export default function ClassRepDashboard() {
       {/* 5. Recent Notifications */}
       <div className="bg-white rounded-xl border border-mid-gray/20 shadow-sm">
         <div className="flex items-center justify-between p-5 border-b">
-          <h2 className="text-lg font-black text-accent">Recent Notifications</h2>
+          <h2 className="text-base sm:text-lg font-black text-accent whitespace-nowrap">Recent Notifications</h2>
           <button
             onClick={() => navigate('/classrep/notifications')}
-            className="text-gold text-sm font-bold flex items-center gap-1 hover:underline"
+            className="text-gold text-xs sm:text-sm font-bold flex items-center gap-1 hover:underline whitespace-nowrap"
           >
             View All <ArrowRight className="w-3 h-3" />
           </button>

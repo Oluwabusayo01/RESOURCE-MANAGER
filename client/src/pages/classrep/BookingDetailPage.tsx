@@ -158,9 +158,9 @@ export default function BookingDetailPage() {
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-start gap-4">
-              <ResourceImage src={booking.resource.image} name={booking.resource.name} type={booking.resource.type} className="w-16 h-16 rounded-xl object-cover border border-mid-gray/20 shrink-0" />
+              <ResourceImage src={booking.resource?.image} name={booking.resource?.name || 'Unknown Resource'} type={booking.resource?.type || 'lab'} className="w-16 h-16 rounded-xl object-cover border border-mid-gray/20 shrink-0" />
               <div>
-                <h1 className="text-2xl font-black text-accent">{booking.resource.name}</h1>
+                <h1 className="text-2xl font-black text-accent">{booking.resource?.name || 'Unknown Resource'}</h1>
                 <p className="text-dark-gray font-medium mt-1">{booking.course}</p>
               </div>
             </div>
@@ -173,7 +173,7 @@ export default function BookingDetailPage() {
                 <MapPin className="w-4 h-4 text-gold" />
                 <span className="text-[10px] font-bold text-dark-gray uppercase">Resource Type</span>
               </div>
-              <p className="font-bold text-accent capitalize">{booking.resource.type}</p>
+              <p className="font-bold text-accent capitalize">{booking.resource?.type || 'lab'}</p>
             </div>
             <div className="bg-light-gray rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
@@ -366,7 +366,7 @@ export default function BookingDetailPage() {
       <ConfirmDialog
         isOpen={cancelOpen}
         title="Cancel Booking"
-        description={`Are you sure you want to cancel your booking for ${booking.resource.name} on ${booking.date}? This action cannot be undone.`}
+        description={`Are you sure you want to cancel your booking for ${booking.resource?.name || 'this resource'} on ${booking.date}? This action cannot be undone.`}
         confirmLabel="Yes, Cancel Booking"
         onConfirm={handleCancel}
         onCancel={() => setCancelOpen(false)}

@@ -74,7 +74,7 @@ export default function MyBookingsPage() {
   }
 
   const filteredBookings = bookings.filter(b => 
-    b.resource.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (b.resource?.name || 'Unknown Resource').toLowerCase().includes(searchQuery.toLowerCase()) ||
     b.course.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
@@ -151,8 +151,8 @@ export default function MyBookingsPage() {
                     <TableRow key={b.id} className="hover:bg-light-gray/30">
                       <TableCell className="font-bold text-accent">
                         <div className="flex items-center gap-3">
-                          <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
-                          <span>{b.resource.name}</span>
+                          <ResourceImage src={b.resource?.image} name={b.resource?.name || 'Unknown Resource'} type={b.resource?.type || 'lab'} />
+                          <span>{b.resource?.name || 'Unknown Resource'}</span>
                         </div>
                       </TableCell>
                       <TableCell className="text-dark-gray font-medium">{b.course}</TableCell>

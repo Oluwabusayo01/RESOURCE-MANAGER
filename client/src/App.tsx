@@ -29,6 +29,7 @@ import AdminDashboard from '@/pages/admin/AdminDashboard'
 import ManageResourcesPage from '@/pages/admin/ManageResourcesPage'
 import ManageUsersPage from '@/pages/admin/ManageUsersPage'
 import AllBookingsPage from '@/pages/admin/AllBookingsPage'
+import AdminLibraryPage from '@/pages/admin/AdminLibraryPage'
 
 import PublicLayout from '@/components/shared/PublicLayout'
 import DashboardLayout from '@/components/shared/DashboardLayout'
@@ -73,6 +74,8 @@ function App() {
           <Route path="/admin/resources" element={<ProtectedRoute allowedRoles={['admin']}><ManageResourcesPage /></ProtectedRoute>} />
           <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['admin']}><ManageUsersPage /></ProtectedRoute>} />
           <Route path="/admin/bookings" element={<ProtectedRoute allowedRoles={['admin']}><AllBookingsPage /></ProtectedRoute>} />
+          <Route path="/admin/library" element={<ProtectedRoute allowedRoles={['admin']}><AdminLibraryPage /></ProtectedRoute>} />
+          <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={['admin']}><NotificationsPage /></ProtectedRoute>} />
         </Route>
 
         {/* 404 Route */}

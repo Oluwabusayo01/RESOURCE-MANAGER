@@ -192,9 +192,9 @@ export default function HomePage() {
             ) : bookings.length > 0 ? (
               bookings.map((b) => (
                 <div key={b.id} className="bg-white p-6 rounded-xl border border-mid-gray/20 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4">
-                  <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} className="w-12 h-12 rounded-lg object-cover border border-mid-gray/20 shrink-0" />
+                  <ResourceImage src={b.resource?.image} name={b.resource?.name || 'Unknown Resource'} type={b.resource?.type || 'lab'} className="w-12 h-12 rounded-lg object-cover border border-mid-gray/20 shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <h4 className="font-bold text-accent truncate mb-1">{b.resource.name}</h4>
+                    <h4 className="font-bold text-accent truncate mb-1">{b.resource?.name || 'Unknown Resource'}</h4>
                     <p className="text-sm text-dark-gray mb-4 truncate">{b.course}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-gold">{format12Hour(b.startTime)} - {format12Hour(b.endTime)}</span>

@@ -247,8 +247,8 @@ export default function AllBookingsPage() {
                       <TableRow key={b.id} className="hover:bg-light-gray/50 text-xs sm:text-sm">
                         <TableCell className="font-bold whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <ResourceImage src={b.resource.image} name={b.resource.name} type={b.resource.type} />
-                            <span>{b.resource.name}</span>
+                            <ResourceImage src={b.resource?.image} name={b.resource?.name || 'Unknown Resource'} type={b.resource?.type || 'lab'} />
+                            <span>{b.resource?.name || 'Unknown Resource'}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-dark-gray text-xs whitespace-nowrap">{b.user?.name || 'Unknown'}</TableCell>
@@ -265,7 +265,7 @@ export default function AllBookingsPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setCancelDialog({ open: true, id: b.id, name: b.resource.name })}
+                              onClick={() => setCancelDialog({ open: true, id: b.id, name: b.resource?.name || 'Unknown Resource' })}
                               className="text-red-500 h-8 w-8 p-0"
                             >
                               <XCircle className="w-4 h-4" />
@@ -327,7 +327,7 @@ export default function AllBookingsPage() {
           {viewBooking && (
             <div className="space-y-4 py-4 px-6 overflow-y-auto flex-1 max-h-[55vh] sm:max-h-[60vh]">
               <div className="flex items-start justify-between">
-                <h3 className="text-xl font-black text-accent">{viewBooking.resource.name}</h3>
+                <h3 className="text-xl font-black text-accent">{viewBooking.resource?.name || 'Unknown Resource'}</h3>
                 <StatusBadge status={viewBooking.status} />
               </div>
 

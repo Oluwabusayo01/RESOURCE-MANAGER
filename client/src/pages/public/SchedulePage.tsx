@@ -135,7 +135,7 @@ export default function SchedulePage() {
       const end = new Date(`${b.date}T${b.endTime}`)
       return {
         ...b,
-        title: `${b.resource.name}: ${b.course}`,
+        title: `${b.resource?.name || 'Unknown Resource'}: ${b.course}`,
         start,
         end,
       }
@@ -146,6 +146,17 @@ export default function SchedulePage() {
     let backgroundColor = '#3B82F6' // Default Blue
     if (event.department === 'cyber security') backgroundColor = '#8B5CF6' // Purple
     if (event.department === 'information system') backgroundColor = '#14B8A6' // Teal
+
+    if (currentView === Views.AGENDA || currentView === 'agenda') {
+      return {
+        style: {
+          borderLeft: `4px solid ${backgroundColor}`,
+          backgroundColor: 'transparent',
+          color: '#111111',
+          fontSize: '0.875rem',
+        }
+      }
+    }
 
     return {
       style: {
@@ -282,9 +293,9 @@ export default function SchedulePage() {
             <div className="py-6 space-y-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  <ResourceImage src={selectedEvent.resource.image} name={selectedEvent.resource.name} type={selectedEvent.resource.type} className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 shrink-0" />
+                  <ResourceImage src={selectedEvent.resource?.image} name={selectedEvent.resource?.name || 'Unknown Resource'} type={selectedEvent.resource?.type || 'lab'} className="w-14 h-14 rounded-lg object-cover border border-mid-gray/20 shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-xl font-bold text-accent truncate">{selectedEvent.resource.name}</h3>
+                    <h3 className="text-xl font-bold text-accent truncate">{selectedEvent.resource?.name || 'Unknown Resource'}</h3>
                     <p className="text-dark-gray font-medium truncate">{selectedEvent.course}</p>
                   </div>
                 </div>
@@ -357,6 +368,50 @@ export default function SchedulePage() {
         .fci-calendar .rbc-toolbar button.rbc-active {
           background-color: #111111;
           color: white;
+        }
+        .fci-calendar .rbc-agenda-view table.rbc-agenda-table {
+          border: 1px solid #e5e7eb;
+          border-collapse: collapse;
+          border-radius: 8px;
+          overflow: hidden;
+          width: 100%;
+        }
+        .fci-calendar .rbc-agenda-view table.rbc-agenda-table tbody tr {
+          border-bottom: 1px solid #e5e7eb;
+          background-color: transparent !important;
+        }
+        .fci-calendar .rbc-agenda-view table.rbc-agenda-table tbody tr:hover {
+          background-color: #f9fafb !important;
+        }
+        .fci-calendar .rbc-agenda-view table.rbc-agenda-table td {
+          padding: 14px 18px;
+          vertical-align: middle;
+          font-size: 0.875rem;
+          color: #374151;
+          background-color: transparent !important;
+        }
+        .fci-calendar .rbc-agenda-view table.rbc-agenda-table th {
+          padding: 14px 18px;
+          background: #f9f9f9;
+          font-weight: 800;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          color: #111111;
+          border-bottom: 2px solid #e5e7eb;
+          text-align: left;
+        }
+        .fci-calendar .rbc-agenda-date-cell {
+          font-weight: 800;
+          color: #111111 !important;
+          border-right: 1px solid #e5e7eb;
+        }
+        .fci-calendar .rbc-agenda-time-cell {
+          font-weight: 700;
+          color: #C9A84C !important;
+          border-right: 1px solid #e5e7eb;
+        }
+        .fci-calendar .rbc-agenda-event-cell {
+          font-weight: 600;
         }
       `}</style>
     </motion.div>

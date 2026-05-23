@@ -67,7 +67,7 @@ const formatFileSize = (bytes: number) => {
 
 export default function ELibraryPage() {
   const user = useAuthStore((s) => s.user)
-  const canUpload = user && (user.role === 'staff' || user.role === 'admin')
+  const canUpload = user && user.role === 'admin'
 
   const [materials, setMaterials] = useState<LibraryMaterial[]>([])
   const [loading, setLoading] = useState(true)

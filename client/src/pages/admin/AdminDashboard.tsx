@@ -378,9 +378,9 @@ export default function AdminDashboard() {
       <Card className="border border-mid-gray/20 shadow-sm overflow-hidden">
         <CardContent className="p-0">
           <div className="flex items-center justify-between p-5 border-b">
-            <h2 className="text-lg font-black text-accent">Pending User Approvals</h2>
+            <h2 className="text-base sm:text-lg font-black text-accent whitespace-nowrap">Pending Approvals</h2>
             {!loading && (
-              <span className="text-xs font-bold text-gold bg-gold/10 px-3 py-1 rounded-full">
+              <span className="text-[10px] sm:text-xs font-bold text-gold bg-gold/10 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">
                 {pendingUsers.length} pending
               </span>
             )}
