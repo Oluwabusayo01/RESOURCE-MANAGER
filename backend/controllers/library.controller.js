@@ -90,7 +90,7 @@ export const uploadFileController = async (req, res) => {
       error: error.message,
     });
   }
-};
+
 
 export const downloadFile = async (req, res) => {
   const errors = validationResult(req);
