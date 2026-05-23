@@ -392,7 +392,7 @@ export default function UploadMaterialPage() {
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="sm:max-w-[540px] w-[95vw] max-h-[90vh] flex flex-col overflow-hidden p-0 gap-0 rounded-2xl border border-mid-gray/10 shadow-2xl">
           {/* Modal Header */}
-          <div className="bg-gradient-to-r from-accent to-accent/90 px-6 py-5 shrink-0 text-white relative">
+          <div className="bg-linear-to-r from-accent to-accent/90 px-6 py-5 shrink-0 text-white relative">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_70%_20%,#C9A84C,transparent_60%)]" />
             <DialogHeader className="relative z-10 text-left">
               <DialogTitle className="text-white text-xl font-black flex items-center gap-2">
