@@ -236,12 +236,35 @@ export const libraryService = {
       const data = r.data.data || r.data || [];
       return data.map((item: any) => ({ ...item, id: item._id }));
     }),
-  upload: (formData: FormData) =>
-    USE_MOCK ? mock.uploadMaterial(formData) : api.post('/library/upload-pdf', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data),
-  download: (id: string) =>
-    USE_MOCK ? mock.downloadMaterial(id) : api.get(`/library/${id}/download`).then(r => r.data),
+  getById: (id: string) =>
+    USE_MOCK ? mock.getMaterialById(id) : api.get(`/library/${id}`).then(r => {
+      const item = r.data.data || r.data;
+      return { ...item, id: item._id || item.id };
+    }),
+  getStaffLibrary: () =>
+    USE_MOCK ? mock.getStaffLibrary() : api.get('/library/staff').then(r => {
+      const data = r.data.data || r.data || [];
+      return data.map((item: any) => ({ ...item, id: item._id }));
+    }),
+  uploadFile: (file: File) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return USE_MOCK
+      ? mock.uploadFile(file)
+      : api.post('/library/upload-file', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data)
+  },
+  create: (payload: any) =>
+    USE_MOCK ? mock.createMaterial(payload) : api.post('/library', payload).then(r => r.data),
+  update: (id: string, payload: any) =>
+    USE_MOCK ? mock.updateMaterial(id, payload) : api.patch(`/library/${id}`, payload).then(r => r.data),
   delete: (id: string) =>
     USE_MOCK ? mock.deleteMaterial(id) : api.delete(`/library/${id}`).then(r => r.data),
+  downloadFile: (fileUrl: string) => {
+    const url = `/library/download-file?fileUrl=${encodeURIComponent(fileUrl)}`
+    return USE_MOCK
+      ? mock.downloadFile(fileUrl)
+      : api.get(url, { responseType: 'blob' }).then(r => r.data)
+  }
 }
 
 export const userService = {

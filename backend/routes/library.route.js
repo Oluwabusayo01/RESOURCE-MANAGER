@@ -32,9 +32,6 @@ router.get(
 );
 router.post("/library", verifiedUser, uploadMaterialValidation, createMaterial);
 
-// GET list of materials
-router.get("/library", getMaterialsController);
-
 // Support both /library/upload-pdf and /library/upload-file for flexibility
 router.post(
   "/library/upload-file",

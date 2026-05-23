@@ -252,8 +252,8 @@ export const pushClassUpdate = async (payload: any) => {
 export const getLibrary = async (params?: any) => {
   await delay()
   let library = [...MOCK_DB.library]
-  if (params?.department && params.department !== 'All') {
-    library = library.filter(m => m.department === params.department)
+  if (params?.department && params.department !== 'all') {
+    library = library.filter(m => m.department.toLowerCase() === params.department.toLowerCase())
   }
   if (params?.search) {
     const s = params.search.toLowerCase()
@@ -262,33 +262,75 @@ export const getLibrary = async (params?: any) => {
   return library
 }
 
-export const uploadMaterial = async (formData: FormData) => {
+export const getStaffLibrary = async () => {
   await delay()
-  const title = formData.get('title') as string
-  const course = formData.get('course') as string
-  const department = formData.get('department') as Department
-  const uploadedBy = formData.get('uploadedBy') as string
-  const uploadedById = formData.get('uploadedById') as string
-  
+  const userStr = localStorage.getItem('rm_user')
+  const user = userStr ? JSON.parse(userStr) : null
+  const currentUserId = user?.id || 'u2'
+  return MOCK_DB.library.filter(m => m.uploadedById === currentUserId)
+}
+
+export const getMaterialById = async (id: string) => {
+  await delay()
+  const found = MOCK_DB.library.find(m => m.id === id)
+  if (!found) throw new Error('Material not found')
+  return found
+}
+
+export const uploadFile = async (file: File) => {
+  await delay()
+  const ext = file.name.split('.').pop()?.toLowerCase() || 'pdf'
+  return {
+    fileUrl: `https://mock-supabase-storage.com/${Date.now()}-${file.name}`,
+    fileName: file.name,
+    fileSize: file.size,
+    fileType: ext
+  }
+}
+
+export const createMaterial = async (payload: any) => {
+  await delay()
+  const userStr = localStorage.getItem('rm_user')
+  const user = userStr ? JSON.parse(userStr) : null
   const newMaterial: LibraryMaterial = {
     id: 'm' + (MOCK_DB.library.length + 1),
-    title,
-    course,
-    department,
-    description: formData.get('description') as string,
-    uploadedBy,
-    uploadedById,
-    fileType: 'pdf', // Mock
-    fileUrl: '#',
+    title: payload.title,
+    course: payload.course,
+    department: payload.department,
+    description: payload.description,
+    uploadedBy: payload.uploadedBy || user?.name || 'Dr. Aisha Bello',
+    uploadedById: user?.id || 'u2',
+    fileType: payload.fileType || 'pdf',
+    fileUrl: payload.fileUrl || '#',
+    fileName: payload.fileName || 'material.pdf',
+    fileSize: payload.fileSize || 0,
     createdAt: new Date().toISOString()
   }
   MOCK_DB.library.unshift(newMaterial)
   return newMaterial
 }
 
-export const downloadMaterial = async (_id: string) => {
+export const updateMaterial = async (id: string, payload: any) => {
   await delay()
-  return { fileUrl: '#' }
+  const index = MOCK_DB.library.findIndex(m => m.id === id)
+  if (index === -1) throw new Error('Material not found')
+  MOCK_DB.library[index] = {
+    ...MOCK_DB.library[index],
+    title: payload.title,
+    course: payload.course,
+    department: payload.department,
+    description: payload.description,
+    fileUrl: payload.fileUrl,
+    fileName: payload.fileName,
+    fileSize: payload.fileSize,
+    fileType: payload.fileType,
+  }
+  return MOCK_DB.library[index]
+}
+
+export const downloadFile = async (fileUrl: string) => {
+  await delay()
+  return { fileUrl }
 }
 
 export const deleteMaterial = async (id: string) => {

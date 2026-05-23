@@ -43,7 +43,7 @@ export default function Sidebar() {
       { name: 'Dashboard', path: '/staff/dashboard', icon: LayoutDashboard },
       { name: 'Book a Resource', path: '/staff/book', icon: CalendarPlus },
       { name: 'My Bookings', path: '/staff/bookings', icon: History },
-      { name: 'Upload Material', path: '/staff/upload', icon: Upload },
+      { name: 'Materials', path: '/staff/upload', icon: Upload },
       { name: 'Notifications', path: '/staff/notifications', icon: Bell },
       { name: 'Go to Home', path: '/', icon: Home },
     ],

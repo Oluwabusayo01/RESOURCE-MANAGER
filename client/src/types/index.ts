@@ -31,5 +31,6 @@ export interface Notification {
 export interface LibraryMaterial {
   id: string; title: string; course: string; department: Department
   description?: string; uploadedBy: string; uploadedById: string
-  fileType: 'pdf' | 'docx' | 'pptx'; fileUrl: string; createdAt: string
+  fileType: string; fileUrl: string; createdAt: string
+  fileName?: string; fileSize?: number
 }

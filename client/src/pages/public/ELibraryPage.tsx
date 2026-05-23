@@ -127,14 +127,28 @@ export default function ELibraryPage() {
 
   const handleDownload = async (material: LibraryMaterial) => {
     try {
-      const result = await libraryService.download(material.id)
-      if (result.fileUrl && result.fileUrl !== '#') {
-        window.open(result.fileUrl, '_blank')
-      } else {
-        toast.success(`Downloading "${material.title}"...`)
-      }
+      toast.loading(`Downloading "${material.title}"...`, { id: 'download' })
+      const response = await libraryService.downloadFile(material.fileUrl)
+      const blob = new Blob([response], { type: 'application/octet-stream' })
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      link.setAttribute('download', material.fileName || `${material.title}.${material.fileType}`)
+      document.body.appendChild(link)
+      link.click()
+      link.parentNode?.removeChild(link)
+      window.URL.revokeObjectURL(downloadUrl)
+      toast.success(`Downloaded "${material.title}"`, { id: 'download' })
     } catch (err) {
-      toast.error('Download failed.')
+      console.error('Blob download failed, trying direct link...', err)
+      try {
+        const token = localStorage.getItem('rm_token')
+        const directUrl = `${import.meta.env.VITE_API_BASE_URL}/library/download-file?fileUrl=${encodeURIComponent(material.fileUrl)}&token=${token}`
+        window.open(directUrl, '_blank')
+        toast.success(`Downloading "${material.title}"...`, { id: 'download' })
+      } catch (fallbackErr) {
+        toast.error('Download failed.', { id: 'download' })
+      }
     }
   }
 
@@ -208,14 +222,29 @@ export default function ELibraryPage() {
 
     setUploading(true)
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('title', title.trim())
-      formData.append('course', course.trim())
-      formData.append('department', uploadDept)
-      if (description.trim()) formData.append('description', description.trim())
+      // Step 1: Upload the file
+      const uploadRes = await libraryService.uploadFile(file)
+      const fileUrl = uploadRes.fileUrl || uploadRes.data?.fileUrl
 
-      await libraryService.upload(formData)
+      if (!fileUrl) {
+        throw new Error('Failed to retrieve file URL from storage.')
+      }
+
+      // Step 2: Create material metadata
+      const payload = {
+        title: title.trim(),
+        course: course.trim(),
+        department: uploadDept,
+        description: description.trim() || undefined,
+        uploadedBy: user?.name || 'Staff Member',
+        fileUrl,
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.name.split('.').pop()?.toLowerCase() || 'pdf',
+      }
+
+      await libraryService.create(payload)
+      
       setUploadSuccess(true)
       toast.success('Material uploaded successfully!')
       // Refresh the library listing
@@ -226,7 +255,7 @@ export default function ELibraryPage() {
         setTimeout(resetUploadForm, 200)
       }, 1500)
     } catch (err: any) {
-      const msg = err?.response?.data?.message || 'Upload failed. Please try again.'
+      const msg = err?.response?.data?.message || err.message || 'Upload failed. Please try again.'
       toast.error(msg)
     } finally {
       setUploading(false)

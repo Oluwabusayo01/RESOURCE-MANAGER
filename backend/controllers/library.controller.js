@@ -43,7 +43,7 @@ export const upload = multer({
 });
 
 export const uploadFileController = async (req, res) => {
-  if (!req.file)
+  if (!req.file) {
     return res
       .status(400)
       .json({ success: false, message: "No file uploaded" });
@@ -90,7 +90,7 @@ export const uploadFileController = async (req, res) => {
       error: error.message,
     });
   }
-
+};
 
 export const downloadFile = async (req, res) => {
   const errors = validationResult(req);
