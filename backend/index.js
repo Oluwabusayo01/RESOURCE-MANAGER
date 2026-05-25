@@ -11,8 +11,9 @@ import uploadImageRoute from "./routes/uploadImage.route.js";
 import bookingRoutes from "./routes/booking.route.js";
 import libraryRoutes from "./routes/library.route.js";
 import notificationRoutes from "./routes/notification.route.js";
-
-
+import adminRoutes from "./routes/admin.route.js";
+    
+  
 dotenv.config();    
 connectDatabase();
       
@@ -41,6 +42,7 @@ app.use("/api", uploadImageRoute);
 app.use("/api", bookingRoutes);
 app.use("/api", libraryRoutes);
 app.use("/api", notificationRoutes);
+app.use("/api", adminRoutes);
 
 // app.use(express.static(path.join(_dirname, "/frontend/dist")));
 

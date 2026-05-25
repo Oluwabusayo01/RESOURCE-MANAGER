@@ -389,13 +389,13 @@ Frontend will open fileUrl in a new browser tab.
   "totalBookingsThisMonth": 42,
   "pendingUsers": 3,
   "totalUsers": 28,
-  "mostBookedResource": {
+  "mostBookedResource": {  
     "id": "r1",
     "name": "Computer Lab A",
     "bookingCount": 18
   }
 }
-```
+```  
 
 ---
 

@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 import dotenv from "dotenv";
 import sharp from "sharp";
+import { createActivity } from "../utils/createActivity.js";
 
 dotenv.config();
 
@@ -52,6 +53,11 @@ export const uploadImage = async (req, res, next) => {
     };
 
     const result = await streamUpload(processedBuffer);
+    await createActivity(
+      "image_uploaded",
+      `${req.user?.name || "A user"} uploaded a resource image.`,
+      req.user?.id || null,
+    );
 
     return res.status(200).json({
       success: true,

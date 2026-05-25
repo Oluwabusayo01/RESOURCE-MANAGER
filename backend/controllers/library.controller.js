@@ -4,6 +4,7 @@ import Library from "../models/library.model.js";
 import multer from "multer";
 import dotenv from "dotenv";
 import { createNotification } from "../utils/createNotification.js";
+import { createActivity } from "../utils/createActivity.js";
 
 dotenv.config();
 
@@ -101,7 +102,7 @@ export const downloadFile = async (req, res) => {
       message: errors.array()[0].msg,
     });
   }
-
+  
   const { fileUrl } = matchedData(req);
 
   return res.redirect(fileUrl);
@@ -147,7 +148,12 @@ export const createMaterial = async (req, res, next) => {
       fileSize,
       fileType,
       user: req.user.id,
-    });
+    });  
+    await createActivity(
+      "material_uploaded",
+      `${req.user.name} uploaded "${material.title}" (${material.course}).`,
+      req.user.id,
+    );
 
     return res.status(201).json({
       success: true,
@@ -218,7 +224,12 @@ export const updateMaterial = async (req, res, next) => {
       "system",
       `Your material "${material.title}" has been updated.`,
     );
-
+    await createActivity(
+      "material_updated",
+      `${req.user.name} updated material "${material.title}".`,
+      req.user.id,
+    );
+  
     return res.status(200).json({
       success: true,
       message: "Material updated successfully",
@@ -264,6 +275,11 @@ export const deleteMaterial = async (req, res, next) => {
       material.user,
       "system",
       `Your material "${material.title}" has been deleted.`,
+    );
+    await createActivity(
+      "material_deleted",
+      `${req.user.name} deleted material "${material.title}".`,
+      req.user.id,
     );
 
     await Library.findByIdAndDelete(id);

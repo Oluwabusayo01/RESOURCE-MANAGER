@@ -7,9 +7,10 @@ import { registrationApprovedEmailTemplate } from "../emailTemplates/registratio
 import { registrationRejectedEmailTemplate } from "../emailTemplates/registrationRejected.template.js";
 import { registrationRevokedEmailTemplate } from "../emailTemplates/registrationRevoked.template.js";
 import { createNotification } from "../utils/createNotification.js";
-
-dotenv.config();
-
+import { createActivity } from "../utils/createActivity.js";
+  
+dotenv.config();    
+  
 export const getAllUsers = async (req, res, next) => {
   const errors = validationResult(req);
 
@@ -109,6 +110,11 @@ export const approveUser = async (req, res, next) => {
       "registration_approved",
       "Your registration has been approved. You can now log in.",
     );
+    await createActivity(
+      "user_approved",
+      `${req.user.name} approved ${user.name}.`,
+      req.user.id,
+    );  
 
     sendEmail({
       to: user.email,
@@ -173,6 +179,11 @@ export const rejectUser = async (req, res, next) => {
       "registration_rejected",
       "Your registration has been rejected.",
     );
+    await createActivity(
+      "user_rejected",
+      `${req.user.name} rejected ${user.name}.`,
+      req.user.id,
+    );
 
     sendEmail({
       to: user.email,
@@ -223,6 +234,11 @@ export const revokeUser = async (req, res, next) => {
 
     // Delete the user from the database
     await user.deleteOne();
+    await createActivity(
+      "user_revoked",
+      `${req.user.name} revoked ${user.name}.`,
+      req.user.id,
+    );
 
     sendEmail({
       to: user.email,

@@ -3,6 +3,7 @@ import Resource from "../models/resource.model.js";
 import { validationResult, matchedData } from "express-validator";
 import { autoCompleteBookings } from "../utils/autoCompleteBooking.js";
 import { createNotification } from "../utils/createNotification.js";
+import { createActivity } from "../utils/createActivity.js";
 
 export const createBooking = async (req, res, next) => {
   const errors = validationResult(req);
@@ -74,6 +75,11 @@ export const createBooking = async (req, res, next) => {
       newBooking.user,
       "booking_confirmed",
       `Your booking for ${resource.name} (${course}) has been confirmed.`,
+    );
+    await createActivity(
+      "booking_created",
+      `${req.user.name} booked ${resource.name} - ${course}.`,
+      req.user.id,
     );
 
     // 5. Populate resource and user for the response
@@ -175,6 +181,11 @@ export const updateBooking = async (req, res, next) => {
       "booking_updated",
       `Your booking for ${bookingResource?.name || "this resource"} (${booking.course}) has been updated.`,
     );
+    await createActivity(
+      "booking_updated",
+      `${req.user.name} updated booking for ${bookingResource?.name || "resource"} - ${booking.course}.`,
+      req.user.id,
+    );
 
     await booking.populate([
       { path: "resource", select: "name type capacity status image" },
@@ -256,6 +267,11 @@ export const cancelBooking = async (req, res, next) => {
       booking.user,
       "booking_cancelled",
       `Your booking for ${bookingResource?.name || "this resource"} (${booking.course}) has been cancelled.`,
+    );
+    await createActivity(
+      "booking_cancelled",
+      `${req.user.name} cancelled booking for ${bookingResource?.name || "resource"} - ${booking.course}.`,
+      req.user.id,
     );
 
     await booking.populate([

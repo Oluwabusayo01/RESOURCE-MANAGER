@@ -2,6 +2,7 @@ import { validationResult, matchedData } from "express-validator";
 import User from "../models/user.model.js";
 import Resource from "../models/resource.model.js";
 import { createNotification } from "../utils/createNotification.js";
+import { createActivity } from "../utils/createActivity.js";
 
 export const createResource = async (req, res, next) => {
   const errors = validationResult(req);
@@ -38,6 +39,11 @@ export const createResource = async (req, res, next) => {
       req.user.id,
       "system",
       `Resource "${newResource.name}" has been created successfully.`,
+    );
+    await createActivity(
+      "resource_created",
+      `${req.user.name} created resource "${newResource.name}".`,
+      req.user.id,
     );
 
     return res.status(201).json({
@@ -103,6 +109,11 @@ export const updateResource = async (req, res, next) => {
       "system",
       `Resource "${resource.name}" has been updated successfully.`,
     );
+    await createActivity(
+      "resource_updated",
+      `${req.user.name} updated resource "${resource.name}".`,
+      req.user.id,
+    );
 
     return res.status(200).json({
       statusCode: 200,
@@ -147,7 +158,7 @@ export const getAllResources = async (req, res, next) => {
         .lean(),
       Resource.countDocuments(filter),
     ]);
-
+  
     return res.status(200).json({
       success: true,
       data: resources,

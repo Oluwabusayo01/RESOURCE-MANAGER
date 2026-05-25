@@ -4,6 +4,7 @@ import { sendEmail } from "../utils/sendEmail.js";
 import { registrationEmailTemplate } from "../emailTemplates/registrationPending.template.js";
 import generateToken from "../utils/generateToken.js";
 import { createNotification } from "../utils/createNotification.js";
+import { createActivity } from "../utils/createActivity.js";
 
 export const registerUser = async (req, res, next) => {
   const errors = validationResult(req);
@@ -36,9 +37,15 @@ export const registerUser = async (req, res, next) => {
     const newUser = new User({ name, email, password, department, role });
     await newUser.save();
 
+    await createActivity(
+      "user_registered",
+      `${newUser.name} registered as ${newUser.role}.`,
+      newUser._id,
+    );
+
     const admins = await User.find({ role: "admin", status: "approved" })
       .select("_id")
-      .lean();
+      .lean();   
 
     await Promise.all(
       admins.map((admin) =>
