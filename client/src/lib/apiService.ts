@@ -1,15 +1,12 @@
 import api from './axios'
-import * as mock from './mockApi'
-
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true'
 
 export const authService = {
   login: (email: string, password: string) =>
-    USE_MOCK ? mock.login(email, password) : api.post('/auth/login', { email, password }).then(r => r.data),
+    api.post('/auth/login', { email, password }).then(r => r.data),
   register: (payload: any) =>
-    USE_MOCK ? mock.register(payload) : api.post('/auth/register', payload).then(r => r.data),
+    api.post('/auth/register', payload).then(r => r.data),
   me: () =>
-    USE_MOCK ? mock.me() : api.get('/auth/me').then(r => r.data),
+    api.get('/auth/me').then(r => r.data),
 }
 
 export const resourceService = {
@@ -19,7 +16,7 @@ export const resourceService = {
       if (apiParams.status === 'active') apiParams.status = 'available'
       else if (apiParams.status === 'inactive') apiParams.status = 'unavailable'
     }
-    return USE_MOCK ? mock.getResources(params) : api.get('/resources', { params: apiParams }).then(r => {
+    return api.get('/resources', { params: apiParams }).then(r => {
       const data = r.data.data || r.data || [];
       return data.map((item: any) => {
         let status = item.status
@@ -32,25 +29,12 @@ export const resourceService = {
   create: async (payload: any) => {
     let imageLink = payload.image;
     if (payload.image instanceof File) {
-      if (USE_MOCK) {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        const type = payload.type || 'lab';
-        const stockImages: Record<string, string> = {
-          lab: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800",
-          seminar: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
-          hall: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800",
-          equipment: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=800",
-          meeting: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=800",
-        };
-        imageLink = stockImages[type] || "https://images.unsplash.com/photo-1541829019-259276a7f013?w=800";
-      } else {
-        const formData = new FormData();
-        formData.append('image', payload.image);
-        const uploadRes = await api.post('/upload-image', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        imageLink = uploadRes.data.imageUrl;
-      }
+      const formData = new FormData();
+      formData.append('image', payload.image);
+      const uploadRes = await api.post('/upload-image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      imageLink = uploadRes.data.imageUrl;
     }
 
     let apiPayload = { ...payload, image: imageLink }
@@ -58,7 +42,7 @@ export const resourceService = {
       if (apiPayload.status === 'active') apiPayload.status = 'available'
       else if (apiPayload.status === 'inactive') apiPayload.status = 'unavailable'
     }
-    return USE_MOCK ? mock.createResource(apiPayload) : api.post('/resources', apiPayload).then(r => {
+    return api.post('/resources', apiPayload).then(r => {
       const item = r.data.data || r.data
       let status = item.status
       if (status === 'available') status = 'active'
@@ -69,25 +53,12 @@ export const resourceService = {
   update: async (id: string, payload: any) => {
     let imageLink = payload.image;
     if (payload.image instanceof File) {
-      if (USE_MOCK) {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        const type = payload.type || 'lab';
-        const stockImages: Record<string, string> = {
-          lab: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=800",
-          seminar: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800",
-          hall: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=800",
-          equipment: "https://images.unsplash.com/photo-1535016120720-40c646be5580?w=800",
-          meeting: "https://images.unsplash.com/photo-1431540015161-0bf868a2d407?w=800",
-        };
-        imageLink = stockImages[type] || "https://images.unsplash.com/photo-1541829019-259276a7f013?w=800";
-      } else {
-        const formData = new FormData();
-        formData.append('image', payload.image);
-        const uploadRes = await api.post('/upload-image', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        imageLink = uploadRes.data.imageUrl;
-      }
+      const formData = new FormData();
+      formData.append('image', payload.image);
+      const uploadRes = await api.post('/upload-image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      imageLink = uploadRes.data.imageUrl;
     }
 
     let apiPayload = { ...payload, image: imageLink }
@@ -95,7 +66,7 @@ export const resourceService = {
       if (apiPayload.status === 'active') apiPayload.status = 'available'
       else if (apiPayload.status === 'inactive') apiPayload.status = 'unavailable'
     }
-    return USE_MOCK ? mock.updateResource(id, apiPayload) : api.patch(`/resources/${id}`, apiPayload).then(r => {
+    return api.patch(`/resources/${id}`, apiPayload).then(r => {
       const item = r.data.data || r.data
       let status = item.status
       if (status === 'available') status = 'active'
@@ -105,7 +76,7 @@ export const resourceService = {
   },
   toggleStatus: (id: string, status: string) => {
     const mappedStatus = status === 'active' ? 'available' : status === 'inactive' ? 'unavailable' : status
-    return USE_MOCK ? mock.toggleResourceStatus(id, status) : api.patch(`/resources/${id}`, { status: mappedStatus }).then(r => {
+    return api.patch(`/resources/${id}`, { status: mappedStatus }).then(r => {
       const item = r.data.data || r.data
       let resStatus = item.status
       if (resStatus === 'available') resStatus = 'active'
@@ -114,7 +85,7 @@ export const resourceService = {
     })
   },
   checkAvailability: (id: string, params: any) =>
-    USE_MOCK ? mock.checkAvailability(id, params) : api.get(`/resources/${id}/availability`, { params }).then(r => r.data),
+    api.get(`/resources/${id}/availability`, { params }).then(r => r.data),
 }
 
 const mapBooking = (item: any): any => {
@@ -171,34 +142,32 @@ const mapQueryParams = (params?: any) => {
 
 export const bookingService = {
   getAll: (params?: any) =>
-    USE_MOCK ? mock.getBookings(params) : api.get('/bookings', { params: mapQueryParams(params) }).then(r => {
+    api.get('/bookings', { params: mapQueryParams(params) }).then(r => {
       const data = r.data.data || r.data || [];
       return data.map(mapBooking);
     }),
   getPublic: (params?: any) =>
-    USE_MOCK ? mock.getBookings(params) : api.get('/bookings/public', { params: mapQueryParams(params) }).then(r => {
+    api.get('/bookings/public', { params: mapQueryParams(params) }).then(r => {
       const data = r.data.data || r.data || [];
       return data.map(mapBooking);
     }),
   getById: (id: string) =>
-    USE_MOCK 
-      ? mock.getBookingById(id) 
-      : bookingService.getAll().then(bookings => {
-          const found = bookings.find((b: any) => b.id === id);
-          if (!found) {
-            const err = new Error("Booking not found") as any;
-            err.response = { status: 404, data: { message: "Booking not found" } };
-            throw err;
-          }
-          return found;
-        }),
+    bookingService.getAll().then(bookings => {
+      const found = bookings.find((b: any) => b.id === id);
+      if (!found) {
+        const err = new Error("Booking not found") as any;
+        err.response = { status: 404, data: { message: "Booking not found" } };
+        throw err;
+      }
+      return found;
+    }),
   create: (payload: any) => {
     const apiPayload = { ...payload }
     if (apiPayload.resourceId) {
       apiPayload.resource = apiPayload.resourceId
       delete apiPayload.resourceId
     }
-    return USE_MOCK ? mock.createBooking(payload) : api.post('/bookings', apiPayload).then(r => mapBooking(r.data.data || r.data))
+    return api.post('/bookings', apiPayload).then(r => mapBooking(r.data.data || r.data))
   },
   update: (id: string, payload: any) => {
     const apiPayload = { ...payload }
@@ -206,21 +175,21 @@ export const bookingService = {
       apiPayload.resource = apiPayload.resourceId
       delete apiPayload.resourceId
     }
-    return USE_MOCK ? mock.updateBooking(id, payload) : api.patch(`/bookings/${id}`, apiPayload).then(r => mapBooking(r.data.data || r.data))
+    return api.patch(`/bookings/${id}`, apiPayload).then(r => mapBooking(r.data.data || r.data))
   },
   cancel: (id: string) =>
-    USE_MOCK ? mock.cancelBooking(id) : api.patch(`/bookings/cancel/${id}`).then(r => mapBooking(r.data.data || r.data)),
+    api.patch(`/bookings/cancel/${id}`).then(r => mapBooking(r.data.data || r.data)),
   logAttendance: (id: string, attendance: number) =>
-    USE_MOCK ? mock.logAttendance(id, attendance) : api.patch(`/bookings/${id}`, { attendance }).then(r => mapBooking(r.data.data || r.data)),
+    api.patch(`/bookings/${id}`, { attendance }).then(r => mapBooking(r.data.data || r.data)),
   delete: (id: string) =>
-    USE_MOCK ? mock.deleteBooking(id) : api.delete(`/bookings/${id}`).then(r => r.data),
+    api.delete(`/bookings/${id}`).then(r => r.data),
 }
 
 export const notificationService = {
   getAll: (params?: any) => {
     const { page, limit } = params || {}
     const apiParams = { page, limit }
-    return USE_MOCK ? mock.getNotifications(params) : api.get('/notifications', { params: apiParams }).then(r => {
+    return api.get('/notifications', { params: apiParams }).then(r => {
       const data = r.data.data || r.data || []
       let readIds: string[] = []
       try {
@@ -247,117 +216,97 @@ export const notificationService = {
     })
   },
   markRead: (id: string) => {
-    if (USE_MOCK) {
-      return mock.markNotificationRead(id)
-    } else {
+    try {
+      const stored = localStorage.getItem('rm_read_notification_ids')
+      let readIds: string[] = stored ? JSON.parse(stored) : []
+      if (!readIds.includes(id)) {
+        readIds.push(id)
+        localStorage.setItem('rm_read_notification_ids', JSON.stringify(readIds))
+      }
+    } catch (e) {
+      console.error('Failed to save read notification ID', e)
+    }
+    return Promise.resolve({ success: true, message: "Marked as read locally." })
+  },
+  markAllRead: () => {
+    return notificationService.getAll({ limit: 1000 }).then(notifs => {
       try {
         const stored = localStorage.getItem('rm_read_notification_ids')
         let readIds: string[] = stored ? JSON.parse(stored) : []
-        if (!readIds.includes(id)) {
-          readIds.push(id)
-          localStorage.setItem('rm_read_notification_ids', JSON.stringify(readIds))
-        }
+        notifs.forEach((n: any) => {
+          if (!readIds.includes(n.id)) {
+            readIds.push(n.id)
+          }
+        });
+        localStorage.setItem('rm_read_notification_ids', JSON.stringify(readIds))
       } catch (e) {
-        console.error('Failed to save read notification ID', e)
+        console.error('Failed to save read notification IDs', e)
       }
-      return Promise.resolve({ success: true, message: "Marked as read locally." })
-    }
-  },
-  markAllRead: () => {
-    if (USE_MOCK) {
-      return mock.markAllNotificationsRead()
-    } else {
-      return notificationService.getAll({ limit: 1000 }).then(notifs => {
-        try {
-          const stored = localStorage.getItem('rm_read_notification_ids')
-          let readIds: string[] = stored ? JSON.parse(stored) : []
-          notifs.forEach((n: any) => {
-            if (!readIds.includes(n.id)) {
-              readIds.push(n.id)
-            }
-          });
-          localStorage.setItem('rm_read_notification_ids', JSON.stringify(readIds))
-        } catch (e) {
-          console.error('Failed to save read notification IDs', e)
-        }
-        return { success: true, message: "All marked as read locally." }
-      })
-    }
+      return { success: true, message: "All marked as read locally." }
+    })
   },
   pushClassUpdate: (payload: any) =>
-    USE_MOCK ? mock.pushClassUpdate(payload) : api.post('/notifications/class-update', payload).then(r => r.data),
+    api.post('/notifications/class-update', payload).then(r => r.data),
 }
 
 export const libraryService = {
   getAll: (params?: any) =>
-    USE_MOCK ? mock.getLibrary(params) : api.get('/library', { params }).then(r => {
+    api.get('/library', { params }).then(r => {
       const data = r.data.data || r.data || [];
       return data.map((item: any) => ({ ...item, id: item._id }));
     }),
   getById: (id: string) =>
-    USE_MOCK ? mock.getMaterialById(id) : api.get(`/library/${id}`).then(r => {
+    api.get(`/library/${id}`).then(r => {
       const item = r.data.data || r.data;
       return { ...item, id: item._id || item.id };
     }),
   getStaffLibrary: () =>
-    USE_MOCK ? mock.getStaffLibrary() : api.get('/library/staff').then(r => {
+    api.get('/library/staff').then(r => {
       const data = r.data.data || r.data || [];
       return data.map((item: any) => ({ ...item, id: item._id }));
     }),
   uploadFile: (file: File) => {
     const formData = new FormData()
     formData.append('file', file)
-    return USE_MOCK
-      ? mock.uploadFile(file)
-      : api.post('/library/upload-file', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data)
+    return api.post('/library/upload-file', formData, { headers: { 'Content-Type': 'multipart/form-data' } }).then(r => r.data)
   },
   create: (payload: any) =>
-    USE_MOCK ? mock.createMaterial(payload) : api.post('/library', payload).then(r => r.data),
+    api.post('/library', payload).then(r => r.data),
   update: (id: string, payload: any) =>
-    USE_MOCK ? mock.updateMaterial(id, payload) : api.patch(`/library/${id}`, payload).then(r => r.data),
+    api.patch(`/library/${id}`, payload).then(r => r.data),
   delete: (id: string) =>
-    USE_MOCK ? mock.deleteMaterial(id) : api.delete(`/library/${id}`).then(r => r.data),
+    api.delete(`/library/${id}`).then(r => r.data),
   downloadFile: (fileUrl: string) => {
     const url = `/library/download-file?fileUrl=${encodeURIComponent(fileUrl)}`
-    return USE_MOCK
-      ? mock.downloadFile(fileUrl)
-      : api.get(url, { responseType: 'blob' }).then(r => r.data)
+    return api.get(url, { responseType: 'blob' }).then(r => r.data)
   }
 }
 
 export const userService = {
   getAll: (params?: any) =>
-    USE_MOCK 
-      ? mock.getUsers(params).then(res => ({
-          users: res.users.map((u: any) => ({ ...u, id: u.id || u._id })),
-          pagination: res.pagination
-        }))
-      : api.get('/users', { params }).then(r => {
-          const usersRaw = r.data.users || r.data.data || [];
-          const users = usersRaw.map((u: any) => ({ ...u, id: u._id }));
-          return { users, pagination: r.data.pagination };
-        }),
+    api.get('/users', { params }).then(r => {
+      const usersRaw = r.data.users || r.data.data || [];
+      const users = usersRaw.map((u: any) => ({ ...u, id: u._id }));
+      return { users, pagination: r.data.pagination };
+    }),
   approve: (id: string) =>
-    USE_MOCK ? mock.approveUser(id) : api.patch(`/users/${id}/approve`).then(r => r.data.data || r.data),
+    api.patch(`/users/${id}/approve`).then(r => r.data.data || r.data),
   reject: (id: string) =>
-    USE_MOCK ? mock.rejectUser(id) : api.patch(`/users/${id}/reject`).then(r => r.data.data || r.data),
+    api.patch(`/users/${id}/reject`).then(r => r.data.data || r.data),
   revoke: (id: string) =>
-    USE_MOCK ? mock.revokeUser(id) : api.patch(`/users/${id}/revoke`).then(r => r.data.data || r.data),
+    api.patch(`/users/${id}/revoke`).then(r => r.data.data || r.data),
 }
 
 export const adminService = {
   getStats: () =>
-    USE_MOCK ? mock.getAdminStats() : api.get('/admin/stats').then(r => r.data.data || r.data),
+    api.get('/admin/stats').then(r => r.data.data || r.data),
   getByDepartment: () =>
-    USE_MOCK ? mock.getBookingsByDepartment() : api.get('/admin/analytics/by-department').then(r => r.data.data || r.data),
+    api.get('/admin/analytics/by-department').then(r => r.data.data || r.data),
   getPeakHours: () =>
-    USE_MOCK ? mock.getPeakHours() : api.get('/admin/analytics/peak-hours').then(r => r.data.data || r.data),
+    api.get('/admin/analytics/peak-hours').then(r => r.data.data || r.data),
   getActivity: (params?: any) =>
-    USE_MOCK ? mock.getActivity(params) : api.get('/admin/activity', { params }).then(r => {
+    api.get('/admin/activity', { params }).then(r => {
       const data = r.data.data || r.data || [];
       return data.map((item: any) => ({ ...item, id: item._id }));
     }),
 }
-
-
-//verify e-library implementation
