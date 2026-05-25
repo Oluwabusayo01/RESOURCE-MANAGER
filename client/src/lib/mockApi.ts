@@ -402,25 +402,45 @@ export const revokeUser = async (id: string) => {
 
 export const getAdminStats = async () => {
   await delay()
-  const mostBooked = MOCK_DB.bookings.reduce((acc: any, b) => {
-    acc[b.resource.name] = (acc[b.resource.name] || 0) + 1
-    return acc
-  }, {})
-  const mostBookedName = Object.keys(mostBooked).reduce((a, b) => mostBooked[a] > mostBooked[b] ? a : b, 'N/A')
+  const counts: Record<string, { id: string, name: string, bookingCount: number }> = {}
+  MOCK_DB.bookings.forEach((b) => {
+    const resId = b.resourceId
+    const resName = b.resource.name
+    if (!counts[resId]) {
+      counts[resId] = { id: resId, name: resName, bookingCount: 0 }
+    }
+    counts[resId].bookingCount++
+  })
+
+  let mostBooked = null
+  let maxCount = 0
+  Object.values(counts).forEach(item => {
+    if (item.bookingCount > maxCount) {
+      maxCount = item.bookingCount
+      mostBooked = item
+    }
+  })
 
   return {
-    totalBookings: MOCK_DB.bookings.length,
+    totalBookingsThisMonth: MOCK_DB.bookings.length,
     pendingUsers: MOCK_DB.users.filter(u => u.status === 'pending').length,
     totalUsers: MOCK_DB.users.length,
-    mostBookedResource: mostBookedName
+    mostBookedResource: mostBooked
   }
 }
 
 export const getBookingsByDepartment = async () => {
   await delay()
+  const formatDepartment = (dept: string) => {
+    const normalized = dept.toLowerCase().trim()
+    if (normalized === 'computer science') return 'Computer Science'
+    if (normalized === 'cyber security') return 'Cyber Security'
+    if (normalized === 'information system') return 'Information Systems Sciences (INS)'
+    return dept
+  }
   const depts = ['computer science', 'cyber security', 'information system']
   return depts.map(d => ({
-    department: d,
+    department: formatDepartment(d),
     count: MOCK_DB.bookings.filter(b => b.department === d).length
   }))
 }

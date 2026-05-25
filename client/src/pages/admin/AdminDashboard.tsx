@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
-import { bookingService, userService } from '@/lib/apiService'
+import { userService, adminService } from '@/lib/apiService'
 import {
   BarChart,
   Bar,
@@ -45,10 +45,14 @@ import {
 import { toast } from 'sonner'
 
 interface AdminStats {
-  totalBookings: number
+  totalBookingsThisMonth: number
   pendingUsers: number
   totalUsers: number
-  mostBookedResource: string
+  mostBookedResource: {
+    bookingCount: number
+    id: string
+    name: string
+  } | null
 }
 
 interface DeptData {
@@ -100,96 +104,40 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      // Fetch bookings, all users, and pending users in parallel
-      const [bookings, allUsersRes, pendingUsersRes] = await Promise.all([
-        bookingService.getAll({ limit: 1000 }).catch(e => {
-          console.error("Failed to fetch bookings:", e)
+      const [statsRes, deptRes, peakRes, pendingUsersRes, activityRes] = await Promise.all([
+        adminService.getStats().catch(e => {
+          console.error("Failed to fetch admin stats:", e)
+          return null
+        }),
+        adminService.getByDepartment().catch(e => {
+          console.error("Failed to fetch department stats:", e)
           return []
         }),
-        userService.getAll({ limit: 1000 }).catch(e => {
-          console.error("Failed to fetch users:", e)
-          return { users: [] }
+        adminService.getPeakHours().catch(e => {
+          console.error("Failed to fetch peak hours:", e)
+          return []
         }),
         userService.getAll({ status: 'pending' }).catch(e => {
           console.error("Failed to fetch pending users:", e)
           return { users: [] }
+        }),
+        adminService.getActivity({ limit: 10 }).catch(e => {
+          console.error("Failed to fetch activity:", e)
+          return []
         })
       ])
 
-      const allUsers = allUsersRes.users || []
-      const pendingUsersList = pendingUsersRes.users || []
-      setPendingUsers(pendingUsersList)
-
-      // Calculate stats
-      const counts: Record<string, number> = {}
-      bookings.forEach((b: any) => {
-        const name = b.resource?.name || 'Unknown'
-        counts[name] = (counts[name] || 0) + 1
-      })
-      let mostBooked = 'None'
-      let maxCount = 0
-      Object.entries(counts).forEach(([name, count]) => {
-        if (count > maxCount) {
-          maxCount = count
-          mostBooked = name
-        }
-      })
-
-      setStats({
-        totalBookings: bookings.length,
-        pendingUsers: pendingUsersList.length,
-        totalUsers: allUsers.length,
-        mostBookedResource: mostBooked
-      })
-
-      // Calculate bookings by department
-      const deptCounts: Record<string, number> = {}
-      bookings.forEach((b: any) => {
-        const dept = b.department || b.user?.department || 'Unknown'
-        // Format to match UI
-        const formattedDept = dept === 'information system' ? 'INS' : dept
-        deptCounts[formattedDept] = (deptCounts[formattedDept] || 0) + 1
-      })
-      const mappedDeptData = Object.entries(deptCounts).map(([department, count]) => ({
-        department,
-        count
+      setStats(statsRes)
+      setDeptData(deptRes || [])
+      
+      const formattedPeak = (peakRes || []).map((item: any) => ({
+        ...item,
+        hour: format12Hour(item.hour)
       }))
-      setDeptData(mappedDeptData)
-
-      // Calculate peak booking hours
-      const hourCounts: Record<string, number> = {}
-      bookings.forEach((b: any) => {
-        if (b.startTime) {
-          const hour = b.startTime.split(':')[0] + ':00'
-          hourCounts[hour] = (hourCounts[hour] || 0) + 1
-        }
-      })
-      const mappedPeakData = Object.entries(hourCounts)
-        .map(([hour, count]) => ({ hour, count }))
-        .sort((a, b) => a.hour.localeCompare(b.hour))
-        .map(item => ({
-          ...item,
-          hour: format12Hour(item.hour)
-        }))
-      setPeakData(mappedPeakData)
-
-      // Calculate recent activity feed from bookings and user registers
-      const bookingActivities = bookings.map((b: any) => ({
-        id: `booking-${b.id}`,
-        type: 'booking_created',
-        description: `${b.course || 'Resource'} booked for ${b.resource?.name || 'Resource'} by ${b.user?.name || 'User'}`,
-        timestamp: b.createdAt || b.date
-      }))
-      const userActivities = allUsers.map((u: any) => ({
-        id: `user-${u.id}`,
-        type: 'user_registered',
-        description: `${u.name} registered as ${u.role === 'classrep' ? 'Class Rep' : u.role}`,
-        timestamp: u.createdAt || new Date().toISOString()
-      }))
-      const combinedActivities = [...bookingActivities, ...userActivities]
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-        .slice(0, 5)
-      setActivity(combinedActivities)
+      setPeakData(formattedPeak)
+      
+      setPendingUsers(pendingUsersRes?.users || [])
+      setActivity(activityRes || [])
 
     } catch (err) {
       console.error('Failed to load admin dashboard data', err)
@@ -226,10 +174,10 @@ export default function AdminDashboard() {
 
   const statCards = stats
     ? [
-        { label: 'Total Bookings', value: stats.totalBookings, icon: CalendarCheck, color: 'text-blue-500', bg: 'bg-blue-50' },
+        { label: 'Bookings This Month', value: stats.totalBookingsThisMonth, icon: CalendarCheck, color: 'text-blue-500', bg: 'bg-blue-50' },
         { label: 'Pending Registrations', value: stats.pendingUsers, icon: UserPlus, color: 'text-gold', bg: 'bg-gold/10' },
         { label: 'Registered Users', value: stats.totalUsers, icon: Users, color: 'text-purple-500', bg: 'bg-purple-50' },
-        { label: 'Most Booked', value: stats.mostBookedResource, icon: Trophy, color: 'text-green-500', bg: 'bg-green-50', isText: true },
+        { label: 'Most Booked', value: stats.mostBookedResource?.name || 'None', icon: Trophy, color: 'text-green-500', bg: 'bg-green-50', isText: true },
       ]
     : []
 
@@ -348,7 +296,7 @@ export default function AdminDashboard() {
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={peakData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="hour" tick={{ fontSize: 11, fill: '#555' }} />
+                  <XAxis dataKey="hour" interval={0} tick={{ fontSize: 11, fill: '#555' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#555' }} allowDecimals={false} />
                   <Tooltip
                     contentStyle={{
