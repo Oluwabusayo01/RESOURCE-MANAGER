@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import path from "path";
+import { fileURLToPath } from "url";
 import connectDatabase from "./config/database.js";
 import authRoutes from "./routes/auth.route.js";   
 import userRoutes from "./routes/user.route.js";
@@ -32,7 +33,9 @@ app.use(
   
 app.use(express.json());
   
-const _dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientDistPath = path.join(__dirname, "../client/dist");
 
 app.use("/api", authRoutes); 
 app.use("/api", userRoutes);
@@ -43,10 +46,10 @@ app.use("/api", libraryRoutes);
 app.use("/api", notificationRoutes);
 app.use("/api", adminRoutes);
   
-app.use(express.static(path.join(_dirname, "/client/dist")));
+app.use(express.static(clientDistPath));
 
 app.get(/.*/, (req, res) => {
-  res.sendFile(path.join(_dirname, "/client/dist/index.html"));
+  res.sendFile(path.join(clientDistPath, "index.html"));
 });
   
 const startServer = async () => {
