@@ -15,7 +15,6 @@ import adminRoutes from "./routes/admin.route.js";
     
   
 dotenv.config();    
-connectDatabase();
       
 const app = express()
 const PORT = process.env.PORT || 5000;
@@ -43,13 +42,23 @@ app.use("/api", bookingRoutes);
 app.use("/api", libraryRoutes);
 app.use("/api", notificationRoutes);
 app.use("/api", adminRoutes);
-
-// app.use(express.static(path.join(_dirname, "/frontend/dist")));
-
-// app.get("/*", (req, res) => {
-//   res.sendFile(path.join(_dirname, "/frontend/dist/index.html"));
-// });
   
-app.listen(PORT, () => {
-  console.log(` App running on port ${PORT}`);
+app.use(express.static(path.join(_dirname, "/client/dist")));
+
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(_dirname, "/client/dist/index.html"));
 });
+  
+const startServer = async () => {
+  try {
+    await connectDatabase();
+    app.listen(PORT, () => {
+      console.log(` App running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error(`Failed to start server: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+startServer();
