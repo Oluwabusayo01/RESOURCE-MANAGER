@@ -1,0 +1,25 @@
+{
+  "name": "resource-manager",
+  "version": "1.0.0",
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "backend/index.js",
+  "scripts": {
+    "install:all": "npm ci --prefix backend && npm ci --prefix client",
+    "build": "npm run install:all && npm run build --prefix client",
+    "start": "npm start --prefix backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oluwabusayo01/RESOURCE-MANAGER.git"
+  },
+  "keywords": [],     
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20 <25"
+  },
+  "bugs": {
+    "url": "https://github.com/Oluwabusayo01/RESOURCE-MANAGER/issues"
+  },
+  "homepage": "https://github.com/Oluwabusayo01/RESOURCE-MANAGER#readme"
+}

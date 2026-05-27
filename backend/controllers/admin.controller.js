@@ -109,7 +109,7 @@ export const getBookingsByDepartment = async (req, res) => {
     return res.status(200).json({
       success: true,
       data,  
-    });
+    });  
   } catch (error) {
     console.error("Error while getting bookings by department:", error.message);
     return res.status(500).json({
@@ -147,8 +147,8 @@ export const getPeakHours = async (req, res) => {
       peakHoursAggregation.map((item) => [item._id, item.count]),
     );
 
-    const data = Array.from({ length: 10 }, (_, index) => {
-      const hour = `${String(index + 8).padStart(2, "0")}:00`;
+    const data = Array.from({ length: 14 }, (_, index) => {
+      const hour = `${String(index + 6).padStart(2, "0")}:00`;
       return {
         hour,
         count: countByHour.get(hour) || 0,
@@ -157,8 +157,8 @@ export const getPeakHours = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data,
-    });
+      data,  
+    }); 
   } catch (error) {
     console.error("Error while getting peak hours:", error.message);
     return res.status(500).json({
@@ -167,7 +167,7 @@ export const getPeakHours = async (req, res) => {
     });
   }
 };
-
+  
 export const getAllActivity = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -185,14 +185,16 @@ export const getAllActivity = async (req, res) => {
     const page = Number(pageParam) || 1;
     const limit = Number(limitParam) || 10;
     const skip = (page - 1) * limit;
+    const since = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    const recentActivityFilter = { createdAt: { $gte: since } };
 
     const [activities, total] = await Promise.all([
-      Activity.find({})
+      Activity.find(recentActivityFilter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .lean(),
-      Activity.countDocuments(),
+      Activity.countDocuments(recentActivityFilter),
     ]);
 
     const data = activities.map((activity) => ({
@@ -212,7 +214,7 @@ export const getAllActivity = async (req, res) => {
         limit,
         totalPages: Math.ceil(total / limit),
         hasNextPage: page * limit < total,
-      },
+      },  
     });
   } catch (error) {
     console.error("Error while getting activity:", error.message);
