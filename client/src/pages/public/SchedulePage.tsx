@@ -270,6 +270,8 @@ export default function SchedulePage() {
             formats={calendarFormats}
             eventPropGetter={eventPropGetter}
             onSelectEvent={(event) => setSelectedEvent(event as Booking)}
+            min={new Date(1970, 1, 1, 7, 0, 0)}
+            max={new Date(1970, 1, 1, 20, 0, 0)}
             style={{ height: '100%' }}
             className="fci-calendar"
           />

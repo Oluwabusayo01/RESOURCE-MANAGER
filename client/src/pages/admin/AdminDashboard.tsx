@@ -83,12 +83,11 @@ interface ActivityItem {
 
 const format12Hour = (timeStr: string) => {
   if (!timeStr) return ''
-  const [hourStr, minStr] = timeStr.split(':')
+  const [hourStr] = timeStr.split(':')
   const hour = parseInt(hourStr, 10)
   const ampm = hour >= 12 ? 'PM' : 'AM'
   const hour12 = hour % 12 === 0 ? 12 : hour % 12
-  const hourPad = hour12.toString().padStart(2, '0')
-  return `${hourPad}:${minStr} ${ampm}`
+  return `${hour12}${ampm}`
 }
 
 export default function AdminDashboard() {
@@ -253,7 +252,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* 3. Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         {/* Bookings by Department */}
         <Card className="border border-mid-gray/20 shadow-sm">
           <CardContent className="p-6">
@@ -293,11 +292,18 @@ export default function AdminDashboard() {
             {loading ? (
               <Skeleton className="h-64 w-full" />
             ) : (
-              <ResponsiveContainer width="100%" height={260}>
-                <LineChart data={peakData}>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={peakData} margin={{ bottom: 45, left: 0, right: 10, top: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="hour" interval={0} tick={{ fontSize: 11, fill: '#555' }} />
-                  <YAxis tick={{ fontSize: 11, fill: '#555' }} allowDecimals={false} />
+                  <XAxis
+                    dataKey="hour"
+                    interval={0}
+                    tick={{ fontSize: 9, fill: '#777', angle: -45, textAnchor: 'end' }}
+                    tickLine={false}
+                    axisLine={{ stroke: '#eee' }}
+                    height={65}
+                  />
+                  <YAxis tick={{ fontSize: 11, fill: '#555' }} allowDecimals={false} width={28} />
                   <Tooltip
                     contentStyle={{
                       background: '#fff',
