@@ -19,6 +19,10 @@ api.interceptors.response.use(
       localStorage.removeItem('rm_user')
       window.location.href = '/login'
     }
+    const backendMessage = error.response?.data?.message || error.response?.data?.error
+    if (backendMessage && typeof backendMessage === 'string') {
+      error.message = backendMessage
+    }
     return Promise.reject(error)
   }
 )
