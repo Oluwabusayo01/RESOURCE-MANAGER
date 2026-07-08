@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
-type StatusType = 'confirmed' | 'pending' | 'cancelled' | 'rejected' | 'active' | 'inactive'
+type StatusType = 'confirmed' | 'pending' | 'cancelled' | 'rejected' | 'active' | 'inactive' | 'completed'
 
 interface StatusBadgeProps {
   status: StatusType
@@ -15,6 +15,7 @@ const statusStyles: Record<StatusType, string> = {
   rejected: 'badge-rejected',
   active: 'badge-active',
   inactive: 'badge-inactive',
+  completed: 'badge-completed',
 }
 
 export default function StatusBadge({ status, className }: StatusBadgeProps) {
