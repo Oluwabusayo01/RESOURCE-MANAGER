@@ -155,9 +155,7 @@ export const updateResourceValidation = [
     .trim(),
 
   body("capacity")
-    .optional({ nullable: true })
-    .isInt({ min: 1 })
-    .withMessage("Capacity must be a positive integer"),
+    .optional({ nullable: true }),
 
   body("image")
     .optional({ nullable: true })
@@ -337,7 +335,7 @@ export const getBookingsValidation = [
     .withMessage("Limit must be a positive integer"),
 ];
 
-export const getSingleBookingValidation = [   
+export const getSingleBookingValidation = [
   param("id")
     .notEmpty()
     .withMessage("Booking ID is required")
@@ -385,7 +383,7 @@ export const uploadMaterialValidation = [
   body("fileUrl")
     .notEmpty()
     .withMessage("File URL is required")
-    .isURL()  
+    .isURL()
     .withMessage("File URL must be a valid URL"),
   body("fileName")
     .notEmpty()
@@ -412,7 +410,6 @@ export const uploadMaterialValidation = [
     .isIn(["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "txt"])
     .withMessage("Invalid file type"),
 ];
-  
 
 export const updateMaterialValidation = [
   param("id")
@@ -497,14 +494,12 @@ export const getSingleMaterialValidation = [
     .withMessage("Invalid Material ID"),
 ];
 
-
 export const downloadFileValidation = [
   query("fileUrl")
     .notEmpty()
     .withMessage("fileUrl is required")
     .isURL()
     .withMessage("fileUrl must be a valid URL"),
-
 ];
 
 export const getLibraryMaterialsValidation = [

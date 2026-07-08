@@ -72,9 +72,8 @@ export const updateResource = async (req, res, next) => {
   }
 
   try {
-    const { id, name, type, description, capacity, image, status } =
-      matchedData(req);
-
+    const { id, name, type, description, image, status } = matchedData(req);
+    const capacity = req.body.capacity;
     const resource = await Resource.findById(id);
     if (!resource) {
       return res.status(404).json({
@@ -96,6 +95,8 @@ export const updateResource = async (req, res, next) => {
     if (capacity !== undefined) {
       resource.capacity = capacity;
     }
+    console.log("Updating resource with capacity:", capacity);
+
     if (image) {
       resource.image = image;
     }
@@ -158,7 +159,7 @@ export const getAllResources = async (req, res, next) => {
         .lean(),
       Resource.countDocuments(filter),
     ]);
-  
+
     return res.status(200).json({
       success: true,
       data: resources,
