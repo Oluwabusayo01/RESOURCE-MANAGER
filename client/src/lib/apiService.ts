@@ -307,6 +307,10 @@ export const adminService = {
   getActivity: (params?: any) =>
     api.get('/admin/activity', { params }).then(r => {
       const data = r.data.data || r.data || [];
-      return data.map((item: any) => ({ ...item, id: item._id }));
+      const mapped = data.map((item: any) => ({ ...item, id: item._id }));
+      return {
+        data: mapped,
+        pagination: r.data.pagination || null
+      };
     }),
 }
