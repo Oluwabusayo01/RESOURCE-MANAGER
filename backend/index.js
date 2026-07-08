@@ -24,7 +24,7 @@ app.use(cookieParser());
                 
 app.use(
   cors({  
-    origin: ["http://localhost:5173", ],
+    origin: ["http://localhost:5173", "https://faculty-resource-manager.vercel.app/" ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
@@ -53,7 +53,7 @@ app.get(/.*/, (req, res) => {
 });
   
 const startServer = async () => {
-  try {
+  try {        
     await connectDatabase();
     app.listen(PORT, () => {
       console.log(` App running on port ${PORT}`);
