@@ -13,11 +13,11 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "backend"
+      "destination": { "service": "backend" }
     },
     {
-      "source": "/(.*)",
-      "destination": "client"
+      "source": "/:path*",
+      "destination": { "service": "client" }
     }
   ]
 }
