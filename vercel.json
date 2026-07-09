@@ -1,23 +1,24 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "services": {
-    "client": {
-      "root": "client"
+  "builds": [
+    {
+      "src": "backend/index.js",
+      "use": "@vercel/node"
     },
-    "backend": {
-      "root": "backend",
-      "entrypoint": "index.js"
+    {
+      "src": "client/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "dist" }
     }
-  },
+  ],
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": { "service": "backend" }
+      "source": "/api/(.*)",
+      "destination": "backend/index.js"
     },
     {
-      "source": "/:path*",
-      "destination": { "service": "client" }
+      "source": "/(.*)",
+      "destination": "client/$1"
     }
   ]
 }
