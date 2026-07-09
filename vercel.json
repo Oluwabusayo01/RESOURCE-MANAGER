@@ -1,15 +1,21 @@
 {
   "version": 2,
-  "services": [
+  "services": {
+    "frontend": {
+      "root": "client"
+    },
+    "backend": {
+      "root": "backend"
+    }
+  },
+  "rewrites": [
     {
-      "name": "frontend",
-      "src": "frontend",
-      "path": "/*"
+      "source": "/api/:path*",
+      "destination": "backend"
     },
     {
-      "name": "backend",
-      "src": "backend",
-      "path": "/api/*"
+      "source": "/:path*",
+      "destination": "client"
     }
   ]
 }
