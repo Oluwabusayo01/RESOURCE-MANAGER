@@ -1,11 +1,12 @@
 {
   "version": 2,
   "services": {
-    "frontend": {
+    "client": {
       "root": "client"
     },
     "backend": {
-      "root": "backend"
+      "root": "backend",
+      "entrypoint": "index.js"
     }
   },
   "rewrites": [
