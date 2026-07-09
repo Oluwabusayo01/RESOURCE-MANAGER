@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "services": [
+    {
+      "name": "frontend",
+      "src": "frontend",
+      "path": "/*"
+    },
+    {
+      "name": "backend",
+      "src": "backend",
+      "path": "/api/*"
+    }
+  ]
+}
