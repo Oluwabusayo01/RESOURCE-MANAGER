@@ -150,14 +150,14 @@ export default function AllBookingsPage() {
           <h1 className="text-xl sm:text-3xl font-black text-accent">All Bookings</h1>
           <p className="text-dark-gray text-[10px] sm:text-sm mt-1">View and manage all resource bookings across FCI.</p>
         </div>
-        <Button
+        {/* <Button
           variant="outline"
           onClick={() => toast.info('Export feature coming soon.')}
           className="gap-2 font-bold text-dark-gray w-full sm:w-auto h-11 sm:h-10"
         >
           <Download className="w-4 h-4" />
           Export
-        </Button>
+        </Button> */}
       </div>
 
       {/* 1. Filter Bar */}

@@ -46,6 +46,99 @@ interface BookingFormValues {
   notes?: string
 }
 
+const convertTo24h = (hour: string, minute: string, period: string): string => {
+  if (!hour || !minute || !period) return ''
+  let h = parseInt(hour, 10)
+  if (period === 'PM' && h < 12) h += 12
+  if (period === 'AM' && h === 12) h = 0
+  return `${h.toString().padStart(2, '0')}:${minute}`
+}
+
+const parse24h = (timeStr: string) => {
+  if (!timeStr) return { hour: '08', minute: '00', period: 'AM' }
+  const [hStr, mStr] = timeStr.split(':')
+  let h = parseInt(hStr, 10)
+  let period = 'AM'
+  if (h >= 12) {
+    period = 'PM'
+    if (h > 12) h -= 12
+  }
+  if (h === 0) h = 12
+  return {
+    hour: h.toString().padStart(2, '0'),
+    minute: mStr || '00',
+    period
+  }
+}
+
+interface TimePickerProps {
+  label: string
+  value: string
+  onChange: (val: string) => void
+  error?: string
+}
+
+function TimePicker({ label, value, onChange, error }: TimePickerProps) {
+  const { hour, minute, period } = parse24h(value)
+
+  const handleHourChange = (newHour: string) => {
+    onChange(convertTo24h(newHour, minute, period))
+  }
+
+  const handleMinuteChange = (newMinute: string) => {
+    onChange(convertTo24h(hour, newMinute, period))
+  }
+
+  const handlePeriodChange = (newPeriod: string) => {
+    onChange(convertTo24h(hour, minute, newPeriod))
+  }
+
+  const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'))
+  const minutes = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'))
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex items-center gap-2">
+        <Select value={hour} onValueChange={handleHourChange}>
+          <SelectTrigger className="w-20">
+            <SelectValue placeholder="HH" />
+          </SelectTrigger>
+          <SelectContent>
+            {hours.map((h) => (
+              <SelectItem key={h} value={h}>{h}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <span className="text-dark-gray font-semibold">:</span>
+
+        <Select value={minute} onValueChange={handleMinuteChange}>
+          <SelectTrigger className="w-20">
+            <SelectValue placeholder="MM" />
+          </SelectTrigger>
+          <SelectContent>
+            {minutes.map((m) => (
+              <SelectItem key={m} value={m}>{m}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={period} onValueChange={handlePeriodChange}>
+          <SelectTrigger className="w-24">
+            <SelectValue placeholder="AM/PM" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="AM">AM</SelectItem>
+            <SelectItem value="PM">PM</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
+  )
+}
+
 export default function BookingPage() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
@@ -67,8 +160,8 @@ export default function BookingPage() {
     defaultValues: {
       resourceId: '',
       date: new Date().toISOString().split('T')[0],
-      startTime: '',
-      endTime: '',
+      startTime: '08:00',
+      endTime: '09:00',
       course: '',
       notes: '',
     },
@@ -205,22 +298,24 @@ export default function BookingPage() {
               {/* Date */}
               <div className="space-y-2">
                 <Label>Date</Label>
-                <Input type="date" {...register('date')} min={todayStr} />
+                <Input type="date" {...register('date')} min={todayStr} onClick={(e) => e.currentTarget.showPicker()} />
                 {errors.date && <p className="text-xs text-red-500">{errors.date.message}</p>}
               </div>
 
               {/* Time Range */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Start Time</Label>
-                  <Input type="time" {...register('startTime')} />
-                  {errors.startTime && <p className="text-xs text-red-500">{errors.startTime.message}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label>End Time</Label>
-                  <Input type="time" {...register('endTime')} />
-                  {errors.endTime && <p className="text-xs text-red-500">{errors.endTime.message}</p>}
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <TimePicker
+                  label="Start Time"
+                  value={startTime}
+                  onChange={(val) => setValue('startTime', val, { shouldValidate: true })}
+                  error={errors.startTime?.message}
+                />
+                <TimePicker
+                  label="End Time"
+                  value={endTime}
+                  onChange={(val) => setValue('endTime', val, { shouldValidate: true })}
+                  error={errors.endTime?.message}
+                />
               </div>
 
               {/* Course Name */}
