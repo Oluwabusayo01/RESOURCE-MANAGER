@@ -192,7 +192,7 @@ export default function StaffDashboard() {
       {/* 3. Quick Actions (Remaining for staff) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-        <button
+        {/* <button
           onClick={() => setClassUpdateOpen(true)}
           className="flex items-center gap-4 p-5 bg-white border border-mid-gray/20 rounded-xl hover:border-gold hover:shadow-md transition-all group"
         >
@@ -203,7 +203,7 @@ export default function StaffDashboard() {
             <p className="font-bold text-lg text-accent">Push Class Update</p>
             <p className="text-sm text-dark-gray">Notify about changes</p>
           </div>
-        </button>
+        </button> */}
 
         <button
           onClick={() => navigate('/staff/upload')}

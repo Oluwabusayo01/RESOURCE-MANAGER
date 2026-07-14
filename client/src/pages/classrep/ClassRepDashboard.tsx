@@ -180,7 +180,7 @@ export default function ClassRepDashboard() {
       {/* 3. Quick Actions */}
       <div className="grid grid-cols-1 gap-4">
 
-        <button
+        {/* <button
           onClick={() => setClassUpdateOpen(true)}
           className="flex items-center gap-4 p-5 bg-white border border-mid-gray/20 rounded-xl hover:border-gold hover:shadow-md transition-all group"
         >
@@ -191,7 +191,7 @@ export default function ClassRepDashboard() {
             <p className="font-bold text-lg text-accent">Push Class Update</p>
             <p className="text-sm text-dark-gray">Notify your class about schedule changes</p>
           </div>
-        </button>
+        </button> */}
       </div>
 
       {/* 4. My Bookings Table */}
