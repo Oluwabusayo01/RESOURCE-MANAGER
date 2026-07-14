@@ -17,8 +17,12 @@
       "destination": "backend/index.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "client/$1"
+      "source": "/:path(.*\\.[a-zA-Z0-9]+)",
+      "destination": "client/:path"
+    },
+    {
+      "source": "/:path((?!api/).*)",
+      "destination": "client/index.html"
     }
   ]
 }
