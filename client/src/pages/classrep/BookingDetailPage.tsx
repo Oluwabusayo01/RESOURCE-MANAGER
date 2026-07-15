@@ -284,7 +284,7 @@ export default function BookingDetailPage() {
 
   const isFuture = booking.date >= today
   const canCancel = booking.status === 'confirmed' && isFuture
-  const canLogAttendance = booking.status === 'confirmed' && booking.date <= today
+  const canLogAttendance = (booking.status === 'confirmed' || booking.status === 'completed') && booking.date <= today
   const canEditDetails = booking.status === 'confirmed' && isFuture
 
   return (

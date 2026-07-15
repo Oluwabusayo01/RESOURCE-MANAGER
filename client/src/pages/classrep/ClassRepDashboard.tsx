@@ -9,7 +9,6 @@ import type { Booking, Notification } from '@/types'
 import NotificationBell from '@/components/shared/NotificationBell'
 import StatusBadge from '@/components/shared/StatusBadge'
 import ResourceImage from '@/components/shared/ResourceImage'
-import ClassUpdateModal from '@/components/shared/ClassUpdateModal'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 
 import { Button } from '@/components/ui/button'
@@ -27,9 +26,7 @@ import {
 import {
   CalendarCheck,
   Clock,
-  Megaphone,
   Users,
-  Send,
   Eye,
   XCircle,
   Bell,
@@ -56,7 +53,6 @@ export default function ClassRepDashboard() {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [classUpdateOpen, setClassUpdateOpen] = useState(false)
   const [cancelDialog, setCancelDialog] = useState<{ open: boolean; id: string }>({ open: false, id: '' })
 
   const fetchData = async () => {
@@ -90,10 +86,9 @@ export default function ClassRepDashboard() {
     return {
       total: bookings.length,
       upcoming: bookings.filter(b => b.status === 'confirmed' && b.date >= today).length,
-      classUpdates: notifications.filter(n => n.type === 'class_update').length,
       attendance: bookings.reduce((sum, b) => sum + (b.attendance || 0), 0),
     }
-  }, [bookings, notifications])
+  }, [bookings])
 
   const handleCancel = async () => {
     try {
@@ -109,7 +104,6 @@ export default function ClassRepDashboard() {
   const statCards = [
     { label: 'My Total Bookings', value: stats.total, icon: CalendarCheck, color: 'text-blue-500', bg: 'bg-blue-50' },
     { label: 'Upcoming Sessions', value: stats.upcoming, icon: Clock, color: 'text-gold', bg: 'bg-gold/10' },
-    { label: 'Class Updates Sent', value: stats.classUpdates, icon: Megaphone, color: 'text-purple-500', bg: 'bg-purple-50' },
     { label: 'Attendance Logged', value: stats.attendance, icon: Users, color: 'text-green-500', bg: 'bg-green-50' },
   ]
 
@@ -146,9 +140,9 @@ export default function ClassRepDashboard() {
       </div>
 
       {/* 2. Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading
-          ? [1, 2, 3, 4].map(i => (
+          ? [1, 2, 3].map(i => (
             <Card key={i} className="border border-mid-gray/20">
               <CardContent className="p-5 space-y-3">
                 <Skeleton className="h-10 w-10 rounded-lg" />
@@ -318,10 +312,6 @@ export default function ClassRepDashboard() {
       </div>
 
       {/* Modals */}
-      <ClassUpdateModal
-        isOpen={classUpdateOpen}
-        onClose={() => setClassUpdateOpen(false)}
-      />
       <ConfirmDialog
         isOpen={cancelDialog.open}
         title="Cancel Booking"
