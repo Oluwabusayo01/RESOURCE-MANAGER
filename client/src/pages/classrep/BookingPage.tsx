@@ -10,6 +10,7 @@ import type { Resource } from '@/types'
 import { useBookingReminder } from '@/lib/useBookingReminder'
 
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -145,6 +146,7 @@ export default function BookingPage() {
   const { scheduleReminder } = useBookingReminder()
 
   const [resources, setResources] = useState<Resource[]>([])
+  const [loadingResources, setLoadingResources] = useState(true)
   const [checking, setChecking] = useState(false)
   const [available, setAvailable] = useState<boolean | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -171,12 +173,15 @@ export default function BookingPage() {
   const date = useWatch({ control, name: 'date' })
   const startTime = useWatch({ control, name: 'startTime' })
   const endTime = useWatch({ control, name: 'endTime' })
+  const course = useWatch({ control, name: 'course' })
 
   // Fetch active resources on mount
   useEffect(() => {
+    setLoadingResources(true)
     resourceService.getAll({ status: 'active' })
       .then(setResources)
       .catch(err => console.error('Failed to load resources', err))
+      .finally(() => setLoadingResources(false))
   }, [])
 
   // Check availability when fields change
@@ -255,6 +260,61 @@ export default function BookingPage() {
   }
 
   const todayStr = new Date().toISOString().split('T')[0]
+
+  if (loadingResources) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <Skeleton className="h-8 w-48 sm:w-64" />
+          <Skeleton className="h-4 w-72 mt-2" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2 border border-mid-gray/20 shadow-sm">
+            <CardContent className="p-6 space-y-5">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-16" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-24 w-full" />
+              </div>
+              <Skeleton className="h-10 w-32" />
+            </CardContent>
+          </Card>
+          <Card className="border border-mid-gray/20 shadow-sm h-fit">
+            <CardContent className="p-6 space-y-4">
+              <Skeleton className="h-6 w-32" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-4/5" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <motion.div
@@ -335,7 +395,7 @@ export default function BookingPage() {
               <Button
                 type="submit"
                 className="w-full bg-accent text-white hover:bg-accent/90 font-bold"
-                disabled={submitting || available === false || checking}
+                disabled={submitting || available === false || checking || !course || course.trim().length < 3 || !resourceId}
               >
                 {submitting ? (
                   <span className="flex items-center gap-2">

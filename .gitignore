@@ -5,3 +5,5 @@ dist/
 .vscode/
 .idea/
 .DS_Store
+/full_code.txt
+/micro_code.txt
