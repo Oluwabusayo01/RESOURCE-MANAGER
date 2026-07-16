@@ -27,6 +27,37 @@ import {
 import { CheckCircle2, XCircle, ShieldOff, Users, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
+const getPaginationRange = (currentPage: number, totalPages: number) => {
+  const delta = 1 // number of surrounding pages to show
+  const range: number[] = []
+  const rangeWithDots: (number | string)[] = []
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= currentPage - delta && i <= currentPage + delta)
+    ) {
+      range.push(i)
+    }
+  }
+
+  let l: number | undefined
+  for (const i of range) {
+    if (l !== undefined) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1)
+      } else if (i - l > 2) {
+        rangeWithDots.push('...')
+      }
+    }
+    rangeWithDots.push(i)
+    l = i
+  }
+
+  return rangeWithDots
+}
+
 interface UserItem {
   id: string
   name: string
@@ -325,17 +356,27 @@ export default function ManageUsersPage() {
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                {[...Array(pagination.totalPages)].map((_, i) => (
-                  <Button
-                    key={i + 1}
-                    variant={page === i + 1 ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handlePageChange(i + 1)}
-                    className="h-8 w-8 p-0 text-xs font-bold"
-                  >
-                    {i + 1}
-                  </Button>
-                ))}
+                {getPaginationRange(page, pagination.totalPages).map((p, idx) => {
+                  if (p === '...') {
+                    return (
+                      <span key={`dots-${idx}`} className="px-2 text-xs font-bold text-mid-gray select-none">
+                        ...
+                      </span>
+                    )
+                  }
+                  const pageNum = p as number
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={page === pageNum ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                      className="h-8 w-8 p-0 text-xs font-bold"
+                    >
+                      {pageNum}
+                    </Button>
+                  )
+                })}
                 <Button
                   variant="outline"
                   size="sm"
