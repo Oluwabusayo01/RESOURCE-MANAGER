@@ -76,7 +76,7 @@ const formatFileSize = (bytes: number) => {
 
 export default function ELibraryPage() {
   const user = useAuthStore((s) => s.user)
-  const canUpload = user && user.role === 'admin'
+  const canUpload = user && (user.role === 'admin' || user.role === 'staff')
 
   const [materials, setMaterials] = useState<LibraryMaterial[]>([])
   const [loading, setLoading] = useState(true)
@@ -300,7 +300,7 @@ export default function ELibraryPage() {
           />
         </div>
         <Select value={department} onValueChange={setDepartment}>
-          <SelectTrigger className="w-full sm:w-[220px] h-10 text-sm">
+          <SelectTrigger className="w-full sm:w-[220px] !h-10 text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
