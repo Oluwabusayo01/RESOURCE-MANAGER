@@ -1,6 +1,7 @@
 import { validationResult, matchedData } from "express-validator";
 import User from "../models/user.model.js";
 import Resource from "../models/resource.model.js";
+import Booking from "../models/booking.model.js";
 import { createNotification } from "../utils/createNotification.js";
 import { createActivity } from "../utils/createActivity.js";
 
@@ -61,6 +62,7 @@ export const createResource = async (req, res, next) => {
   }
 };
 
+
 export const updateResource = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -102,6 +104,23 @@ export const updateResource = async (req, res, next) => {
     }
     if (status) {
       resource.status = status;
+    }
+    if (status === "unavailable") {
+      const bookings = await Booking.find({
+        resource: resource._id,
+        status: { $in: ["pending", "confirmed"] },
+      });  
+
+      for (const booking of bookings) {
+        booking.status = "cancelled";
+        await booking.save();  
+
+        await createNotification(
+          booking.user,
+          "booking_cancelled",
+          `Your booking for "${resource.name}" has been cancelled because the resource is unavailable.`,
+        );
+      }
     }
     await resource.save();
 

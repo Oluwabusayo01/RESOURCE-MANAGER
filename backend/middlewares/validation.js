@@ -302,6 +302,20 @@ export const updateBookingValidation = [
     .withMessage("Attendance must be a positive number"),
 ];
 
+export const updateBookingAttendanceValidation = [
+  param("id")
+    .notEmpty()
+    .withMessage("Booking ID is required")
+    .isMongoId()
+    .withMessage("Invalid Booking ID"),
+
+  body("attendance")
+    .notEmpty()
+    .withMessage("Attendance is required")
+    .isInt({ min: 0 })
+    .withMessage("Attendance must be a positive number"),
+];
+
 export const cancelBookingValidation = [
   param("id")
     .notEmpty()

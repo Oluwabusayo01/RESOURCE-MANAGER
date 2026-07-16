@@ -6,6 +6,7 @@ import {
   updateBookingValidation,
   getBookingsValidation,
   getSingleBookingValidation,
+  updateBookingAttendanceValidation,
 } from "../middlewares/validation.js";
 import {
   createBooking,
@@ -14,6 +15,7 @@ import {
   getPublicBookings,
   getAllBookings,
   getSingleBooking,
+  updateBookingAttendance,
 } from "../controllers/booking.controller.js";
 
 const router = express.Router();
@@ -27,7 +29,13 @@ router.patch(
   verifiedUser,
   updateBookingValidation,
   updateBooking,
-);  
+);   
+router.patch(
+  "/bookings/:id/attendance",
+  verifiedUser,
+  updateBookingAttendanceValidation,
+  updateBookingAttendance,
+);
 router.patch(
   "/bookings/cancel/:id",
   verifiedUser,

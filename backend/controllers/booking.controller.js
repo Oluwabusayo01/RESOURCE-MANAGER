@@ -101,8 +101,52 @@ export const createBooking = async (req, res, next) => {
     });
   }
 };
+export const updateBookingAttendance = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      success: false,
+      message: errors.array()[0].msg,
+    });
+  }
+  try {
+    const { id, attendance } = matchedData(req);
+
+    const booking = await Booking.findById(id);
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
+      });
+    }
+
+    if (req.user.role !== "admin" && booking.user.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to update this booking",
+      });
+    }
+
+    booking.attendance = attendance;
+
+    await booking.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Attendance updated successfully",
+      data: booking,
+    });
+  } catch (error) {
+    console.error("Error updating booking attendance", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
 
 export const updateBooking = async (req, res, next) => {
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({
@@ -113,7 +157,9 @@ export const updateBooking = async (req, res, next) => {
 
   try {
     await autoCompleteBookings();
-    const { id, course, notes, date, startTime, endTime } = matchedData(req);
+    const { id, course, notes, date, startTime, endTime,  } =
+      matchedData(req);
+      const { attendance } = req.body; 
 
     // 1. Check booking exists
     const booking = await Booking.findById(id);
@@ -169,7 +215,8 @@ export const updateBooking = async (req, res, next) => {
     if (date) booking.date = date;
     if (startTime) booking.startTime = startTime;
     if (endTime) booking.endTime = endTime;
-
+    if (attendance) booking.attendance = attendance;
+  
     await booking.save();
 
     const bookingResource = await Resource.findById(booking.resource)
@@ -207,14 +254,13 @@ export const updateBooking = async (req, res, next) => {
 };
 
 export const cancelBooking = async (req, res, next) => {
-
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     return res.status(422).json({
-       success: false,
-       message: errors.array()[0].msg,
-     });
-   }
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      success: false,
+      message: errors.array()[0].msg,
+    });
+  }
   try {
     await autoCompleteBookings();
 
@@ -295,14 +341,13 @@ export const cancelBooking = async (req, res, next) => {
 };
 
 export const getPublicBookings = async (req, res, next) => {
-
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     return res.status(422).json({
-       success: false,
-       message: errors.array()[0].msg,
-     });
-   }
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      success: false,
+      message: errors.array()[0].msg,
+    });
+  }
   try {
     await autoCompleteBookings();
 
@@ -353,18 +398,16 @@ export const getPublicBookings = async (req, res, next) => {
   }
 };
 
-export const getSingleBooking = async (req, res, next) => {   
+export const getSingleBooking = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      success: false,
+      message: errors.array()[0].msg,
+    });
+  }
 
-   const errors = validationResult(req);
-   if (!errors.isEmpty()) {
-     return res.status(422).json({
-       success: false,
-       message: errors.array()[0].msg,
-     });
-   }
-   
   try {
-
     const { id } = matchedData(req);
 
     const booking = await Booking.findById(id)
@@ -394,10 +437,10 @@ export const getSingleBooking = async (req, res, next) => {
 export const getAllBookings = async (req, res, next) => {
   try {
     await autoCompleteBookings();
-    const {  
-      status,  
+    const {
+      status,
       date,
-      department,  
+      department,
       resource: resourceId,
       user: userId,
       page: pageParam,
