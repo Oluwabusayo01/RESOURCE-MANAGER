@@ -193,7 +193,7 @@ export default function AdminLibraryPage() {
                         {m.department}
                       </TableCell>
                       <TableCell className="text-sm text-dark-gray py-4 font-semibold">{m.uploadedBy}</TableCell>
-                      <TableCell className="text-sm text-mid-gray py-4">{format(new Date(m.createdAt), 'MMM d, yyyy')}</TableCell>
+                      <TableCell className="text-sm text-dark-gray font-medium py-4">{format(new Date(m.createdAt), 'MMM d, yyyy')}</TableCell>
                       <TableCell className="py-4 text-right pr-6">
                         <Button
                           variant="ghost"

@@ -152,15 +152,7 @@ export const bookingService = {
       return data.map(mapBooking);
     }),
   getById: (id: string) =>
-    bookingService.getAll().then(bookings => {
-      const found = bookings.find((b: any) => b.id === id);
-      if (!found) {
-        const err = new Error("Booking not found") as any;
-        err.response = { status: 404, data: { message: "Booking not found" } };
-        throw err;
-      }
-      return found;
-    }),
+    api.get(`/bookings/${id}`).then(r => mapBooking(r.data.data || r.data)),
   create: (payload: any) => {
     const apiPayload = { ...payload }
     if (apiPayload.resourceId) {
@@ -180,7 +172,7 @@ export const bookingService = {
   cancel: (id: string) =>
     api.patch(`/bookings/cancel/${id}`).then(r => mapBooking(r.data.data || r.data)),
   logAttendance: (id: string, attendance: number) =>
-    api.patch(`/bookings/${id}`, { attendance }).then(r => mapBooking(r.data.data || r.data)),
+    api.patch(`/bookings/${id}/attendance`, { attendance }).then(r => mapBooking(r.data.data || r.data)),
   delete: (id: string) =>
     api.delete(`/bookings/${id}`).then(r => r.data),
 }

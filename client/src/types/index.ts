@@ -1,6 +1,6 @@
 export type UserRole = 'classrep' | 'staff' | 'admin'
 export type UserStatus = 'pending' | 'approved' | 'rejected'
-export type BookingStatus = 'confirmed' | 'cancelled'
+export type BookingStatus = 'confirmed' | 'cancelled' | 'completed'
 export type ResourceStatus = 'active' | 'inactive'
 export type ResourceType = 'lab' | 'seminar' | 'hall' | 'equipment' | 'meeting'
 export type NotificationType =

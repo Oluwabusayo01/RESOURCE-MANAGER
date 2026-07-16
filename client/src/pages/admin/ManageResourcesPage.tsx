@@ -148,7 +148,7 @@ export default function ManageResourcesPage() {
     setEditingId(r.id)
     setForm({
       name: r.name,
-      type: r.type,
+      type: r.type ? r.type.toLowerCase() : '',
       capacity: r.capacity !== null ? String(r.capacity) : '',
       status: r.status,
       description: r.description || '',

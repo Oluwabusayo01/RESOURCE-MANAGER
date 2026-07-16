@@ -25,7 +25,7 @@ export default function ResourceImage({
   iconClassName = "w-5 h-5 text-dark-gray opacity-45"
 }: ResourceImageProps) {
   const [error, setError] = useState(false)
-  const Icon = typeIcons[type] || Server
+  const Icon = typeIcons[type?.toLowerCase()] || Server
 
   if (!src || error) {
     // Strip layout class like object-cover since it is not needed for fallback container
