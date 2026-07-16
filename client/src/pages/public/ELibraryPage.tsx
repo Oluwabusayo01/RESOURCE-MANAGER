@@ -300,7 +300,7 @@ export default function ELibraryPage() {
           />
         </div>
         <Select value={department} onValueChange={setDepartment}>
-          <SelectTrigger className="w-full sm:w-[220px] !h-10 text-sm">
+          <SelectTrigger className="w-full sm:w-[220px] h-10! text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
