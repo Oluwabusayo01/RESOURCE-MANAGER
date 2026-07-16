@@ -229,8 +229,11 @@ export default function BookingDetailPage() {
     try {
       await bookingService.cancel(id)
       toast.success('Booking cancelled.')
-      const dashboardPath = user?.role === 'staff' ? '/staff/dashboard' : '/classrep/dashboard'
-      navigate(dashboardPath)
+      if (window.history.length > 1) {
+        navigate(-1)
+      } else {
+        navigate(user?.role === 'staff' ? '/staff/bookings' : '/classrep/bookings')
+      }
     } catch (err: any) {
       toast.error(err.message || 'Failed to cancel booking.')
     }
@@ -258,7 +261,6 @@ export default function BookingDetailPage() {
   }
 
   const today = new Date().toISOString().split('T')[0]
-  const dashboardPath = user?.role === 'staff' ? '/staff/dashboard' : '/classrep/dashboard'
 
   if (loading) {
     return (
@@ -277,7 +279,18 @@ export default function BookingDetailPage() {
         <h2 className="text-xl font-black text-accent mb-2">Booking Not Found</h2>
         <p className="text-dark-gray text-sm mb-6">{error || "The booking you're looking for doesn't exist."}</p>
         <Button onClick={fetchBooking} variant="outline" className="mr-2">Retry</Button>
-        <Button onClick={() => navigate(dashboardPath)} className="bg-accent text-white">Back to Dashboard</Button>
+        <Button
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1)
+            } else {
+              navigate(user?.role === 'staff' ? '/staff/bookings' : '/classrep/bookings')
+            }
+          }}
+          className="bg-accent text-white"
+        >
+          Go Back
+        </Button>
       </div>
     )
   }
@@ -296,11 +309,17 @@ export default function BookingDetailPage() {
     >
       {/* Back Button */}
       <button
-        onClick={() => navigate(dashboardPath)}
+        onClick={() => {
+          if (window.history.length > 1) {
+            navigate(-1)
+          } else {
+            navigate(user?.role === 'staff' ? '/staff/bookings' : '/classrep/bookings')
+          }
+        }}
         className="flex items-center gap-2 text-dark-gray hover:text-accent transition-colors text-sm font-medium"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Dashboard
+        Go Back
       </button>
  
       {/* 1. Booking Info Card */}
