@@ -13,6 +13,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import {
@@ -40,6 +48,99 @@ const format12Hour = (timeStr: string) => {
   return `${hourPad}:${minStr} ${ampm}`
 }
 
+const convertTo24h = (hour: string, minute: string, period: string): string => {
+  if (!hour || !minute || !period) return ''
+  let h = parseInt(hour, 10)
+  if (period === 'PM' && h < 12) h += 12
+  if (period === 'AM' && h === 12) h = 0
+  return `${h.toString().padStart(2, '0')}:${minute}`
+}
+
+const parse24h = (timeStr: string) => {
+  if (!timeStr) return { hour: '08', minute: '00', period: 'AM' }
+  const [hStr, mStr] = timeStr.split(':')
+  let h = parseInt(hStr, 10)
+  let period = 'AM'
+  if (h >= 12) {
+    period = 'PM'
+    if (h > 12) h -= 12
+  }
+  if (h === 0) h = 12
+  return {
+    hour: h.toString().padStart(2, '0'),
+    minute: mStr || '00',
+    period
+  }
+}
+
+interface TimePickerProps {
+  label: string
+  value: string
+  onChange: (val: string) => void
+  error?: string
+}
+
+function TimePicker({ label, value, onChange, error }: TimePickerProps) {
+  const { hour, minute, period } = parse24h(value)
+
+  const handleHourChange = (newHour: string) => {
+    onChange(convertTo24h(newHour, minute, period))
+  }
+
+  const handleMinuteChange = (newMinute: string) => {
+    onChange(convertTo24h(hour, newMinute, period))
+  }
+
+  const handlePeriodChange = (newPeriod: string) => {
+    onChange(convertTo24h(hour, minute, newPeriod))
+  }
+
+  const hours = Array.from({ length: 12 }, (_, i) => (i + 1).toString().padStart(2, '0'))
+  const minutes = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, '0'))
+
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      <div className="flex items-center gap-2">
+        <Select value={hour} onValueChange={handleHourChange}>
+          <SelectTrigger className="w-20">
+            <SelectValue placeholder="HH" />
+          </SelectTrigger>
+          <SelectContent>
+            {hours.map((h) => (
+              <SelectItem key={h} value={h}>{h}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <span className="text-dark-gray font-semibold">:</span>
+
+        <Select value={minute} onValueChange={handleMinuteChange}>
+          <SelectTrigger className="w-20">
+            <SelectValue placeholder="MM" />
+          </SelectTrigger>
+          <SelectContent>
+            {minutes.map((m) => (
+              <SelectItem key={m} value={m}>{m}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={period} onValueChange={handlePeriodChange}>
+          <SelectTrigger className="w-24">
+            <SelectValue placeholder="AM/PM" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="AM">AM</SelectItem>
+            <SelectItem value="PM">PM</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {error && <p className="text-xs text-red-500">{error}</p>}
+    </div>
+  )
+}
+
 export default function BookingDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { user } = useAuthStore()
@@ -53,6 +154,54 @@ export default function BookingDetailPage() {
   const [attendanceEdit, setAttendanceEdit] = useState(false)
   const [attendanceValue, setAttendanceValue] = useState('')
   const [savingAttendance, setSavingAttendance] = useState(false)
+
+  const [isEditingDetails, setIsEditingDetails] = useState(false)
+  const [editCourse, setEditCourse] = useState('')
+  const [editDate, setEditDate] = useState('')
+  const [editStartTime, setEditStartTime] = useState('')
+  const [editEndTime, setEditEndTime] = useState('')
+  const [editNotes, setEditNotes] = useState('')
+  const [savingDetails, setSavingDetails] = useState(false)
+
+  const startEdit = () => {
+    if (!booking) return
+    setEditCourse(booking.course)
+    setEditDate(booking.date)
+    setEditStartTime(booking.startTime)
+    setEditEndTime(booking.endTime)
+    setEditNotes(booking.notes || '')
+    setIsEditingDetails(true)
+  }
+
+  const handleSaveDetails = async () => {
+    if (!id || !editCourse || !editDate || !editStartTime || !editEndTime) {
+      toast.error('Please fill in all required fields.')
+      return
+    }
+
+    if (editEndTime <= editStartTime) {
+      toast.error('End time must be after start time.')
+      return
+    }
+
+    setSavingDetails(true)
+    try {
+      await bookingService.update(id, {
+        course: editCourse,
+        date: editDate,
+        startTime: editStartTime,
+        endTime: editEndTime,
+        notes: editNotes,
+      })
+      toast.success('Booking details updated successfully.')
+      setIsEditingDetails(false)
+      fetchBooking()
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to update booking details.')
+    } finally {
+      setSavingDetails(false)
+    }
+  }
 
   const fetchBooking = async () => {
     if (!id) return
@@ -135,7 +284,8 @@ export default function BookingDetailPage() {
 
   const isFuture = booking.date >= today
   const canCancel = booking.status === 'confirmed' && isFuture
-  const canLogAttendance = booking.status === 'confirmed' && booking.date <= today
+  const canLogAttendance = (booking.status === 'confirmed' || booking.status === 'completed') && booking.date <= today
+  const canEditDetails = booking.status === 'confirmed' && isFuture
 
   return (
     <motion.div
@@ -152,7 +302,7 @@ export default function BookingDetailPage() {
         <ArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </button>
-
+ 
       {/* 1. Booking Info Card */}
       <Card className="border border-mid-gray/20 shadow-sm">
         <CardContent className="p-6">
@@ -164,45 +314,136 @@ export default function BookingDetailPage() {
                 <p className="text-dark-gray font-medium mt-1">{booking.course}</p>
               </div>
             </div>
-            <StatusBadge status={booking.status} />
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-light-gray rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <MapPin className="w-4 h-4 text-gold" />
-                <span className="text-[10px] font-bold text-dark-gray uppercase">Resource Type</span>
-              </div>
-              <p className="font-bold text-accent capitalize">{booking.resource?.type || 'lab'}</p>
-            </div>
-            <div className="bg-light-gray rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Calendar className="w-4 h-4 text-gold" />
-                <span className="text-[10px] font-bold text-dark-gray uppercase">Date</span>
-              </div>
-              <p className="font-bold text-accent">{booking.date}</p>
-            </div>
-            <div className="bg-light-gray rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-4 h-4 text-gold" />
-                <span className="text-[10px] font-bold text-dark-gray uppercase">Time</span>
-              </div>
-              <p className="font-bold text-accent">{format12Hour(booking.startTime)} – {format12Hour(booking.endTime)}</p>
-            </div>
-            <div className="bg-light-gray rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <BookOpen className="w-4 h-4 text-gold" />
-                <span className="text-[10px] font-bold text-dark-gray uppercase">Department</span>
-              </div>
-              <p className="font-bold text-accent text-sm">{booking.department}</p>
+            <div className="flex flex-col items-end gap-2">
+              <StatusBadge status={booking.status} />
+              {canEditDetails && !isEditingDetails && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={startEdit}
+                  className="font-bold border-mid-gray/30 hover:bg-light-gray h-8 text-xs"
+                >
+                  Edit Details
+                </Button>
+              )}
             </div>
           </div>
 
-          {booking.notes && (
-            <div className="mt-4 p-3 bg-light-gray rounded-lg">
-              <p className="text-xs font-bold text-dark-gray uppercase mb-1">Notes</p>
-              <p className="text-sm text-accent">{booking.notes}</p>
+          {isEditingDetails ? (
+            <div className="space-y-4">
+              {/* Course Input */}
+              <div className="space-y-2">
+                <Label>Course Name</Label>
+                <Input
+                  value={editCourse}
+                  onChange={(e) => setEditCourse(e.target.value)}
+                  placeholder="e.g. CSC 401 - Software Engineering"
+                />
+              </div>
+
+              {/* Date Input */}
+              <div className="space-y-2">
+                <Label>Date</Label>
+                <Input
+                  type="date"
+                  value={editDate}
+                  onChange={(e) => setEditDate(e.target.value)}
+                  min={today}
+                  onClick={(e) => e.currentTarget.showPicker()}
+                />
+              </div>
+
+              {/* Time Range Pickers */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <TimePicker
+                  label="Start Time"
+                  value={editStartTime}
+                  onChange={setEditStartTime}
+                />
+                <TimePicker
+                  label="End Time"
+                  value={editEndTime}
+                  onChange={setEditEndTime}
+                />
+              </div>
+
+              {/* Notes Input */}
+              <div className="space-y-2">
+                <Label>Notes (Optional)</Label>
+                <Textarea
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder="Any specific requirements..."
+                  rows={3}
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 pt-2">
+                <Button
+                  onClick={handleSaveDetails}
+                  className="bg-accent text-white hover:bg-accent/90 font-bold h-10"
+                  disabled={savingDetails}
+                >
+                  {savingDetails ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving...
+                    </span>
+                  ) : (
+                    'Save Changes'
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditingDetails(false)}
+                  disabled={savingDetails}
+                  className="h-10"
+                >
+                  Cancel
+                </Button>
+              </div>
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-light-gray rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <MapPin className="w-4 h-4 text-gold" />
+                    <span className="text-[10px] font-bold text-dark-gray uppercase">Resource Type</span>
+                  </div>
+                  <p className="font-bold text-accent capitalize">{booking.resource?.type || 'lab'}</p>
+                </div>
+                <div className="bg-light-gray rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Calendar className="w-4 h-4 text-gold" />
+                    <span className="text-[10px] font-bold text-dark-gray uppercase">Date</span>
+                  </div>
+                  <p className="font-bold text-accent">{booking.date}</p>
+                </div>
+                <div className="bg-light-gray rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock className="w-4 h-4 text-gold" />
+                    <span className="text-[10px] font-bold text-dark-gray uppercase">Time</span>
+                  </div>
+                  <p className="font-bold text-accent">{format12Hour(booking.startTime)} – {format12Hour(booking.endTime)}</p>
+                </div>
+                <div className="bg-light-gray rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-1">
+                    <BookOpen className="w-4 h-4 text-gold" />
+                    <span className="text-[10px] font-bold text-dark-gray uppercase">Department</span>
+                  </div>
+                  <p className="font-bold text-accent text-sm">{booking.department}</p>
+                </div>
+              </div>
+
+              {booking.notes && (
+                <div className="mt-4 p-3 bg-light-gray rounded-lg">
+                  <p className="text-xs font-bold text-dark-gray uppercase mb-1">Notes</p>
+                  <p className="text-sm text-accent">{booking.notes}</p>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>
@@ -346,11 +587,10 @@ export default function BookingDetailPage() {
 
       {/* 4. Cancel Booking */}
       {canCancel && (
-        <Card className="border border-red-200 shadow-sm">
+        <Card className="border border-mid-gray/20 shadow-sm">
           <CardContent className="p-6 flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-red-600 uppercase tracking-wider">Danger Zone</h2>
-              <p className="text-xs text-dark-gray mt-1">Cancelling a booking cannot be undone.</p>
+              <p className="text-sm text-dark-gray font-medium">Cancelling a booking cannot be undone.</p>
             </div>
             <Button
               variant="outline"

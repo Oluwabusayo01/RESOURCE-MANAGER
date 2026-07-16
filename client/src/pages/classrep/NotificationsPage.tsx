@@ -58,8 +58,10 @@ export default function NotificationsPage() {
   }
 
   // Pagination logic
-  const totalPages = Math.ceil(notifications.length / PER_PAGE)
-  const paginatedNotifications = notifications.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+  const safeNotifications = notifications || []
+  const totalPages = Math.ceil(safeNotifications.length / PER_PAGE)
+  const paginatedNotifications = safeNotifications.slice((page - 1) * PER_PAGE, page * PER_PAGE)
+  const validNotifications = paginatedNotifications.filter(n => n && n.id)
 
   useEffect(() => {
     fetchNotifications()
@@ -91,7 +93,7 @@ export default function NotificationsPage() {
     }
   }
 
-  const unreadCount = notifications.filter(n => !n.read).length
+  const unreadCount = safeNotifications.filter(n => n && !n.read).length
 
   return (
     <motion.div
@@ -104,13 +106,19 @@ export default function NotificationsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl sm:text-3xl font-black text-accent">Notifications</h1>
-          <p className="text-dark-gray text-[10px] sm:text-sm mt-1">
-            {unreadCount > 0
-              ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}.`
-              : "You're all caught up!"}
-          </p>
+          <div className="h-5 flex items-center mt-1">
+            {loading ? (
+              <Skeleton className="h-4 w-40" />
+            ) : (
+              <p className="text-dark-gray text-[10px] sm:text-sm">
+                {unreadCount > 0
+                  ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}.`
+                  : "You're all caught up!"}
+              </p>
+            )}
+          </div>
         </div>
-        {unreadCount > 0 && (
+        {!loading && unreadCount > 0 && (
           <Button
             variant="outline"
             onClick={handleMarkAllRead}
@@ -126,10 +134,19 @@ export default function NotificationsPage() {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map(i => (
-            <Skeleton key={i} className="h-16 w-full rounded-xl" />
+            <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-white border border-light-gray shadow-sm">
+              {/* Icon Skeleton */}
+              <Skeleton className="w-10 h-10 rounded-lg shrink-0" />
+              
+              {/* Content Skeleton */}
+              <div className="flex-1 space-y-2 py-1">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/4" />
+              </div>
+            </div>
           ))}
         </div>
-      ) : notifications.length === 0 ? (
+      ) : safeNotifications.length === 0 ? (
         <div className="text-center py-20">
           <Bell className="w-16 h-16 text-mid-gray mx-auto mb-4" />
           <p className="text-lg font-bold text-dark-gray">You have no notifications yet.</p>
@@ -137,7 +154,7 @@ export default function NotificationsPage() {
       ) : (
         <div className="space-y-4">
           <div className="space-y-2">
-            {paginatedNotifications.map((n, i) => {
+            {validNotifications.map((n, i) => {
               const config = iconMap[n.type] || iconMap.system
               const Icon = config.icon
 

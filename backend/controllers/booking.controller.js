@@ -161,6 +161,7 @@ export const updateBooking = async (req, res, next) => {
       matchedData(req);
       const { attendance } = req.body; 
 
+
     // 1. Check booking exists
     const booking = await Booking.findById(id);
     if (!booking) {
@@ -178,35 +179,53 @@ export const updateBooking = async (req, res, next) => {
       });
     }
 
-    // 3. Can only update confirmed bookings
-    if (booking.status !== "confirmed") {
+    // 3. Can only update confirmed or completed bookings
+    if (booking.status !== "confirmed" && booking.status !== "completed") {
       return res.status(400).json({
         success: false,
         message: `Cannot update a ${booking.status} booking`,
       });
     }
 
-    // 4. Resolve final date, startTime, endTime for conflict check
-    // Use new values if provided, fall back to existing ones
-    const resolvedDate = date || booking.date;
-    const resolvedStartTime = startTime || booking.startTime;
-    const resolvedEndTime = endTime || booking.endTime;
+    if (booking.status === "completed") {
+      // If completed, ONLY attendance can be updated
+      const hasOtherUpdates = course || notes || date || startTime || endTime;
+      if (hasOtherUpdates) {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot update booking details once it is completed. Only attendance can be logged.",
+        });
+      }
+    } else {
+      // 4. Resolve final date, startTime, endTime for conflict check
+      // Use new values if provided, fall back to existing ones
+      const resolvedDate = date || booking.date;
+      const resolvedStartTime = startTime || booking.startTime;
+      const resolvedEndTime = endTime || booking.endTime;
 
-    // 5. Conflict check — exclude the current booking from the check
-    const conflict = await Booking.findOne({
-      _id: { $ne: id }, // exclude current booking
-      resource: booking.resource,
-      date: resolvedDate,
-      status: "confirmed",
-      startTime: { $lt: resolvedEndTime },
-      endTime: { $gt: resolvedStartTime },
-    });
-
-    if (conflict) {
-      return res.status(409).json({
-        success: false,
-        message: `This resource is already booked from ${conflict.startTime} to ${conflict.endTime} on ${conflict.date}`,
+      // 5. Conflict check — exclude the current booking from the check
+      const conflict = await Booking.findOne({
+        _id: { $ne: id }, // exclude current booking
+        resource: booking.resource,
+        date: resolvedDate,
+        status: "confirmed",
+        startTime: { $lt: resolvedEndTime },
+        endTime: { $gt: resolvedStartTime },
       });
+
+      if (conflict) {
+        return res.status(409).json({
+          success: false,
+          message: `This resource is already booked from ${conflict.startTime} to ${conflict.endTime} on ${conflict.date}`,
+        });
+      }
+
+      // Apply updates to details if not completed
+      if (course) booking.course = course;
+      if (notes) booking.notes = notes;
+      if (date) booking.date = date;
+      if (startTime) booking.startTime = startTime;
+      if (endTime) booking.endTime = endTime;
     }
 
     // 6. Apply updates
@@ -282,7 +301,6 @@ export const cancelBooking = async (req, res, next) => {
         message: "You are not authorized to cancel this booking",
       });
     }
-
     // 3. Can only cancel confirmed bookings
     if (booking.status === "cancelled") {
       return res.status(400).json({
