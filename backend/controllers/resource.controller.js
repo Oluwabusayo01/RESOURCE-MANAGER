@@ -73,8 +73,9 @@ export const updateResource = async (req, res, next) => {
     });
   }
 
+  const { image } = req.body;  
   try {
-    const { id, name, type, description, image, status } = matchedData(req);
+    const { id, name, type, description, status } = matchedData(req);
     const capacity = req.body.capacity;
     const resource = await Resource.findById(id);
     if (!resource) {
@@ -82,8 +83,8 @@ export const updateResource = async (req, res, next) => {
         success: false,
         message: "Resource not found",
       });
-    }
-
+    } 
+   
     // Update the resource fields
     if (name) {
       resource.name = name;
@@ -99,12 +100,12 @@ export const updateResource = async (req, res, next) => {
     }
     console.log("Updating resource with capacity:", capacity);
 
-    if (image) {
+    if (image || image === null) {
       resource.image = image;
-    }
+    }   
     if (status) {
       resource.status = status;
-    }
+    }  
     if (status === "unavailable") {
       const bookings = await Booking.find({
         resource: resource._id,
