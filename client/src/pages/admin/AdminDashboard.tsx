@@ -44,6 +44,37 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 
+const getPaginationRange = (currentPage: number, totalPages: number) => {
+  const delta = 1 // number of surrounding pages to show
+  const range: number[] = []
+  const rangeWithDots: (number | string)[] = []
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (
+      i === 1 ||
+      i === totalPages ||
+      (i >= currentPage - delta && i <= currentPage + delta)
+    ) {
+      range.push(i)
+    }
+  }
+
+  let l: number | undefined
+  for (const i of range) {
+    if (l !== undefined) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1)
+      } else if (i - l > 2) {
+        rangeWithDots.push('...')
+      }
+    }
+    rangeWithDots.push(i)
+    l = i
+  }
+
+  return rangeWithDots
+}
+
 interface AdminStats {
   totalBookingsThisMonth: number
   pendingUsers: number
@@ -575,20 +606,30 @@ export default function AdminDashboard() {
                         Previous
                       </Button>
                       
-                      {Array.from({ length: paginationInfo.totalPages }, (_, i) => i + 1).map((p) => (
-                        <Button
-                          key={p}
-                          variant={p === activityPage ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => fetchPaginatedActivity(p)}
-                          disabled={paginatedLoading}
-                          className={`w-8 h-8 p-0 text-xs font-bold ${
-                            p === activityPage ? 'bg-gold hover:bg-gold/90 text-white' : ''
-                          }`}
-                        >
-                          {p}
-                        </Button>
-                      ))}
+                      {getPaginationRange(activityPage, paginationInfo.totalPages).map((p, idx) => {
+                        if (p === '...') {
+                          return (
+                            <span key={`dots-${idx}`} className="px-2 text-xs font-bold text-mid-gray select-none">
+                              ...
+                            </span>
+                          )
+                        }
+                        const pageNum = p as number
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={pageNum === activityPage ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => fetchPaginatedActivity(pageNum)}
+                            disabled={paginatedLoading}
+                            className={`w-8 h-8 p-0 text-xs font-bold ${
+                              pageNum === activityPage ? 'bg-gold hover:bg-gold/90 text-white' : ''
+                            }`}
+                          >
+                            {pageNum}
+                          </Button>
+                        )
+                      })}
 
                       <Button
                         variant="outline"

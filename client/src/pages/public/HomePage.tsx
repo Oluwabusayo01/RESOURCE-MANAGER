@@ -196,9 +196,13 @@ export default function HomePage() {
                   <div className="min-w-0 flex-1">
                     <h4 className="font-bold text-accent truncate mb-1">{b.resource?.name || 'Unknown Resource'}</h4>
                     <p className="text-sm text-dark-gray mb-4 truncate">{b.course}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-gold">{format12Hour(b.startTime)} - {format12Hour(b.endTime)}</span>
-                      <StatusBadge status={b.status} className="text-[10px] py-0 px-2" />
+                    <div className="space-y-2">
+                      <div className="text-xs font-medium text-gold" style={{ whiteSpace: 'nowrap' }}>
+                        {format12Hour(b.startTime)} - {format12Hour(b.endTime)}
+                      </div>
+                      <div>
+                        <StatusBadge status={b.status} className="text-[10px] py-0.5 px-2" />
+                      </div>
                     </div>
                   </div>
                 </div>

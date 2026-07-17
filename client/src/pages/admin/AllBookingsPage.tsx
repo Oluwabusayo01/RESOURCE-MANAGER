@@ -37,7 +37,6 @@ import {
 import {
   Eye,
   XCircle,
-  Download,
   RotateCcw,
   ChevronLeft,
   ChevronRight,

@@ -23,7 +23,7 @@ const typeIcons: Record<string, any> = {
 }
 
 export default function ResourceCard({ resource }: ResourceCardProps) {
-  const Icon = typeIcons[resource.type] || Monitor
+  const Icon = typeIcons[resource.type?.toLowerCase()] || Monitor
   const [imgError, setImgError] = useState(false)
 
   return (

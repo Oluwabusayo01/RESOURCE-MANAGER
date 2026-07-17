@@ -33,6 +33,15 @@ import { toast } from 'sonner'
 
 const PER_PAGE = 9
 
+const formatBytes = (bytes: number | undefined | null) => {
+  if (bytes === undefined || bytes === null || isNaN(bytes)) return ''
+  if (bytes === 0) return '0 B'
+  const k = 1024
+  const sizes = ['B', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
+}
+
 
 const ALLOWED_TYPES = [
   'application/pdf',
@@ -67,7 +76,7 @@ const formatFileSize = (bytes: number) => {
 
 export default function ELibraryPage() {
   const user = useAuthStore((s) => s.user)
-  const canUpload = user && user.role === 'admin'
+  const canUpload = user && (user.role === 'admin' || user.role === 'staff')
 
   const [materials, setMaterials] = useState<LibraryMaterial[]>([])
   const [loading, setLoading] = useState(true)
@@ -291,7 +300,7 @@ export default function ELibraryPage() {
           />
         </div>
         <Select value={department} onValueChange={setDepartment}>
-          <SelectTrigger className="w-full sm:w-[220px] h-10 text-sm">
+          <SelectTrigger className="w-full sm:w-[220px] h-10! text-sm">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -346,9 +355,16 @@ export default function ELibraryPage() {
                   transition={{ delay: i * 0.08 }}
                   className="bg-white rounded-xl border border-mid-gray/20 p-6 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 flex flex-col animate-hover"
                 >
-                  {/* File Type Icon */}
-                  <div className="w-12 h-12 bg-gold/10 rounded-lg flex items-center justify-center mb-4">
-                    <Icon className="w-6 h-6 text-gold" />
+                  {/* Top row with icon & optional size badge */}
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="w-12 h-12 bg-gold/10 rounded-lg flex items-center justify-center">
+                      <Icon className="w-6 h-6 text-gold" />
+                    </div>
+                    {m.fileSize !== undefined && m.fileSize !== null && m.fileSize > 0 && (
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 bg-gold/10 text-gold rounded border border-gold/20 select-none uppercase tracking-wider">
+                        {formatBytes(m.fileSize)}
+                      </span>
+                    )}
                   </div>
 
                   {/* Title & Course */}
@@ -425,7 +441,7 @@ export default function ELibraryPage() {
       <Dialog open={uploadOpen} onOpenChange={handleDialogClose}>
         <DialogContent className="sm:max-w-[520px] w-[95vw] max-h-[85vh] flex flex-col overflow-hidden p-0 gap-0">
           {/* Decorative gradient header */}
-          <div className="relative bg-gradient-to-br from-accent via-accent to-gold/40 px-6 pt-6 pb-5 shrink-0">
+          <div className="relative bg-linear-to-br from-accent via-accent to-gold/40 px-6 pt-6 pb-5 shrink-0">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_20%,rgba(201,168,76,0.6),transparent_60%)]" />
             <DialogHeader className="relative z-10">
               <DialogTitle className="text-white text-xl font-black flex items-center gap-2">

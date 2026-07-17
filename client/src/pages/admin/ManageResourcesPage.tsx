@@ -145,11 +145,12 @@ export default function ManageResourcesPage() {
   }
 
   const openEdit = (r: Resource) => {
+    console.log("openEdit called with resource:", r)
     setEditingId(r.id)
     setForm({
       name: r.name,
-      type: r.type,
-      capacity: r.capacity !== null ? String(r.capacity) : '',
+      type: r.type ? r.type.toLowerCase() : '',
+      capacity: (r.capacity !== null && r.capacity !== undefined) ? String(r.capacity) : '',
       status: r.status,
       description: r.description || '',
       image: r.image || null,
