@@ -1,35 +1,69 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { BaseSeqModel, sequelize } from "../config/database.js";
 
-const notificationSchema = new mongoose.Schema(
+class Notification extends BaseSeqModel {
+  get user() {
+    if (this.dataValues.user) {
+      return this.dataValues.user;
+    }
+    return this.getDataValue("userId");
+  }
+  set user(val) {
+    if (val && typeof val === "object" && val.id) {
+      this.setDataValue("userId", val.id);
+      this.dataValues.user = val;
+    } else {
+      this.setDataValue("userId", val);
+      this.dataValues.user = null;
+    }
+  }
+}
+
+Notification.init(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    id: {
+      type: DataTypes.STRING(24),
+      primaryKey: true,
+    },
+    userId: {
+      type: DataTypes.STRING(24),
+      allowNull: false,
     },
     type: {
-      type: String,
-      required: true,
-      enum: [
+      type: DataTypes.ENUM(
         "booking_confirmed",
         "booking_cancelled",
         "booking_updated",
         "registration_approved",
         "registration_rejected",
         "class_update",
-        "system",
-      ],
+        "system"
+      ),
+      allowNull: false,
     },
     message: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
   },
-  { timestamps: true },
+  {
+    sequelize,
+    modelName: "Notification",
+    tableName: "Notifications",
+    timestamps: true,
+    hooks: {
+      beforeCreate: async (notification) => {
+        if (!notification.id) {
+          notification.id = Notification.generateId();
+        }
+      },
+    },
+    indexes: [
+      {
+        fields: ["userId", "createdAt"],
+      },
+    ],
+  }
 );
 
-notificationSchema.index({ user: 1, createdAt: -1 });
-notificationSchema.index({ user: 1, read: 1 });
-
-export default mongoose.model("Notification", notificationSchema);
+export default Notification;

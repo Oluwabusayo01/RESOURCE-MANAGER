@@ -1,56 +1,85 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { BaseSeqModel, sequelize } from "../config/database.js";
 
-const librarySchema = new mongoose.Schema(
+class Library extends BaseSeqModel {
+  get user() {
+    if (this.dataValues.user) {
+      return this.dataValues.user;
+    }
+    return this.getDataValue("userId");
+  }
+  set user(val) {
+    if (val && typeof val === "object" && val.id) {
+      this.setDataValue("userId", val.id);
+      this.dataValues.user = val;
+    } else {
+      this.setDataValue("userId", val);
+      this.dataValues.user = null;
+    }
+  }
+}
+
+Library.init(
   {
+    id: {
+      type: DataTypes.STRING(24),
+      primaryKey: true,
+    },
     title: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     course: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     department: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     description: {
-      type: String,
-      trim: true,
-      default: null,
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
     },
     uploadedBy: {
-      type: String, 
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    userId: {
+      type: DataTypes.STRING(24),
+      allowNull: false,
     },
     fileType: {
-      type: String,
-      enum: ["pdf", "doc", "docx", "ppt", "pptx", "xls", "xlsx", "txt"],
-      required: true,
+      type: DataTypes.STRING(50),
+      allowNull: false,
     },
     fileUrl: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING(2083),
+      allowNull: false,
     },
     fileName: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     fileSize: {
-      type: Number, // bytes
-      required: true,
-    }
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
   },
-  { timestamps: true },
+  {
+    sequelize,
+    modelName: "Library",
+    tableName: "LibraryMaterials",
+    timestamps: true,
+    hooks: {
+      beforeCreate: async (library) => {
+        if (!library.id) {
+          library.id = Library.generateId();
+        }
+      },
+    },
+  }
 );
 
-export default mongoose.model("Library", librarySchema);
+export default Library;

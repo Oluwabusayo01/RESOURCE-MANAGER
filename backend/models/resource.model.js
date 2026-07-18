@@ -1,37 +1,56 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { BaseSeqModel, sequelize } from "../config/database.js";
 
-const resourceSchema = new mongoose.Schema(
+class Resource extends BaseSeqModel {}
+
+Resource.init(
   {
+    id: {
+      type: DataTypes.STRING(24),
+      primaryKey: true,
+    },
     name: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
     },
     type: {
-      type: String,
-      required: true,
-      //   enum: ["lab", "seminar", "hall", "equipment", "meeting"],
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     description: {
-      type: String,
-      trim: true,
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     capacity: {
-      type: Number,
-      default: null,
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null,
     },
     image: {
-      type: String,
-      default: null,
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: null,
     },
     status: {
-      type: String,
-      enum: ["available", "unavailable"],
-      default: "available",
+      type: DataTypes.ENUM("available", "unavailable"),
+      allowNull: false,
+      defaultValue: "available",
     },
   },
-  { timestamps: true },
+  {
+    sequelize,
+    modelName: "Resource",
+    tableName: "Resources",
+    timestamps: true,
+    hooks: {
+      beforeCreate: async (resource) => {
+        if (!resource.id) {
+          resource.id = Resource.generateId();
+        }
+      },
+    },
+  }
 );
 
-export default mongoose.model("Resource", resourceSchema);
+export default Resource;

@@ -1,67 +1,134 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { BaseSeqModel, sequelize } from "../config/database.js";
 
-const bookingSchema = new mongoose.Schema(
+class Booking extends BaseSeqModel {
+  get resource() {
+    if (this.dataValues.resource) {
+      return this.dataValues.resource;
+    }
+    return this.getDataValue("resourceId");
+  }
+  set resource(val) {
+    if (val && typeof val === "object" && val.id) {
+      this.setDataValue("resourceId", val.id);
+      this.dataValues.resource = val;
+    } else {
+      this.setDataValue("resourceId", val);
+      this.dataValues.resource = null;
+    }
+  }
+
+  get user() {
+    if (this.dataValues.user) {
+      return this.dataValues.user;
+    }
+    return this.getDataValue("userId");
+  }
+  set user(val) {
+    if (val && typeof val === "object" && val.id) {
+      this.setDataValue("userId", val.id);
+      this.dataValues.user = val;
+    } else {
+      this.setDataValue("userId", val);
+      this.dataValues.user = null;
+    }
+  }
+
+  get cancelledBy() {
+    if (this.dataValues.cancelledBy) {
+      return this.dataValues.cancelledBy;
+    }
+    return this.getDataValue("cancelledById");
+  }
+  set cancelledBy(val) {
+    if (val && typeof val === "object" && val.id) {
+      this.setDataValue("cancelledById", val.id);
+      this.dataValues.cancelledBy = val;
+    } else {
+      this.setDataValue("cancelledById", val);
+      this.dataValues.cancelledBy = null;
+    }
+  }
+}
+
+Booking.init(
   {
-    resource: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Resource",
-      required: true,
+    id: {
+      type: DataTypes.STRING(24),
+      primaryKey: true,
     },
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
+    resourceId: {
+      type: DataTypes.STRING(24),
+      allowNull: false,
+    },
+    userId: {
+      type: DataTypes.STRING(24),
+      allowNull: false,
     },
     course: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     notes: {
-      type: String,
-      trim: true,
-      default: null,
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
     },
     date: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     startTime: {
-      type: String, 
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     endTime: {
-      type: String, 
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     status: {
-      type: String,
-      enum: ["confirmed", "cancelled", "completed"],
-      default: "confirmed",
+      type: DataTypes.ENUM("confirmed", "cancelled", "completed"),
+      allowNull: false,
+      defaultValue: "confirmed",
     },
     attendance: {
-      type: Number,
-      default: null,
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      defaultValue: null,
     },
     department: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     cancelledAt: {
-      type: Date,
-      default: null,
+      type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: null,
     },
-    cancelledBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
+    cancelledById: {
+      type: DataTypes.STRING(24),
+      allowNull: true,
+      defaultValue: null,
     },
   },
-  { timestamps: true },
+  {
+    sequelize,
+    modelName: "Booking",
+    tableName: "Bookings",
+    timestamps: true,
+    hooks: {
+      beforeCreate: async (booking) => {
+        if (!booking.id) {
+          booking.id = Booking.generateId();
+        }
+      },
+    },
+    indexes: [
+      {
+        fields: ["resourceId", "date", "status"],
+      },
+    ],
+  }
 );
 
-// Speed up conflict detection query
-bookingSchema.index({ resource: 1, date: 1, status: 1 });
-
-export default mongoose.model("Booking", bookingSchema);
+export default Booking;

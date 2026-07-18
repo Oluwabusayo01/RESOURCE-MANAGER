@@ -1,27 +1,65 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { BaseSeqModel, sequelize } from "../config/database.js";
 
-const activitySchema = new mongoose.Schema(
+class Activity extends BaseSeqModel {
+  get actor() {
+    if (this.dataValues.actor) {
+      return this.dataValues.actor;
+    }
+    return this.getDataValue("actorId");
+  }
+  set actor(val) {
+    if (val && typeof val === "object" && val.id) {
+      this.setDataValue("actorId", val.id);
+      this.dataValues.actor = val;
+    } else {
+      this.setDataValue("actorId", val);
+      this.dataValues.actor = null;
+    }
+  }
+}
+
+Activity.init(
   {
+    id: {
+      type: DataTypes.STRING(24),
+      primaryKey: true,
+    },
     type: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     description: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
-    actor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
+    actorId: {
+      type: DataTypes.STRING(24),
+      allowNull: true,
+      defaultValue: null,
     },
   },
-  { timestamps: true },
+  {
+    sequelize,
+    modelName: "Activity",
+    tableName: "Activities",
+    timestamps: true,
+    hooks: {
+      beforeCreate: async (activity) => {
+        if (!activity.id) {
+          activity.id = Activity.generateId();
+        }
+      },
+    },
+    indexes: [
+      {
+        fields: ["createdAt"],
+      },
+      {
+        fields: ["type", "createdAt"],
+      },
+    ],
+  }
 );
 
-activitySchema.index({ createdAt: -1 });
-activitySchema.index({ type: 1, createdAt: -1 });
-
-export default mongoose.model("Activity", activitySchema);
+export default Activity;

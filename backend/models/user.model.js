@@ -1,64 +1,76 @@
-import mongoose from "mongoose";
+import { DataTypes } from "sequelize";
+import { BaseSeqModel, sequelize } from "../config/database.js";
 import bcrypt from "bcryptjs";
 
-const userSchema = new mongoose.Schema(
+class User extends BaseSeqModel {
+  async comparePassword(candidatePassword) {
+    return bcrypt.compare(candidatePassword, this.password);
+  }
+}
+
+User.init(
   {
+    id: {
+      type: DataTypes.STRING(24),
+      primaryKey: true,
+    },
     name: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
-      lowercase: true,
-      trim: true,
       validate: {
-        validator: function (value) {
-          return value.toLowerCase().endsWith("lautech.edu.ng");
+        isLautechEmail(value) {
+          if (!value.toLowerCase().endsWith("lautech.edu.ng")) {
+            throw new Error("Enter a valid LAUTECH email address");
+          }
         },
-        message: "Enter a valid LAUTECH email address",
       },
     },
     password: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     department: {
-      type: String,
-      required: true,
-      enum: ["computer science", "cyber security", "information system"],
-      trim: true,
+      type: DataTypes.ENUM("computer science", "cyber security", "information system"),
+      allowNull: false,
     },
     role: {
-      type: String,
-      enum: ["classrep", "staff", "admin"],
-      default: "classrep",
-      required: true,
-    },    
+      type: DataTypes.ENUM("classrep", "staff", "admin"),
+      allowNull: false,
+      defaultValue: "classrep",
+    },
     status: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
+      type: DataTypes.ENUM("pending", "approved", "rejected"),
+      defaultValue: "pending",
     },
   },
-  { timestamps: true },
-);
-
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) {
-    return;
+  {
+    sequelize,
+    modelName: "User",
+    tableName: "Users",
+    timestamps: true,
+    hooks: {
+      beforeCreate: async (user) => {
+        if (!user.id) {
+          user.id = User.generateId();
+        }
+        if (user.changed("password")) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        }
+      },
+      beforeUpdate: async (user) => {
+        if (user.changed("password")) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        }
+      },
+    },
   }
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
-};
-
-const User = mongoose.model("User", userSchema);
+);
 
 export default User;
