@@ -8,6 +8,7 @@ class Booking extends BaseSeqModel {
     }
     return this.getDataValue("resourceId");
   }
+
   set resource(val) {
     if (val && typeof val === "object" && val.id) {
       this.setDataValue("resourceId", val.id);
@@ -24,6 +25,7 @@ class Booking extends BaseSeqModel {
     }
     return this.getDataValue("userId");
   }
+
   set user(val) {
     if (val && typeof val === "object" && val.id) {
       this.setDataValue("userId", val.id);
@@ -40,6 +42,7 @@ class Booking extends BaseSeqModel {
     }
     return this.getDataValue("cancelledById");
   }
+
   set cancelledBy(val) {
     if (val && typeof val === "object" && val.id) {
       this.setDataValue("cancelledById", val.id);

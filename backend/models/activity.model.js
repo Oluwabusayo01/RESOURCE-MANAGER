@@ -8,6 +8,7 @@ class Activity extends BaseSeqModel {
     }
     return this.getDataValue("actorId");
   }
+
   set actor(val) {
     if (val && typeof val === "object" && val.id) {
       this.setDataValue("actorId", val.id);

@@ -8,6 +8,7 @@ class Library extends BaseSeqModel {
     }
     return this.getDataValue("userId");
   }
+
   set user(val) {
     if (val && typeof val === "object" && val.id) {
       this.setDataValue("userId", val.id);

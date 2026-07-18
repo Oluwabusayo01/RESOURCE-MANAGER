@@ -47,9 +47,16 @@ function convertSelect(selectFields) {
   if (!selectFields) return undefined;
 
   if (typeof selectFields === "string") {
-    const fields = selectFields.split(/\s+/).filter(Boolean);
-    const exclude = fields.filter((f) => f.startsWith("-")).map((f) => f.slice(1));
-    const include = fields.filter((f) => !f.startsWith("-"));
+    const fields = selectFields.split(/\s+/).filter(Boolean).map((f) => {
+      if (f === "_id") return "id";
+      if (f === "-_id") return "-id";
+      return f;
+    });
+
+    const filteredFields = fields.filter((f) => f !== "__v" && f !== "-__v");
+
+    const exclude = filteredFields.filter((f) => f.startsWith("-")).map((f) => f.slice(1));
+    const include = filteredFields.filter((f) => !f.startsWith("-"));
 
     if (exclude.length > 0) {
       return { exclude };
@@ -63,6 +70,7 @@ function convertSelect(selectFields) {
     const exclude = [];
     const include = [];
     for (const [key, val] of Object.entries(selectFields)) {
+      if (key === "__v") continue;
       const field = key === "_id" ? "id" : key;
       if (val === 0 || val === false) {
         exclude.push(field);
@@ -133,12 +141,15 @@ function convertPopulateToIncludes(options, models) {
   });
 }
 
+// Helper to check for plain objects
+function isPlainObject(val) {
+  if (val === null || typeof val !== "object") return false;
+  const proto = Object.getPrototypeOf(val);
+  return proto === null || proto === Object.prototype;
+}
+
 // Convert MongoDB filter to Sequelize where conditions
 export function convertFilter(obj) {
-  if (obj === null || typeof obj !== "object") {
-    return obj;
-  }
-
   if (obj instanceof RegExp) {
     const source = obj.source.replace(/\\/g, "");
     return { [Op.like]: `%${source}%` };
@@ -146,6 +157,10 @@ export function convertFilter(obj) {
 
   if (Array.isArray(obj)) {
     return obj.map(convertFilter);
+  }
+
+  if (obj === null || typeof obj !== "object" || !isPlainObject(obj)) {
+    return obj;
   }
 
   const result = {};
@@ -278,11 +293,12 @@ class MongooseQuery {
 
   async then(resolve, reject) {
     try {
+      console.log("MongooseQuery.then options:", JSON.stringify(this.sequelizeOptions, null, 2));
       let result;
       if (this.single) {
-        result = await this.model.findOne(this.sequelizeOptions);
+        result = await Model.findOne.call(this.model, this.sequelizeOptions);
       } else {
-        result = await this.model.findAll(this.sequelizeOptions);
+        result = await Model.findAll.call(this.model, this.sequelizeOptions);
       }
 
       if (this.isLean) {
@@ -303,8 +319,73 @@ class MongooseQuery {
   }
 }
 
+// Helper to map MongoDB references to physical SQL foreign keys
+function convertValues(values, options) {
+  if (!values || typeof values !== "object") return values;
+  const converted = { ...values };
+
+  const isDatabaseLoad = options && options.isNewRecord === false;
+
+  if (converted.user !== undefined) {
+    const val = converted.user;
+    if (isDatabaseLoad) {
+      // Keep it as is (populated association loaded from DB)
+    } else if (!(val instanceof Model)) {
+      converted.userId = val && typeof val === "object" && val.id ? val.id : val;
+      delete converted.user;
+    }
+  }
+  if (converted.resource !== undefined) {
+    const val = converted.resource;
+    if (isDatabaseLoad) {
+      // Keep it as is (populated association loaded from DB)
+    } else if (!(val instanceof Model)) {
+      converted.resourceId = val && typeof val === "object" && val.id ? val.id : val;
+      delete converted.resource;
+    }
+  }
+  if (converted.actor !== undefined) {
+    const val = converted.actor;
+    if (isDatabaseLoad) {
+      // Keep it as is (populated association loaded from DB)
+    } else if (!(val instanceof Model)) {
+      converted.actorId = val && typeof val === "object" && val.id ? val.id : val;
+      delete converted.actor;
+    }
+  }
+  if (converted.cancelledBy !== undefined) {
+    const val = converted.cancelledBy;
+    if (isDatabaseLoad) {
+      // Keep it as is (populated association loaded from DB)
+    } else if (!(val instanceof Model)) {
+      converted.cancelledById = val && typeof val === "object" && val.id ? val.id : val;
+      delete converted.cancelledBy;
+    }
+  }
+
+  return converted;
+}
+
 // Base Sequelize Model with custom Mongoose-like static & instance methods
 export class BaseSeqModel extends Model {
+  constructor(values, options) {
+    super(convertValues(values, options), options);
+  }
+
+  static create(values, options) {
+    const converted = convertValues(values, options);
+    return super.create(converted, options);
+  }
+
+  static bulkCreate(records, options) {
+    const convertedRecords = Array.isArray(records) ? records.map(r => convertValues(r, options)) : records;
+    return super.bulkCreate(convertedRecords, options);
+  }
+
+  static update(values, options) {
+    return super.update(convertValues(values, options), options);
+  }
+
   // Instance helpers
   get _id() {
     return this.id;
@@ -349,10 +430,16 @@ export class BaseSeqModel extends Model {
 
   // Static builders
   static find(filter) {
+    if (filter && filter.where !== undefined) {
+      return Model.findAll.call(this, filter);
+    }
     return new MongooseQuery(this, filter, false);
   }
 
   static findOne(filter) {
+    if (filter && filter.where !== undefined) {
+      return Model.findOne.call(this, filter);
+    }
     return new MongooseQuery(this, filter, true);
   }
 
@@ -451,7 +538,11 @@ const connectDatabase = async () => {
 
     // Specific Aggregation overrides for booking.controller / admin.controller
     if (Booking) {
-      Booking.aggregate = async function (pipeline) {
+      Booking.aggregate = async function (...args) {
+        if (typeof args[0] === "string" && typeof args[1] === "string") {
+          return Model.aggregate.apply(this, args);
+        }
+        const pipeline = Array.isArray(args[0]) ? args[0] : args;
         const isMostBookedResource = pipeline.some(
           (step) =>
             step.$group &&
@@ -518,11 +609,12 @@ const connectDatabase = async () => {
           }));
         }
 
+        console.error("Unsupported aggregation pipeline received:", JSON.stringify(pipeline, null, 2));
         throw new Error("Unsupported aggregation pipeline");
       };
     }
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("Database tables synchronized successfully.");
   } catch (error) {
     console.error(`Error connecting to MySQL: ${error.message}`);

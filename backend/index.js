@@ -66,3 +66,4 @@ const startServer = async () => {
 };
 
 startServer();
+// Reload trigger: added logging for Booking creation input/output
