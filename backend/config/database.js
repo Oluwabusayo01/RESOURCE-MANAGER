@@ -6,10 +6,16 @@ dotenv.config();
 
 let sequelize;
 
-if (process.env.MYSQL_URL) {
+if (process.env.MYSQL_URL && process.env.MYSQL_URL.startsWith("mysql://")) {
+  const isAiven = process.env.MYSQL_URL.includes("aivencloud.com");
   sequelize = new Sequelize(process.env.MYSQL_URL, {
     dialect: "mysql",
     logging: false,
+    dialectOptions: isAiven ? {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    } : {},
     define: {
       timestamps: true,
     },
@@ -21,11 +27,18 @@ if (process.env.MYSQL_URL) {
   const dbHost = process.env.MYSQL_HOST || "localhost";
   const dbPort = process.env.MYSQL_PORT || 3306;
 
+  const isAiven = dbHost && dbHost.includes("aivencloud.com");
+
   sequelize = new Sequelize(dbName, dbUser, dbPass, {
     host: dbHost,
     port: dbPort,
     dialect: "mysql",
     logging: false,
+    dialectOptions: isAiven ? {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    } : {},
     define: {
       timestamps: true,
     },
