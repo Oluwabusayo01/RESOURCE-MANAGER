@@ -340,9 +340,13 @@ export default function BookingPage() {
               {/* Resource Select */}
               <div className="space-y-2">
                 <Label>Resource</Label>
-                <Select onValueChange={(val) => setValue('resourceId', val, { shouldValidate: true })} value={resourceId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a lab, hall, or room" />
+                <Select 
+                  onValueChange={(val) => setValue('resourceId', val, { shouldValidate: true })} 
+                  value={resourceId}
+                  disabled={resources.length === 0}
+                >
+                  <SelectTrigger className={resources.length === 0 ? "border-amber-200 bg-amber-50/20" : ""}>
+                    <SelectValue placeholder={resources.length === 0 ? "No resources available" : "Select a lab, hall, or room"} />
                   </SelectTrigger>
                   <SelectContent>
                     {resources.map((r) => (
@@ -352,6 +356,12 @@ export default function BookingPage() {
                     ))}
                   </SelectContent>
                 </Select>
+                {resources.length === 0 ? (
+                  <div className="flex items-center gap-2 p-3 bg-amber-50/50 border border-amber-200/50 rounded-md text-amber-800 text-xs sm:text-sm mt-1">
+                    <XCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>No active resources (labs, halls, or rooms) are currently available. Please contact the administrator.</span>
+                  </div>
+                ) : null}
                 {errors.resourceId && <p className="text-xs text-red-500">{errors.resourceId.message}</p>}
               </div>
 
