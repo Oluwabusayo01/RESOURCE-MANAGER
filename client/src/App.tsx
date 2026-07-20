@@ -91,11 +91,6 @@ function App() {
         } />
       </Routes>
       <Toaster position="top-center" richColors />
-      {import.meta.env.VITE_USE_MOCK === 'true' && (
-        <div className="fixed bottom-0 left-0 right-0 bg-black text-white text-[10px] py-1 text-center z-50 opacity-80 pointer-events-none">
-          🟡 Demo Mode — Using mock data. Backend not connected.
-        </div>
-      )}
     </Router>
   )
 }
