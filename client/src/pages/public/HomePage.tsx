@@ -37,7 +37,6 @@ export default function HomePage() {
   useEffect(() => {
     const fetchTodayBookings = async () => {
       try {
-        // Mock delay is handled inside apiService
         const data = await bookingService.getPublic({
           date: new Date().toISOString().split('T')[0],
           status: 'confirmed',

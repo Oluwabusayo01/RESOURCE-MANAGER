@@ -74,8 +74,6 @@ export default function LoginPage() {
     }
   }
 
-  const isMock = import.meta.env.VITE_USE_MOCK === 'true'
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] relative overflow-hidden p-4">
       {/* Decorative background elements */}
@@ -196,31 +194,6 @@ export default function LoginPage() {
                 </Link>
               </p>
             </div>
-
-            {/* Demo Credentials — only visible when VITE_USE_MOCK=true */}
-            {isMock && (
-              <div className="mt-8 p-5 bg-[#F9F9F9] border border-mid-gray/20 rounded-2xl">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-2 h-2 bg-gold rounded-full" />
-                  <span className="text-[10px] font-black text-accent uppercase tracking-widest">Demo Access</span>
-                </div>
-                <div className="space-y-3">
-                  {[
-                    { role: 'Admin', email: 'admin@fci.lautech.edu.ng', pass: 'admin1234' },
-                    { role: 'Class Rep', email: 'emeka@fci.edu', pass: 'password123' },
-                    { role: 'Staff', email: 'aisha@fci.edu', pass: 'password123' }
-                  ].map((cred, i) => (
-                    <div key={i} className="flex flex-col gap-1">
-                      <span className="text-[10px] font-bold text-dark-gray">{cred.role}</span>
-                      <div className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-mid-gray/10 shadow-sm">
-                        <span className="text-[11px] font-mono text-accent">{cred.email}</span>
-                        <span className="text-[11px] font-mono text-gold">{cred.pass}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
