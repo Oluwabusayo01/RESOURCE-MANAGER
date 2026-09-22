@@ -278,7 +278,7 @@ export const userService = {
   getAll: (params?: any) =>
     api.get('/users', { params }).then(r => {
       const usersRaw = r.data.users || r.data.data || [];
-      const users = usersRaw.map((u: any) => ({ ...u, id: u._id }));
+      const users = usersRaw.map((u: any) => ({ ...u, id: u._id || u.id }));
       return { users, pagination: r.data.pagination };
     }),
   approve: (id: string) =>
