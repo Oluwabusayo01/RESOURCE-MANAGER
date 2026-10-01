@@ -22,7 +22,7 @@ export const resourceService = {
         let status = item.status
         if (status === 'available') status = 'active'
         else if (status === 'unavailable') status = 'inactive'
-        return { ...item, id: item._id, status }
+        return { ...item, id: item._id || item.id, status }
       });
     })
   },
@@ -47,7 +47,7 @@ export const resourceService = {
       let status = item.status
       if (status === 'available') status = 'active'
       else if (status === 'unavailable') status = 'inactive'
-      return { ...item, id: item._id, status }
+      return { ...item, id: item._id || item.id, status }
     })
   },
   update: async (id: string, payload: any) => {
@@ -71,17 +71,17 @@ export const resourceService = {
       let status = item.status
       if (status === 'available') status = 'active'
       else if (status === 'unavailable') status = 'inactive'
-      return { ...item, id: item._id, status }
+      return { ...item, id: item._id || item.id, status }
     })
   },
-  toggleStatus: (id: string, status: string) => {
+  toggleStatus: (id: string | Number, status: string) => {
     const mappedStatus = status === 'active' ? 'available' : status === 'inactive' ? 'unavailable' : status
     return api.patch(`/resources/${id}`, { status: mappedStatus }).then(r => {
       const item = r.data.data || r.data
       let resStatus = item.status
       if (resStatus === 'available') resStatus = 'active'
       else if (resStatus === 'unavailable') resStatus = 'inactive'
-      return { ...item, id: item._id, status: resStatus }
+      return { ...item, id: item._id || item.id, status: resStatus }
     })
   },
   checkAvailability: (id: string, params: any) =>
@@ -194,9 +194,9 @@ export const notificationService = {
       }
       let mapped = data.map((item: any) => ({
         ...item,
-        id: item._id,
+        id: item._id || item.id,
         timestamp: item.createdAt || item.timestamp || new Date().toISOString(),
-        read: readIds.includes(item._id)
+        read: readIds.includes(item._id || item.id)
       }))
       if (params?.unread) {
         mapped = mapped.filter((item: any) => !item.read)
@@ -245,7 +245,7 @@ export const libraryService = {
   getAll: (params?: any) =>
     api.get('/library', { params }).then(r => {
       const data = r.data.data || r.data || [];
-      return data.map((item: any) => ({ ...item, id: item._id }));
+      return data.map((item: any) => ({ ...item, id: item._id || item.id }));
     }),
   getById: (id: string) =>
     api.get(`/library/${id}`).then(r => {
@@ -255,7 +255,7 @@ export const libraryService = {
   getStaffLibrary: () =>
     api.get('/library/staff').then(r => {
       const data = r.data.data || r.data || [];
-      return data.map((item: any) => ({ ...item, id: item._id }));
+      return data.map((item: any) => ({ ...item, id: item._id || item.id }));
     }),
   uploadFile: (file: File) => {
     const formData = new FormData()
@@ -299,7 +299,7 @@ export const adminService = {
   getActivity: (params?: any) =>
     api.get('/admin/activity', { params }).then(r => {
       const data = r.data.data || r.data || [];
-      const mapped = data.map((item: any) => ({ ...item, id: item._id }));
+      const mapped = data.map((item: any) => ({ ...item, id: item._id || item.id }));
       return {
         data: mapped,
         pagination: r.data.pagination || null
